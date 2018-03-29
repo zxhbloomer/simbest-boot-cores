@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+		<groupId>com.simbest.boot</groupId>
+		<artifactId>simbest-boot-parent</artifactId>
+		<version>0.1</version>
+		<relativePath>../simbest-boot-parent</relativePath>
+  </parent>
+	
+  <groupId>com.simbest.boot</groupId>
+  <artifactId>simbest-boot-cores</artifactId>
+  <version>0.1</version>
+  <packaging>jar</packaging>
+
+  <name>${project.artifactId}</name>
+  <description>Simbest Spring Boot Cores</description>
+
+  <properties>
+    
+  </properties>
+
+  <dependencies>
+    
+  </dependencies>
+  
+  <repositories>
+		<repository>
+			<id>simbest-parent-mvn-repo</id>
+			<url>https://raw.github.com/simbest/simbest-boot-parent/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	
+</project>
