@@ -18,16 +18,29 @@
   <description>Simbest Spring Boot Cores</description>
 
   <properties>
+      <simbest.version>0.1</simbest.version>
   </properties>
 
   <dependencies>
-    
+      <dependency>
+          <groupId>com.simbest.boot</groupId>
+          <artifactId>simbest-boot-orguser</artifactId>
+          <version>${simbest.version}</version>
+      </dependency>
   </dependencies>
   
   <repositories>
 		<repository>
 			<id>simbest-parent-mvn-repo</id>
 			<url>https://raw.github.com/simbest/simbest-boot-parent/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>simbest-orguser-mvn-repo</id>
+			<url>https://raw.github.com/simbest/simbest-boot-orguser/mvn-repo/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
