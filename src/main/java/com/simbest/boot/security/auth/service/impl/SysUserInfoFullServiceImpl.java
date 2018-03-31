@@ -32,7 +32,7 @@ import java.util.List;
  * @author lishuyi
  */
 @Service
-public class SysUserInfoFullServiceImpl implements UserDetailsService, SysUserInfoFullService {
+public class SysUserInfoFullServiceImpl implements SysUserInfoFullService {
 
     @Autowired
     private SysUserInfoFullRepository userRepository;

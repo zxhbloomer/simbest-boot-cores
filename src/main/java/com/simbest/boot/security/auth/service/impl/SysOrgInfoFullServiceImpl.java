@@ -23,4 +23,8 @@ public class SysOrgInfoFullServiceImpl implements SysOrgInfoFullService {
     private SysOrgInfoFullRepository orgRepository;
 
 
+    @Override
+    public void deleteById(Integer id) {
+        orgRepository.deleteById(id);
+    }
 }

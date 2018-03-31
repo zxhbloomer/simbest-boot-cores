@@ -8,6 +8,7 @@ import com.simbest.boot.security.auth.model.SysUserInfoFull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
  *
  * @author lishuyi
  */
-public interface SysUserInfoFullService {
+public interface SysUserInfoFullService extends UserDetailsService {
 
     SysUserInfo getCurrentUser();
 

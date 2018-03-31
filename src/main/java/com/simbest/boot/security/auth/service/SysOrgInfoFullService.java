@@ -4,6 +4,8 @@
 package com.simbest.boot.security.auth.service;
 
 
+import javax.transaction.Transactional;
+
 /**
  * <strong>Description : 基于Spring Security的组织逻辑层</strong><br>
  * <strong>Create on : 2017年08月23日</strong><br>
@@ -12,7 +14,8 @@ package com.simbest.boot.security.auth.service;
  *
  * @author lishuyi
  */
+@Transactional
 public interface SysOrgInfoFullService {
 
-
+    void deleteById(Integer id);
 }

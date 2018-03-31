@@ -10,9 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * 用途：单点测试控制器
- * 作者: lishuyi
- * 时间: 2018/1/31  15:49
+ * <strong>Title</strong> : 单点登录控制器<br>
+ * <strong>Description</strong> : <br>
+ * <strong>Create on</strong> : 2018/02/27<br>
+ * <strong>Modify on</strong> : 2018/03/02<br>
+ * <strong>Copyright (C) ___ Ltd.</strong><br>
+ *
+ * @author baimengqi baimengqi@simbest.com.cn
+ * @version v0.0.1
  */
 @RestController
 @RequestMapping("/sso")

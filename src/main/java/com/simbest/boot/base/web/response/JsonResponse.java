@@ -6,6 +6,8 @@ package com.simbest.boot.base.web.response;
 
 import lombok.*;
 
+import java.io.Serializable;
+
 /**
  * 用途：Restful 接口通用返回的JSON对象
  * 作者: lishuyi 
@@ -49,5 +51,27 @@ public class JsonResponse {
      */
     public static JsonResponse defaultErrorResponse() {
         return JsonResponse.builder().errcode(UNKNOWN_ERROR_CODE).errmsg(UNKNOWN_ERROR_MSG).build();
+    }
+
+    /**
+     *
+     * @param obj 成功数据
+     * @return 输出成功数据
+     */
+    public static JsonResponse success(Object obj) {
+        JsonResponse response = defaultSuccessResponse();
+        response.setData(obj);
+        return response;
+    }
+
+    /**
+     *
+     * @param obj 失败数据
+     * @return 输出失败数据
+     */
+    public static JsonResponse fail(Object obj) {
+        JsonResponse response = defaultErrorResponse();
+        response.setData(obj);
+        return response;
     }
 }

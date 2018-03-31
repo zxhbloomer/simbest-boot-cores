@@ -16,7 +16,7 @@ import springfox.documentation.service.Contact;
 
 /**
  * 用途：RESTFUL API 在线文档
- * 访问路径： http://localhost:8080/ddy/swagger-ui.html
+ * 访问路径： http://localhost:8001/uums/swagger-ui.html
  * 作者: lishuyi
  * 时间: 2018/3/7  14:39
  */

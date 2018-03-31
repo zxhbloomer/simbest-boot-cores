@@ -32,20 +32,6 @@ public class IndexController {
         return "index";
     }
 
-    /**
-     * @return login
-     */
-    @RequestMapping(value = "/login", method = {RequestMethod.POST, RequestMethod.GET})
-    public String login() {
-        return "login";
-    }
 
-    /**
-     * @return 403
-     */
-    @RequestMapping(value = "/403", method = {RequestMethod.POST, RequestMethod.GET})
-    public String accesssDenied() {
-        return "403";
-    }
 
 }
