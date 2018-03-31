@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
-import com.simbest.boot.annotations.EntityCnName;
+import com.simbest.boot.base.annotations.EntityCnName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
