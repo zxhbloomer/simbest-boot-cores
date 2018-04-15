@@ -11,6 +11,7 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(description = "登录控制器")
 @Slf4j
-@RestController
+@Controller
 @RequestMapping("/login")
 public class LoginController {
 
