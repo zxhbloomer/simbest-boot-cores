@@ -72,10 +72,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 "/swagger-resources/configuration/security", //安全选项
                 "/swagger-ui.html");
         web.ignoring().antMatchers(
-                HttpMethod.GET,
-                "/",
                 "/webjars/**",
-                "/*.html",
                 "/favicon.ico",
                 "/**/*.html",
                 "/**/*.css",
@@ -96,8 +93,8 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .addFilterAt(captchaUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/error", "/login", "/logout").permitAll()  // 都可以访问
-                .antMatchers("/h2-console/**").permitAll()  // 都可以访问
-                .antMatchers("/sys/user/**").hasRole("USER")   // 需要相应的角色才能访问
+                .antMatchers("/h2-console/**", "/html/**").permitAll()  // 都可以访问
+                .antMatchers("/action/**").hasRole("USER")   // 需要相应的角色才能访问
                 .antMatchers("/admins/**").hasAnyRole("ADMIN", "SUPERVISOR")   // 需要相应的角色才能访问
                 .anyRequest().authenticated()
 //                .anyRequest().permitAll()

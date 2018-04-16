@@ -22,16 +22,8 @@ public class IndexController {
      * @return /
      */
     @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.GET})
-    public String root() {
-        return "redirect:/index";
-    }
-
-    /**
-     * @return index
-     */
-    @GetMapping("/index")
     public String index() {
-        return "index.html";
+        return "index";
     }
 
     /**
