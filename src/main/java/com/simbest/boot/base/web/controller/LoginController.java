@@ -40,12 +40,12 @@ public class LoginController {
     /**
      * @return login
      */
-    @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(method = {RequestMethod.POST, RequestMethod.GET})
     public String login() {
         return "login";
     }
 
-    @PostMapping("submit")
+    @PostMapping("/submit")
     public JsonResponse submit(@RequestParam String username, @RequestParam String password,
                                @RequestParam String validateCode) {
         try {
@@ -67,11 +67,5 @@ public class LoginController {
         }
     }
 
-    /**
-     * @return 403
-     */
-    @RequestMapping(value = "/403", method = {RequestMethod.POST, RequestMethod.GET})
-    public String accesssDenied() {
-        return "403";
-    }
+
 }
