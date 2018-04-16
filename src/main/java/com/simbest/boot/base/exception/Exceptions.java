@@ -45,7 +45,7 @@ public class Exceptions {
      * 判断异常是否由某些底层的异常引起
      * @param ex Exception
      * @param causeExceptionClasses Exception Class
-     * @return
+     * @return boolean
      */
     @SafeVarargs // 警告: [unchecked] 参数化 vararg 类型Class<? extends Exception>的堆可能已受污染
     public static boolean isCausedBy(Exception ex, Class<? extends Exception>... causeExceptionClasses) {

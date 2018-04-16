@@ -94,8 +94,8 @@ public final class GlobalExceptionRegister {
     }
 
     /**
-     * @param clazz 异常类
-     * @param data  额外返回信息
+     *
+     * @param e Exception
      * @return 返回JsonResponse
      */
     public static JsonResponse returnErrorResponse(Exception e) {
