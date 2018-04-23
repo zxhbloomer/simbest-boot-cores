@@ -27,8 +27,8 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     private SysPermissionRepository permissionRepository;
 
     @Override
-    public List<Map<String, Object>> findMenu(Long userid) {
-        return permissionRepository.findMenu(userid);
+    public List<Map<String, Object>> findMenu(String username) {
+        return permissionRepository.findMenu(username);
     }
 
     @Override

@@ -5,7 +5,8 @@ package com.simbest.boot.security.auth.service.impl;
 
 import com.simbest.boot.security.auth.model.SysUserInfo;
 import com.simbest.boot.security.auth.model.SysUserInfoFull;
-import com.simbest.boot.security.auth.repository.SysDutyRepository;
+import com.simbest.boot.security.auth.repository.SysOrgInfoFullRepository;
+import com.simbest.boot.security.auth.repository.SysRoleRepository;
 import com.simbest.boot.security.auth.repository.SysPermissionRepository;
 import com.simbest.boot.security.auth.repository.SysUserInfoFullRepository;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
@@ -15,10 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.Comparator;
 import java.util.List;
@@ -38,7 +37,10 @@ public class SysUserInfoFullServiceImpl implements SysUserInfoFullService {
     private SysUserInfoFullRepository userRepository;
 
     @Autowired
-    private SysDutyRepository dutyRepository;
+    private SysOrgInfoFullRepository orgRepository;
+
+    @Autowired
+    private SysRoleRepository roleRepository;
 
     @Autowired
     private SysPermissionRepository permissionRepository;
@@ -53,8 +55,9 @@ public class SysUserInfoFullServiceImpl implements SysUserInfoFullService {
         SysUserInfoFull userInfo = userRepository.findByUsername(username);
         if(userInfo == null)
             throw new UsernameNotFoundException(username + " not found!");
-        userInfo.setAuthDutys(dutyRepository.getDutyByUserId(userInfo.getId()));
-        userInfo.setAuthPermissions(permissionRepository.getPermissionByUserId(userInfo.getId()));
+        userInfo.setOrgs(orgRepository.getOrgByUsername(username));
+        userInfo.setAuthRoles(roleRepository.getRoleByUsername(username));
+        userInfo.setAuthPermissions(permissionRepository.getPermissionByUsername(username));
         return userInfo;
     }
 

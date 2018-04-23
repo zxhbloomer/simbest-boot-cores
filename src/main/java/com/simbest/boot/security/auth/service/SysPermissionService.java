@@ -21,10 +21,10 @@ public interface SysPermissionService {
     /**
      * 返回用户可见菜单
      *
-     * @param userid 用户ID
+     * @param username 用户登录标识
      * @return 用户菜单List<Map>
      */
-    List<Map<String, Object>> findMenu(Long userid);
+    List<Map<String, Object>> findMenu(String username);
 
     List<SysPermission> findAll();
 }

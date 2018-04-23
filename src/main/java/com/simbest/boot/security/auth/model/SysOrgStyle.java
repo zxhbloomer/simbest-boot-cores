@@ -40,9 +40,7 @@ public class SysOrgStyle {
     private Integer id;
 
     @NonNull
+    @Column(nullable = false, unique = true)
     private String orgStyle; //组织类型, 映射主数据规范style
-
-
-
 
 }

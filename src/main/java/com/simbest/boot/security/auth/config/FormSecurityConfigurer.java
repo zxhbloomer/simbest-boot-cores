@@ -61,6 +61,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
         web.ignoring().antMatchers("/css/**");
         web.ignoring().antMatchers("/js/**");
         web.ignoring().antMatchers("/fonts/**");
+        web.ignoring().antMatchers("/img/**");
         web.ignoring().antMatchers("/images/**");
         web.ignoring().antMatchers("/resources/**");
         web.ignoring().antMatchers("/h2-console/**");
@@ -97,7 +98,6 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .antMatchers("/action/**").hasRole("USER")   // 需要相应的角色才能访问
                 .antMatchers("/admins/**").hasAnyRole("ADMIN", "SUPERVISOR")   // 需要相应的角色才能访问
                 .anyRequest().authenticated()
-//                .anyRequest().permitAll()
                 .and().formLogin().successHandler(successLoginHandler) // 成功登入后，重定向到首页
                 .loginPage(ApplicationConstants.LOGIN_PAGE).failureUrl(ApplicationConstants.LOGIN_ERROR_PAGE) // 自定义登录界面
                 .failureHandler(failedLoginHandler) //记录登录错误日志，并自定义登录错误提示信息

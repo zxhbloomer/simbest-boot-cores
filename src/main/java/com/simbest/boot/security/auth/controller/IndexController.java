@@ -1,4 +1,4 @@
-package com.simbest.boot.base.web.controller;
+package com.simbest.boot.security.auth.controller;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;

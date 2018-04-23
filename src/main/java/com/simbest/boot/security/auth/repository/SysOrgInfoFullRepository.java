@@ -2,10 +2,12 @@ package com.simbest.boot.security.auth.repository;
 
 import com.simbest.boot.base.repository.BaseRepository;
 import com.simbest.boot.security.auth.model.SysOrgInfoFull;
+import com.simbest.boot.security.auth.model.SysRole;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <strong>Description : 基于Spring Security的组织持久层</strong><br>
@@ -21,8 +23,12 @@ public interface SysOrgInfoFullRepository extends BaseRepository<SysOrgInfoFull,
     @Query (value = sql1, nativeQuery = true)
     List<Integer> getByParentId ( @Param ( "id" ) int id );
 
-    List<SysOrgInfoFull> findByOuLikeAndStatus ( String ou, Boolean status);
+    List<SysOrgInfoFull> findByOrgCodeLikeAndStatus(String orgCode, Boolean status);
 
     List<SysOrgInfoFull> findByParentOrgIdAndStatus(Integer parentOrgId, Boolean status);
+
+    @Query("SELECT o FROM SysOrgInfoFull o, SysOrgUserInfo ou, SysUserInfoFull u WHERE ou.orgCode=o.orgCode AND ou.username=u.username AND u.username=:username " +
+            "ORDER BY o.orgLevelId ASC, ou.displayOrder ASC")
+    Set<SysOrgInfoFull> getOrgByUsername(@Param("username") String username);
 
 }

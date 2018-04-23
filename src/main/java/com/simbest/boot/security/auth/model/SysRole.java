@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
-import com.simbest.boot.security.IDuty;
+import com.simbest.boot.security.IRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 /**
- * <strong>Description : 角色职务信息</strong><br>
+ * <strong>Description : 角色信息</strong><br>
  * <strong>Create on : 2017年08月23日</strong><br>
  * <strong>Modify on : 2017年11月08日</strong><br>
  * <strong>Copyright Beijing Simbest Technology Ltd.</strong><br>
@@ -36,34 +36,31 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @Entity
-public class SysDuty implements IDuty, GrantedAuthority {
+public class SysRole implements IRole, GrantedAuthority {
 
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name = "sys_duty_seq", sequenceName = "sys_duty_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sys_duty_seq")
+    @SequenceGenerator(name = "sys_role_seq", sequenceName = "sys_role_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sys_role_seq")
     private Integer id;
 
     @NonNull
-    private String dutyCode;
+    @Column(nullable = false, unique = true)
+    private String roleCode; //系统角色编码
 
     @NonNull
-    private String dutyName;
+    @Column(nullable = false)
+    private String roleName; //角色名称
 
     @NonNull
-    private Integer dutyTypeId; //职位分类
+    @Column(nullable = false)
+    private Integer orgStyleId; //组织类型
 
-    @NonNull
-    private Integer corpLevel; //职位外部等级（集团规范）
-
-    @NonNull
-    private Integer innerLevel; //职位内部等级(系统内使用)
 
     @Override
     public String getAuthority() {
-        return getDutyCode();
+        return getRoleCode();
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -72,22 +69,16 @@ public class SysDuty implements IDuty, GrantedAuthority {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        SysDuty rhs = (SysDuty) obj;
+        SysRole rhs = (SysRole) obj;
         return new EqualsBuilder()
-                .append(getDutyCode(), rhs.getDutyCode())
-                .append(getDutyTypeId(), rhs.getDutyTypeId())
-                .append(getCorpLevel(), rhs.getCorpLevel())
-                .append(getInnerLevel(), rhs.getInnerLevel())
+                .append(getRoleCode(), rhs.getRoleCode())
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(getDutyCode())
-                .append(getDutyTypeId())
-                .append(getCorpLevel())
-                .append(getInnerLevel())
+                .append(getRoleCode())
                 .toHashCode();
     }
 

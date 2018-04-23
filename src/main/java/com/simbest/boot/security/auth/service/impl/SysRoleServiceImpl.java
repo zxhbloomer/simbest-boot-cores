@@ -3,9 +3,9 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
-import com.simbest.boot.security.auth.model.SysDuty;
-import com.simbest.boot.security.auth.repository.SysDutyRepository;
-import com.simbest.boot.security.auth.service.SysDutyService;
+import com.simbest.boot.security.auth.model.SysRole;
+import com.simbest.boot.security.auth.repository.SysRoleRepository;
+import com.simbest.boot.security.auth.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,22 +20,22 @@ import java.util.List;
  * @author lishuyi
  */
 @Service
-public class SysDutyServiceImpl implements SysDutyService {
+public class SysRoleServiceImpl implements SysRoleService {
 
     @Autowired
-    private SysDutyRepository RoleRepository;
+    private SysRoleRepository RoleRepository;
 
-    public List<SysDuty> findAll() {
+    public List<SysRole> findAll() {
         return RoleRepository.findAll();
     }
 
     @Override
-    public SysDuty findById(Integer id) {
+    public SysRole findById(Integer id) {
         return RoleRepository.findById(id).orElse(null);
     }
 
     @Override
-    public SysDuty save(SysDuty role) {
+    public SysRole save(SysRole role) {
         return RoleRepository.save(role);
     }
 

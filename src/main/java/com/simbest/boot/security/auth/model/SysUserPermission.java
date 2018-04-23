@@ -40,7 +40,7 @@ public class SysUserPermission {
     private Integer id;
 
     @NonNull
-    private Integer userId;
+    private String username;
 
     @NonNull
     private Integer permissionId;

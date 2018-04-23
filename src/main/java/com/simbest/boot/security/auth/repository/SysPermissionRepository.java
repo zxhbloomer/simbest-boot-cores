@@ -5,6 +5,7 @@ package com.simbest.boot.security.auth.repository;
 
 import com.simbest.boot.base.repository.BaseRepository;
 import com.simbest.boot.security.auth.model.SysPermission;
+import com.simbest.boot.security.auth.model.SysRole;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -32,39 +33,39 @@ public interface SysPermissionRepository extends BaseRepository<SysPermission, I
             "(\n" +
             "\t(SELECT  p.ID, p.DESCRIPTION AS description, p.MENU_LEVEL AS menuLevel, \n" +
             "            p.ICON AS icon, p.URL AS url, p.PARENT_ID AS parentid, p.ORDER_BY \n" +
-            "            FROM sys_user_info_full u,sys_duty d,sys_user_duty ud,sys_permission p,sys_duty_permission dp \n" +
-            "            WHERE ud.user_id=u.id AND ud.duty_id=d.id AND dp.duty_id=d.id AND dp.permission_id=p.id \n" +
-            "            AND u.id=:userId AND p.PERMISSION_TYPE='MENU')\n" +
+            "            FROM sys_user_info_full u,sys_role r,sys_user_role ur,sys_permission p,sys_role_permission rp \n" +
+            "            WHERE ur.username=u.username AND ur.role_id=r.id AND rp.role_id=r.id AND rp.permission_id=p.id \n" +
+            "            AND u.username=:username AND p.PERMISSION_TYPE='MENU')\n" +
             "UNION\n" +
             "\t(SELECT  p.ID, p.DESCRIPTION AS description, p.MENU_LEVEL AS menuLevel, \n" +
             "            p.ICON AS icon, p.URL AS url, p.PARENT_ID AS parentid, p.ORDER_BY \n" +
             "            FROM sys_user_info_full u,sys_permission p,sys_user_permission up \n" +
-            "            WHERE up.user_id=u.id AND up.permission_id=p.id \n" +
-            "            AND u.id=:userId AND p.PERMISSION_TYPE='MENU')\n" +
+            "            WHERE up.username=u.username AND up.permission_id=p.id \n" +
+            "            AND u.username=:username AND p.PERMISSION_TYPE='MENU')\n" +
             ") \n" +
             "AS tbl ORDER BY ORDER_BY ASC", nativeQuery = true)
-    List<Map<String, Object>> findMenu(@Param("userId") Long userId);
+    List<Map<String, Object>> findMenu(@Param("username") String username);
 
     @Query(value = "SELECT DISTINCT * FROM \n" +
             "(\n" +
             "\t(SELECT  p.*" +
-            "            FROM sys_user_info_full u,sys_duty d,sys_user_duty ud,sys_permission p,sys_duty_permission dp \n" +
-            "            WHERE ud.user_id=u.id AND ud.duty_id=d.id AND dp.duty_id=d.id AND dp.permission_id=p.id \n" +
-            "            AND u.id=:userId AND p.PERMISSION_TYPE='MENU')\n" +
+            "            FROM sys_user_info_full u,sys_role r,sys_user_role ur,sys_permission p,sys_duty_permission dp \n" +
+            "            WHERE ur.user_id=u.id AND ur.role_id=r.id AND rp.role_id=r.id AND rp.permission_id=p.id \n" +
+            "            AND u.username=:username AND p.PERMISSION_TYPE='MENU')\n" +
             "UNION\n" +
             "\t(SELECT  p.*" +
             "            FROM sys_user_info_full u,sys_permission p,sys_user_permission up \n" +
             "            WHERE up.user_id=u.id AND up.permission_id=p.id \n" +
-            "            AND u.id=:userId AND p.PERMISSION_TYPE='MENU')\n" +
+            "            AND u.username=:username AND p.PERMISSION_TYPE='MENU')\n" +
             ") \n" +
             "AS tbl ORDER BY ORDER_BY ASC", nativeQuery = true)
-    Set<SysPermission> getPermissionByUserId(@Param("userId") Long userId);
+    Set<SysPermission> getPermissionByUsername(@Param("username") String username);
 
-    @Query(value = "SELECT p.* FROM sys_permission p, sys_user_permission up, sys_user_info_full u WHERE up.user_id=u.id AND up.permission_id=p.id AND u.id=:userId", nativeQuery = true)
-    Set<SysPermission> getSpecailPermissionyUserId(@Param("userId") Long userId);
+    @Query(value = "SELECT p FROM SysPermission p, SysUserPermission up, SysUserInfoFull u WHERE up.username=u.username AND up.permissionId=p.id AND u.username=:username")
+    Set<SysPermission> getSpecailPermissionyUsername(@Param("username") String username);
 
-    @Query(value = "SELECT p.* FROM sys_permission p, sys_duty_permission dp, sys_duty d WHERE dp.duty_id=d.id AND dp.permission_id=p.id AND d.id=:dutyId", nativeQuery = true)
-    Set<SysPermission> getPermissionByDutyId(@Param("dutyId") Integer dutyId);
+    @Query(value = "SELECT p FROM SysPermission p, SysRolePermission rp, SysRole r WHERE rp.roleId=r.id AND rp.permissionId=p.id AND r.id=:roleId")
+    Set<SysPermission> getPermissionByRoleId(@Param("roleId") Integer roleId);
 
 
 }

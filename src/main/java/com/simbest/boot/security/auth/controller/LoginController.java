@@ -1,4 +1,4 @@
-package com.simbest.boot.base.web.controller;
+package com.simbest.boot.security.auth.controller;
 
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.ErrorCodeConstants;
@@ -45,8 +45,8 @@ public class LoginController {
         return "login";
     }
 
-    @PostMapping("/submit")
-    public JsonResponse submit(@RequestParam String username, @RequestParam String password,
+    @PostMapping("/manualSubmit")
+    public JsonResponse manualSubmit(@RequestParam String username, @RequestParam String password,
                                @RequestParam String validateCode) {
         try {
             UsernamePasswordAuthenticationToken authRequest

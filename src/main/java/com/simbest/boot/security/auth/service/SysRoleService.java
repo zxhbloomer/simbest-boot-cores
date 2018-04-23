@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.service;
 
-import com.simbest.boot.security.auth.model.SysDuty;
+import com.simbest.boot.security.auth.model.SysRole;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ import java.util.List;
  *
  * @author lishuyi
  */
-public interface SysDutyService {
+public interface SysRoleService {
 
-    List<SysDuty> findAll();
+    List<SysRole> findAll();
 
-    SysDuty findById(Integer id);
+    SysRole findById(Integer id);
 
-    SysDuty save(SysDuty duty);
+    SysRole save(SysRole role);
 }

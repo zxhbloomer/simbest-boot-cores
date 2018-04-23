@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
+import com.simbest.boot.security.IOrg;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +32,7 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @MappedSuperclass
-public class SysOrgInfo {
+public class SysOrgInfo implements IOrg {
 
     @Id
     @Column(name = "id")
@@ -40,27 +41,32 @@ public class SysOrgInfo {
     private Integer id;
 
     @NonNull
-    private String ou; //定义组织的简称，可以作为组织的显示名。例如：“网管中心”
+    @Column(nullable = false)
+    private String orgName; //即主数据规范ou，定义组织的简称，可以作为组织的显示名。例如：“网管中心”
 
     @NonNull
+    @Column(nullable = false)
     private String orgCode; //即主数据规范o，为组织的编码，编码规则参考附录中的组织编码规范。 例如：某组织编码为00010002 000000000000
 
     @NonNull
+    @Column(nullable = false)
     private String displayName; //定义组织名称，用于显示。 例如：某组织显示名称为“咸阳网络部-网络优化班”
 
     @NonNull
+    @Column(nullable = false)
     private Integer orgStyleId; //即主数据规范style，自定义属性，定义组织形态。 可选值： 1. 公司 2. 部门（默认）
 
     @NonNull
+    @Column(nullable = false)
     private Integer status; //定义组织的状态，默认值为0，例如：“0”表示正常状态，“1”表示锁定状态。
 
     @NonNull
     private Integer parentOrgId; //上级组织编码
 
     @NonNull
-    private String orgLevel; //组织级别
+    @Column(nullable = false)
+    private Integer orgLevelId; //组织级别,即组织级别orgLevel
 
-    @NonNull
     private String displayOrder; //同一个父节点下的组织的显示顺序
 
     private String reserve1; //预留扩展字段1
@@ -72,4 +78,5 @@ public class SysOrgInfo {
     private String reserve4; //预留扩展字段4
 
     private String reserve5; //预留扩展字段5
+
 }

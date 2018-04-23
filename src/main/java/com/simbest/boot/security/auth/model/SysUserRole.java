@@ -18,7 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 /**
- * <strong>Description : 职务类型信息</strong><br>
+ * <strong>Description : 人员角色信息</strong><br>
  * <strong>Create on : 2017年08月23日</strong><br>
  * <strong>Modify on : 2017年11月08日</strong><br>
  * <strong>Copyright Beijing Simbest Technology Ltd.</strong><br>
@@ -31,21 +31,18 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @Entity
-public class SysDutyType {
+public class SysUserRole {
 
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name = "sys_duty_type_seq", sequenceName = "sys_duty_type_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sys_duty_type_seq")
+    @SequenceGenerator(name = "sys_user_role_seq", sequenceName = "sys_user_role_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sys_user_role_seq")
     private Integer id;
 
     @NonNull
-    private Integer orgStyleId; //即主数据规范style，自定义属性，定义组织形态。 可选值： 1. 公司 2. 部门（默认）
+    private String username;
 
     @NonNull
-    private String dutyType; //职务类型
-
-
-
+    private Integer roleId;
 
 }
