@@ -3,20 +3,22 @@
  */
 package com.simbest.boot.security.auth.provider;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.mzlion.easyokhttp.HttpClient;
+import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
-import com.simbest.boot.security.auth.token.SsoUsernameAuthentication;
+import com.simbest.boot.util.json.JacksonUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+
 
 /**
  * 用途：基于用户名的认证器
@@ -24,24 +26,25 @@ import org.springframework.util.StringUtils;
  * 时间: 2018/1/20  17:49
  */
 @Component
+@RequiredArgsConstructor
 @Slf4j
-public class SsoUsernameAuthenticationProvider implements AuthenticationProvider {
+public class HttpRemoteUsernameAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private SysUserInfoFullService sysUserInfoService;
 
+    @Value("${security.auth.validate.url}")
+    private String validateUrl;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        if (!StringUtils.isEmpty(username)) {
-            UserDetails userDetails = sysUserInfoService.loadUserByUsername(username);
-            if (userDetails != null) {
-                return new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-                        userDetails.getPassword(), userDetails.getAuthorities());
-            } else {
-                throw new
-                        BadCredentialsException("External system authentication failed");
-            }
+        String jsonStr = HttpClient.post(validateUrl)
+                .param("username",username)
+                .asString();
+        JsonNode node = JacksonUtils.json2obj(jsonStr, JsonNode.class);
+        if (null != node.findPath("errcode") && JsonResponse.SUCCESS_CODE == node.findPath("errcode").intValue()) {
+            return new UsernamePasswordAuthenticationToken(node.findPath("principal"), node.findPath("credentials"));
         } else {
             throw new
                     UsernameNotFoundException(username + " is not exist account.");
@@ -50,6 +53,6 @@ public class SsoUsernameAuthenticationProvider implements AuthenticationProvider
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.equals(SsoUsernameAuthentication.class);
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 }

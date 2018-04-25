@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
-import com.simbest.boot.security.IOrg;
+import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.security.IUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +42,7 @@ import java.util.TreeSet;
 @AllArgsConstructor
 @Builder
 @MappedSuperclass
-public class SysUserInfo implements IUser, UserDetails {
+public class SysUserInfo extends LogicModel implements IUser, UserDetails {
 
     @Id
     @Column(name = "id")
@@ -54,18 +54,18 @@ public class SysUserInfo implements IUser, UserDetails {
     private String username; //即主数据规范uid，引用自inetOrgPerson，定义用户登录ID，参见附录内部用户命名规范和外部用户命名规范。
     private String password; //用户密码
     @NonNull
-    @Column( nullable = false)
+    @Column(nullable = false)
     private String truename; //即主数据规范cn，定义用户中文姓名。
     private String nickname;
     private String displayOrder; //定义用户显示顺序
     @NonNull
-    @Column( nullable = false)
+    @Column(nullable = false)
     private String orgCode; //即主数据规范o，定义用户所属的组织的编码号，编码定义参见附录中的组织编码规则。例如：“00010002000300040005”
-    @Column( nullable = false)
+    @Column(nullable = false)
     private String orgName; //即主数据规范ou，定义组织的简称，可以作为组织的显示名。例如：“网管中心”
     private String mobile; //定义用户移动电话
     @NonNull
-    @Column( nullable = false)
+    @Column(nullable = false)
     private String status; //定义用户帐号的状态，可选值参见附录用户帐号状态的数据字典定义。例如：“0”表示正常状态。
     private String photo; //照片
     private String openid; //微信openid

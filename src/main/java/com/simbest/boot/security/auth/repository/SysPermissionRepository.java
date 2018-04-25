@@ -48,15 +48,13 @@ public interface SysPermissionRepository extends BaseRepository<SysPermission, I
 
     @Query(value = "SELECT DISTINCT * FROM \n" +
             "(\n" +
-            "\t(SELECT  p.*" +
-            "            FROM sys_user_info_full u,sys_role r,sys_user_role ur,sys_permission p,sys_duty_permission dp \n" +
-            "            WHERE ur.user_id=u.id AND ur.role_id=r.id AND rp.role_id=r.id AND rp.permission_id=p.id \n" +
+            "\t(SELECT  p.*            FROM sys_user_info_full u,sys_role r,sys_user_role ur,sys_permission p,sys_role_permission rp \n" +
+            "            WHERE ur.username=u.username AND ur.role_id=r.id AND rp.role_id=r.id AND rp.permission_id=p.id \n" +
             "            AND u.username=:username AND p.PERMISSION_TYPE='MENU')\n" +
             "UNION\n" +
-            "\t(SELECT  p.*" +
-            "            FROM sys_user_info_full u,sys_permission p,sys_user_permission up \n" +
-            "            WHERE up.user_id=u.id AND up.permission_id=p.id \n" +
-            "            AND u.username=:username AND p.PERMISSION_TYPE='MENU')\n" +
+            "\t(SELECT  p.*            FROM sys_user_info_full u,sys_permission p,sys_user_permission up \n" +
+            "            WHERE up.username=u.username AND up.permission_id=p.id \n" +
+            "            AND u.username=:username  AND p.PERMISSION_TYPE='MENU')\n" +
             ") \n" +
             "AS tbl ORDER BY ORDER_BY ASC", nativeQuery = true)
     Set<SysPermission> getPermissionByUsername(@Param("username") String username);

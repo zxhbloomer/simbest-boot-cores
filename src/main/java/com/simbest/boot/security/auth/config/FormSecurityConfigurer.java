@@ -14,7 +14,6 @@ import com.simbest.boot.security.auth.provider.SsoAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -95,6 +94,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .authorizeRequests()
                 .antMatchers("/error", "/login", "/logout").permitAll()  // 都可以访问
                 .antMatchers("/h2-console/**", "/html/**").permitAll()  // 都可以访问
+                .antMatchers("/auth/**").permitAll()  // 都可以访问
                 .antMatchers("/action/**").hasRole("USER")   // 需要相应的角色才能访问
                 .antMatchers("/admins/**").hasAnyRole("ADMIN", "SUPERVISOR")   // 需要相应的角色才能访问
                 .anyRequest().authenticated()

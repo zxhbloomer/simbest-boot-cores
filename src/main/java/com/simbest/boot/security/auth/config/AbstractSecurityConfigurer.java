@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.config;
 
+import com.simbest.boot.security.auth.provider.HttpRemoteUsernameAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
 
     @Autowired
     private SsoUsernameAuthenticationProvider ssoUsernameAuthenticationProvider;
+
+    @Autowired
+    private HttpRemoteUsernameAuthenticationProvider httpRemoteUsernameAuthenticationProvider;
 
     @Value("${security.auth.manager.username}")
     private String managerUsername;
@@ -55,6 +59,8 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
         auth.authenticationProvider(ssoUsernameAuthenticationProvider);
         //基于用户名和密码验证
         auth.userDetailsService(sysUserInfoService).passwordEncoder(passwordEncoder());
+        //
+        auth.authenticationProvider(httpRemoteUsernameAuthenticationProvider);
     }
 
 }

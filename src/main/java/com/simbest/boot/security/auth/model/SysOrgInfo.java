@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
+import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.security.IOrg;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,7 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @MappedSuperclass
-public class SysOrgInfo implements IOrg {
+public class SysOrgInfo extends LogicModel implements IOrg {
 
     @Id
     @Column(name = "id")
