@@ -5,6 +5,8 @@ package com.simbest.boot.security.auth.provider;
 
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import com.simbest.boot.security.auth.token.SsoUsernameAuthentication;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,6 +28,9 @@ import org.springframework.util.StringUtils;
 @Component
 @Slf4j
 public class SsoUsernameAuthenticationProvider implements AuthenticationProvider {
+
+    @Setter @Getter
+    protected boolean hideUserNotFoundExceptions = false;
 
     @Autowired
     private SysUserInfoFullService sysUserInfoService;

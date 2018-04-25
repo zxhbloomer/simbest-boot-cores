@@ -23,12 +23,14 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 "/img/**",
                 "/images/**",
                 "/css/**",
-                "/js/**")
+                "/js/**",
+                "/fonts/**")
                 .addResourceLocations(
                         "classpath:/META-INF/resources/webjars/",
                         "classpath:/static/img/",
                         "classpath:/static/images/",
                         "classpath:/static/css/",
-                        "classpath:/static/js/");
+                        "classpath:/static/js/",
+                        "classpath:/static/fonts/");
     }
 }

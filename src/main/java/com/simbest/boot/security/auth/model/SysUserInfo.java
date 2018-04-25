@@ -106,8 +106,10 @@ public class SysUserInfo extends LogicModel implements IUser, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> sortedAuthorities = new TreeSet<>();
-        sortedAuthorities.addAll(authRoles);
-        sortedAuthorities.addAll(authPermissions);
+        if(null != authRoles && authRoles.size() > 0)
+            sortedAuthorities.addAll(authRoles);
+        if(null != authPermissions && authPermissions.size() > 0)
+            sortedAuthorities.addAll(authPermissions);
         return sortedAuthorities;
     }
 

@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,7 @@ public class FailedLoginHandler implements AuthenticationFailureHandler {
             if (exception instanceof BadCredentialsException) {
                 request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
                         new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_BAD_CREDENTIALS));
-            } else if (exception instanceof InternalAuthenticationServiceException) {
+            } else if (exception instanceof UsernameNotFoundException || exception instanceof InternalAuthenticationServiceException) {
                 request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
                         new InsufficientAuthenticationException(ErrorCodeConstants.USERNAME_NOT_FOUND));
             }

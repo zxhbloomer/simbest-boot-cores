@@ -30,17 +30,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class HttpRemoteUsernameAuthenticationProvider implements AuthenticationProvider {
 
+    private final static String UUMS_URL = "/uums/auth/validate";
+
     @Autowired
     private SysUserInfoFullService sysUserInfoService;
 
-    @Value("${security.auth.validate.url}")
-    private String validateUrl;
+    @Value("${security.auth.validate.uums-address}")
+    private String uumsAddress;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        String jsonStr = HttpClient.post(validateUrl)
-                .param("username",username)
+        String jsonStr = HttpClient.post(uumsAddress + UUMS_URL)
+                .param("username", username)
                 .asString();
         JsonNode node = JacksonUtils.json2obj(jsonStr, JsonNode.class);
         if (null != node.findPath("errcode") && JsonResponse.SUCCESS_CODE == node.findPath("errcode").intValue()) {
