@@ -3,21 +3,27 @@
  */
 package com.simbest.boot.security.auth.provider;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
+import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.util.encrypt.Des3Encryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -30,26 +36,32 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class HttpRemoteUsernameAuthenticationProvider implements AuthenticationProvider {
 
-    private final static String UUMS_URL = "/uums/auth/validate";
+    private final static String UUMS_URL = "/uums/httpauth/validate";
+
+    @Value("${app.uums.address}")
+    private String address;
 
     @Autowired
-    private SysUserInfoFullService sysUserInfoService;
-
-    @Value("${security.auth.validate.uums-address}")
-    private String uumsAddress;
+    private Des3Encryptor encryptor;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        String jsonStr = HttpClient.post(uumsAddress + UUMS_URL)
-                .param("username", username)
+        String jsonStr = HttpClient.post(address + UUMS_URL)
+                .param("username", encryptor.encrypt(username))
                 .asString();
         JsonNode node = JacksonUtils.json2obj(jsonStr, JsonNode.class);
         if (null != node.findPath("errcode") && JsonResponse.SUCCESS_CODE == node.findPath("errcode").intValue()) {
-            return new UsernamePasswordAuthenticationToken(node.findPath("principal"), node.findPath("credentials"));
+//            Collection<? extends GrantedAuthority> authorities = JacksonUtils.json2obj(node.findPath("authorities")
+//                    .asText(ApplicationConstants.EMPTY), Collection.class);
+            Collection<? extends GrantedAuthority> authorities = JacksonUtils.json2list(node.findPath("authorities")
+                    .asText(ApplicationConstants.EMPTY), new TypeReference<List<GrantedAuthority>>(){});
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(node.findPath("principal").textValue(),
+                                node.findPath("credentials").textValue(), authorities);
+            return token;
         } else {
             throw new
-                    UsernameNotFoundException(username + " is not exist account.");
+                    BadCredentialsException(username + " authenticate failed.");
         }
     }
 

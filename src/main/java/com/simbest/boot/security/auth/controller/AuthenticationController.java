@@ -3,8 +3,10 @@ package com.simbest.boot.security.auth.controller;
 
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
+import com.simbest.boot.util.encrypt.Des3Encryptor;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,21 +23,36 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(description = "登录校验控制器")
 @Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/httpauth")
 public class AuthenticationController {
+
+    @Autowired
+    private Des3Encryptor encryptor;
 
     @Autowired
     private SysUserInfoFullService sysUserInfoService;
 
     @PostMapping("/validate")
     public JsonResponse validate(@RequestParam String username) {
-        UserDetails userDetails = sysUserInfoService.loadUserByUsername(username);
-        if (userDetails != null) {
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-                    userDetails.getPassword(), userDetails.getAuthorities());
-            return JsonResponse.success(token);
-        } else {
-            return JsonResponse.defaultErrorResponse();
+        if(StringUtils.isNotEmpty(username)){
+            username = encryptor.decrypt(username);
+            if(StringUtils.isNotEmpty(username)) {
+                UserDetails userDetails = sysUserInfoService.loadUserByUsername(username);
+                if (userDetails != null) {
+                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
+                            userDetails.getPassword(), userDetails.getAuthorities());
+                    return JsonResponse.success(token);
+                } else {
+                    return JsonResponse.defaultErrorResponse();
+                }
+            }else {
+                log.debug("Retrive username failed from request with: {}", username);
+                return JsonResponse.fail("username not exist");
+            }
+        }else {
+            log.debug("Retrive username failed from request with: {}", username);
+            return JsonResponse.fail("username not exist");
         }
+
     }
 }

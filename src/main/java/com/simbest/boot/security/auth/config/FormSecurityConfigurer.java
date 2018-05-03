@@ -10,7 +10,7 @@ import com.simbest.boot.security.auth.handle.FailedLoginHandler;
 import com.simbest.boot.security.auth.handle.SsoSuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLogoutHandler;
-import com.simbest.boot.security.auth.provider.SsoAuthenticationService;
+import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationRegister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -35,7 +35,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Autowired
-    private SsoAuthenticationService ssoAuthenticationService;
+    private SsoUsernameAuthenticationRegister ssoRegister;
 
     @Autowired
     private SuccessLoginHandler successLoginHandler;
@@ -94,7 +94,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .authorizeRequests()
                 .antMatchers("/error", "/login", "/logout").permitAll()  // 都可以访问
                 .antMatchers("/h2-console/**", "/html/**").permitAll()  // 都可以访问
-                .antMatchers("/auth/**").permitAll()  // 都可以访问
+                .antMatchers("/httpauth/**").permitAll()  // 都可以访问
                 .antMatchers("/action/**").hasRole("USER")   // 需要相应的角色才能访问
                 .antMatchers("/sys/admin/**").hasAnyRole("ADMIN", "SUPERVISOR")   // 需要相应的角色才能访问
                 .anyRequest().authenticated()
@@ -111,9 +111,9 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Bean
     public SsoAuthenticationFilter ssoAuthenticationFilter() throws Exception {
-        SsoAuthenticationFilter ssoFilter = new SsoAuthenticationFilter(new AntPathRequestMatcher("/sso/**"));
+        SsoAuthenticationFilter ssoFilter = new SsoAuthenticationFilter(new AntPathRequestMatcher("/**/sso/**"));
         ssoFilter.setAuthenticationManager(authenticationManagerBean());
-        ssoFilter.setSsoAuthenticationService(ssoAuthenticationService);
+        ssoFilter.setSsoRegister(ssoRegister);
         // 不跳回首页
         ssoFilter.setAuthenticationSuccessHandler(new SsoSuccessLoginHandler());
         ssoFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));

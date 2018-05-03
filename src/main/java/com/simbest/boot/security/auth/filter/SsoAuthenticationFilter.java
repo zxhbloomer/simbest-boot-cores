@@ -3,12 +3,10 @@
  */
 package com.simbest.boot.security.auth.filter;
 
-import com.simbest.boot.security.auth.provider.SsoAuthenticationService;
+import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationRegister;
 import com.simbest.boot.security.auth.token.SsoUsernameAuthentication;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,17 +34,12 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Setter
-    private SsoAuthenticationService ssoAuthenticationService;
+    private SsoUsernameAuthenticationRegister ssoRegister;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        if (!request.getMethod().equals(HttpMethod.GET.name())) {
-            throw new AuthenticationServiceException(
-                    "Authentication method not supported: " + request.getMethod());
-        }
-
-        String username = ssoAuthenticationService.getUsername(request);
+        String username = ssoRegister.getUsername(request);
         if (StringUtils.isEmpty(username)) {
             throw new UsernameNotFoundException(
                     "Authentication principal can not be null: " + username);
@@ -54,10 +47,7 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
         if (authenticationIsRequired(existingAuth, username)) {
-            SsoUsernameAuthentication authRequest = new SsoUsernameAuthentication(null);
-            authRequest.setUsername(username);
-            SecurityContextHolder.getContext().setAuthentication(authRequest);
-            return this.getAuthenticationManager().authenticate(authRequest);
+            return this.getAuthenticationManager().authenticate(ssoRegister.getToken(request));
         }
         return existingAuth;
     }

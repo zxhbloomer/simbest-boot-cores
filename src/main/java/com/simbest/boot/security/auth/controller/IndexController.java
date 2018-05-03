@@ -22,6 +22,11 @@ public class IndexController {
      * @return /
      */
     @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.GET})
+    public String root() {
+        return "redirect:/index";
+    }
+
+    @RequestMapping(value = "/index", method = {RequestMethod.POST, RequestMethod.GET})
     public String index() {
         return "index";
     }
@@ -34,4 +39,8 @@ public class IndexController {
         return "403";
     }
 
+    @RequestMapping(value = "/b", method = {RequestMethod.POST, RequestMethod.GET})
+    public String b() {
+        return "b";
+    }
 }

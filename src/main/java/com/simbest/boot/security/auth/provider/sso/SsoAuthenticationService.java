@@ -1,9 +1,7 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.security.auth.provider;
-
-import org.springframework.security.core.userdetails.UserDetails;
+package com.simbest.boot.security.auth.provider.sso;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,11 +19,11 @@ public interface SsoAuthenticationService {
      */
     String getUsername(HttpServletRequest request);
 
-    /**
-     * 根据请求验证是否为合法用户
-     * @param request 验证请求
-     * @param userDetails 用户信息
-     * @return true/false
-     */
-    Boolean authenticate(HttpServletRequest request, UserDetails userDetails);
+//    /**
+//     * 根据请求验证是否为合法用户
+//     * @param request 验证请求
+//     * @param userDetails 用户信息
+//     * @return true/false
+//     */
+//    Boolean authenticate(HttpServletRequest request, UserDetails userDetails);
 }

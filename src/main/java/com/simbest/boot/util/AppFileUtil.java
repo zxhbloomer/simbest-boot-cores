@@ -10,6 +10,7 @@ import com.simbest.boot.sys.model.UploadFileModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -38,11 +39,14 @@ public class AppFileUtil {
     private static final String UPLOAD_FILE_PATTERN =
             "(jpg|jpeg|png|gif|bmp|doc|docx|xls|xlsx|pdf|txt)$";
     private static Pattern pattern = Pattern.compile(UPLOAD_FILE_PATTERN);
-    @Value("${app.file.storeLocation}")
-    private String storeLocation;
-    @Value("${app.file.uploadPath}")
-    private String uploadPath;
-    private StoreLocation location = null;
+
+    @Value("${app.file.upload.path}")
+    private String path;
+
+    @Value("${app.file.upload.location}")
+    private String location;
+
+    private StoreLocation storeLocation = null;
 
     /**
      * 判断是否允许上传
@@ -90,7 +94,7 @@ public class AppFileUtil {
 
     @PostConstruct
     public void init() {
-        location = Enum.valueOf(StoreLocation.class, storeLocation);
+        storeLocation = Enum.valueOf(StoreLocation.class, location);
     }
 
     /**
@@ -120,10 +124,10 @@ public class AppFileUtil {
                 continue;
             }
             String filePath = null;
-            switch (location) {
+            switch (storeLocation) {
                 case disk:
                     byte[] bytes = file.getBytes();
-                    String storePath = uploadPath + ApplicationConstants.SLASH + prePath + ApplicationConstants.SLASH
+                    String storePath = path + ApplicationConstants.SLASH + prePath + ApplicationConstants.SLASH
                             + DateUtil.getCurrYear() + ApplicationConstants.SLASH
                             + DateUtil.getCurrSimpleMonth() + ApplicationConstants.SLASH
                             + DateUtil.getCurrSimpleDay() + ApplicationConstants.SLASH

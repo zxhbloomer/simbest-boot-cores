@@ -38,7 +38,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
     }
 
     @Bean
-    public AuthenticationProvider daoAuthenticationProvider() {
+    public AuthenticationProvider jdbcAuthenticationProvider() {
         DaoAuthenticationProvider impl = new DaoAuthenticationProvider();
         impl.setUserDetailsService(sysUserInfoService);
         impl.setPasswordEncoder(passwordEncoder());
@@ -57,7 +57,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
         //仅基于用户名验证
         auth.authenticationProvider(ssoUsernameAuthenticationProvider);
         //基于用户名和密码验证
-        auth.authenticationProvider(daoAuthenticationProvider());
+        auth.authenticationProvider(jdbcAuthenticationProvider());
         //auth.userDetailsService(sysUserInfoService).passwordEncoder(passwordEncoder());
         //基于远程校验账户密码
         auth.authenticationProvider(httpRemoteUsernameAuthenticationProvider);
