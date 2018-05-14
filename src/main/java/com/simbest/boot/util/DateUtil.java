@@ -87,6 +87,14 @@ public final class DateUtil {
 
     /**
      *
+     * @return 当前时间戳字符串 2018-03-14 17:13:08
+     */
+    public static String getCurrentTimestamp() {
+        return getDate(getCurrent(), timestampPattern1);
+    }
+
+    /**
+     *
      * @param pattern 指定类型
      * @return 当前日期字符串 2018-03-14
      */

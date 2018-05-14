@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,11 +27,11 @@ import java.util.concurrent.TimeUnit;
  * 时间: 2018/5/1  19:04
  */
 @Component
-public class JedisClusterUtils {
+public class RedisCacheUtils {
     @Resource
     private RedisTemplate<String, String> redisTemplate;
 
-    private static JedisClusterUtils cacheUtils;
+    private static RedisCacheUtils cacheUtils;
 
     @PostConstruct
     public void init() {
@@ -391,8 +392,23 @@ public class JedisClusterUtils {
      * @param string
      * @return
      */
-    public static void delKey(String key) {
-        cacheUtils.redisTemplate.execute((RedisCallback<Long>) connection -> connection.del(key.getBytes()));
+    public static Boolean delKey(String key) {
+        //cacheUtils.redisTemplate.execute((RedisCallback<Long>) connection -> connection.del(key.getBytes()));
+        return cacheUtils.redisTemplate.delete(key);
+    }
+
+    public static Long deleteByPrefix(String prex) {
+        Set<String> keys = cacheUtils.redisTemplate.keys(prex+"*");
+        return cacheUtils.redisTemplate.delete(keys);
+    }
+
+    public static Long deleteBySuffix(String suffix) {
+        Set<String> keys = cacheUtils.redisTemplate.keys("*"+suffix);
+        return cacheUtils.redisTemplate.delete(keys);
+    }
+
+    public void deleteByKeys(String... keys) {
+        cacheUtils.redisTemplate.delete(Arrays.asList(keys));
     }
 
     /**

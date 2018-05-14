@@ -48,4 +48,7 @@ public class ApplicationConstants {
     public final static String SEPARATOR = System.getProperty("file.separator");
     public final static String SLASH = "/";
     public final static String VERTICAL = "|";
+
+    public final static String REDIS_DEFAULT_CACHE_PREFIX = "runtime";
+    public final static int REDIS_DEFAULT_TTL_TIME_OUT_SECONDS = 3600;
 }
