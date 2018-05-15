@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 用途：全局异常处理
+ * 用途：全局异常处理，只处理应用内runtime的JSON请求错误，其他错误由com.simbest.exclude.GlobalErrorController处理，包括未定义的页面和JSON请求
  * 作者: lishuyi
  * 时间: 2017/11/4  15:34
  */

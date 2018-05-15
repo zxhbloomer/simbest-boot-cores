@@ -49,7 +49,7 @@ public class SysCustomFieldValueController {
         c.eq("fieldEntityId", fieldEntityId);
         return JsonResponse.builder() //
                 .errcode(JsonResponse.SUCCESS_CODE) //
-                .errmsg("查询成功！") //
+                .message("查询成功！") //
                 .data(fieldValueService.findAll(fieldValueService.getSpecification(c)))
                 .build();
     }

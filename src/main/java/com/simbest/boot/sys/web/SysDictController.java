@@ -169,7 +169,7 @@ public class SysDictController {
     @ResponseBody
     public JsonResponse listJson() {
         List<SysDict> list = dictService.findByEnabled(true);
-        return JsonResponse.builder().errcode(JsonResponse.SUCCESS_CODE).errmsg("OK").data(list).build();
+        return JsonResponse.builder().errcode(JsonResponse.SUCCESS_CODE).message("OK").data(list).build();
     }
 
     @ApiOperation(value = "查询字段树", notes = "通过此接口来查询字段树信息")

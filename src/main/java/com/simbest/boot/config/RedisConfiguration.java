@@ -40,7 +40,7 @@ import java.util.Map;
 @Configuration
 @EnableCaching
 @Slf4j
-public class RedisConfig extends CachingConfigurerSupport {
+public class RedisConfiguration extends CachingConfigurerSupport {
 
     @Value("${spring.redis.host}")
     private String host;

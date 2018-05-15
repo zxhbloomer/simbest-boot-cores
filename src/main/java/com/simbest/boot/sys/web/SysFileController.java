@@ -72,7 +72,7 @@ public class SysFileController {
         try {
             List<SysFile> sysFiles = uploadAndSave(new MultipartFile[]{uploadfile}, application, moudule);
             return new ResponseEntity<>(JacksonUtils.obj2json(JsonResponse.builder().errcode(JsonResponse.SUCCESS_CODE)
-                    .errmsg(JsonResponse.SUCCESS_MSG).data(sysFiles.get(0)).build()), HttpStatus.OK);
+                    .data(sysFiles.get(0)).build()), HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>(JacksonUtils.obj2json(JsonResponse.defaultErrorResponse()), HttpStatus.BAD_REQUEST);
         }
@@ -95,7 +95,7 @@ public class SysFileController {
         try {
             List<SysFile> sysFiles = uploadAndSave(uploadfiles, application, moudule);
             return new ResponseEntity<>(JacksonUtils.obj2json(JsonResponse.builder().errcode(JsonResponse.SUCCESS_CODE)
-                    .errmsg(JsonResponse.SUCCESS_MSG).data(sysFiles).build()), HttpStatus.OK);
+                    .data(sysFiles).build()), HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

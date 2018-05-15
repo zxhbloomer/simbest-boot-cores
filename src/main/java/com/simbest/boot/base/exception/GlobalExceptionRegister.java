@@ -31,20 +31,20 @@ public final class GlobalExceptionRegister {
     //初始化状态码与文字说明
     static {
         errorMap.put(Exception.class,
-                JsonResponse.builder().errcode(HttpStatus.BAD_REQUEST.value()).errmsg(HttpStatus.BAD_REQUEST.name()).build());
+                JsonResponse.builder().errcode(HttpStatus.BAD_REQUEST.value()).status(HttpStatus.BAD_REQUEST.value()).error(HttpStatus.BAD_REQUEST.name()).build());
         errorMap.put(RuntimeException.class,
-                JsonResponse.builder().errcode(HttpStatus.INTERNAL_SERVER_ERROR.value()).errmsg(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                JsonResponse.builder().errcode(HttpStatus.INTERNAL_SERVER_ERROR.value()).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).error(HttpStatus.INTERNAL_SERVER_ERROR.name())
                         .build());
         errorMap.put(AccessDeniedException.class,
-                JsonResponse.builder().errcode(HttpStatus.UNAUTHORIZED.value()).errmsg(HttpStatus.UNAUTHORIZED.name()).build());
+                JsonResponse.builder().errcode(HttpStatus.UNAUTHORIZED.value()).status(HttpStatus.UNAUTHORIZED.value()).error(HttpStatus.UNAUTHORIZED.name()).build());
         errorMap.put(AccessDeniedException.class,
-                JsonResponse.builder().errcode(HttpStatus.FORBIDDEN.value()).errmsg(HttpStatus.FORBIDDEN.name()).build());
+                JsonResponse.builder().errcode(HttpStatus.FORBIDDEN.value()).status(HttpStatus.FORBIDDEN.value()).error(HttpStatus.FORBIDDEN.name()).build());
         errorMap.put(HttpRequestMethodNotSupportedException.class,
-                JsonResponse.builder().errcode(HttpStatus.METHOD_NOT_ALLOWED.value()).errmsg(HttpStatus.METHOD_NOT_ALLOWED.name())
+                JsonResponse.builder().errcode(HttpStatus.METHOD_NOT_ALLOWED.value()).status(HttpStatus.METHOD_NOT_ALLOWED.value()).error(HttpStatus.METHOD_NOT_ALLOWED.name())
                         .build());
 
         errorMap.put(MultipartException.class,
-                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).errmsg("Attachment size exceeds the allowable limit!")
+                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value()).error("Attachment size exceeds the allowable limit!")
                         .build());
 
 //

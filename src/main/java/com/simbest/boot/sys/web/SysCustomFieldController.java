@@ -180,7 +180,7 @@ public class SysCustomFieldController {
 
         JsonResponse res = JsonResponse.builder() //
                 .errcode(JsonResponse.SUCCESS_CODE) //
-                .errmsg("查询成功！") //
+                .message("查询成功！") //
                 .data(map)
                 .build();
         return res;
