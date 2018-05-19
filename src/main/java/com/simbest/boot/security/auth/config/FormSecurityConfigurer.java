@@ -31,11 +31,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * 时间: 2018/1/20  11:24
  */
 @EnableWebSecurity
-@Order(10)
+@Order(30)
 public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Autowired
-    private SsoUsernameAuthenticationRegister ssoRegister;
+    private SsoUsernameAuthenticationRegister ssoAuthenticationRegister;
 
     @Autowired
     private SuccessLoginHandler successLoginHandler;
@@ -113,7 +113,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
     public SsoAuthenticationFilter ssoAuthenticationFilter() throws Exception {
         SsoAuthenticationFilter ssoFilter = new SsoAuthenticationFilter(new AntPathRequestMatcher("/**/sso/**"));
         ssoFilter.setAuthenticationManager(authenticationManagerBean());
-        ssoFilter.setSsoRegister(ssoRegister);
+        ssoFilter.setSsoAuthenticationRegister(ssoAuthenticationRegister);
         // 不跳回首页
         ssoFilter.setAuthenticationSuccessHandler(new SsoSuccessLoginHandler());
         ssoFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));

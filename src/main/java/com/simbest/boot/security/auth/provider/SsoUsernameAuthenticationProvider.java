@@ -49,7 +49,7 @@ public class SsoUsernameAuthenticationProvider implements AuthenticationProvider
             }
         } else {
             throw new
-                    UsernameNotFoundException(username + " is not exist account.");
+                    BadCredentialsException(username + " is not exist account.");
         }
     }
 

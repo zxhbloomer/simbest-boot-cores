@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.security.auth.token.HttpRemoteUsernameAuthentication;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +68,6 @@ public class HttpRemoteUsernameAuthenticationProvider implements AuthenticationP
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class);
+        return authentication.equals(HttpRemoteUsernameAuthentication.class);
     }
 }

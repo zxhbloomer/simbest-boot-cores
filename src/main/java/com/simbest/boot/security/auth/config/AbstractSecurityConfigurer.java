@@ -16,7 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * 用途：
+ * 用途： Spring Security 认证与鉴权
+ * 认证原理 https://blog.csdn.net/dandandeshangni/article/details/78959131
+ * 鉴权原理 https://blog.csdn.net/honghailiang888/article/details/53925514
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
  */
@@ -42,7 +44,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
         DaoAuthenticationProvider impl = new DaoAuthenticationProvider();
         impl.setUserDetailsService(sysUserInfoService);
         impl.setPasswordEncoder(passwordEncoder());
-        impl.setHideUserNotFoundExceptions(false);
+        impl.setHideUserNotFoundExceptions(true);
         return impl;
     }
 

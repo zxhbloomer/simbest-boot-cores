@@ -7,6 +7,7 @@ import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationRegister
 import com.simbest.boot.security.auth.token.SsoUsernameAuthentication;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,20 +35,20 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Setter
-    private SsoUsernameAuthenticationRegister ssoRegister;
+    private SsoUsernameAuthenticationRegister ssoAuthenticationRegister;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        String username = ssoRegister.getUsername(request);
+        String username = ssoAuthenticationRegister.getUsername(request);
         if (StringUtils.isEmpty(username)) {
-            throw new UsernameNotFoundException(
+            throw new BadCredentialsException(
                     "Authentication principal can not be null: " + username);
         }
 
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
         if (authenticationIsRequired(existingAuth, username)) {
-            return this.getAuthenticationManager().authenticate(ssoRegister.getToken(request));
+            return this.getAuthenticationManager().authenticate(ssoAuthenticationRegister.getToken(request));
         }
         return existingAuth;
     }

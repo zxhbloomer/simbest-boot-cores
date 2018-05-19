@@ -29,6 +29,11 @@ public class SsoUsernameAuthenticationRegister {
     @Autowired
     private SysUserInfoFullService sysUserInfoService;
 
+    /**
+     * 尝试从HttpServletRequest获取认证用户名
+     * @param request
+     * @return
+     */
     public String getUsername(HttpServletRequest request){
         Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);
         for(SsoAuthenticationService auth : auths.values()){
@@ -40,6 +45,11 @@ public class SsoUsernameAuthenticationRegister {
         return null;
     }
 
+    /**
+     * 尝试从HttpServletRequest获取认证Token
+     * @param request
+     * @return
+     */
     public SsoUsernameAuthentication getToken(HttpServletRequest request){
         Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);
         for(SsoAuthenticationService auth : auths.values()){
