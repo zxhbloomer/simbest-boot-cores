@@ -1,7 +1,7 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.security.auth.provider.sso;
+package com.simbest.boot.security.auth.authentication.sso;
 
 import javax.servlet.http.HttpServletRequest;
 

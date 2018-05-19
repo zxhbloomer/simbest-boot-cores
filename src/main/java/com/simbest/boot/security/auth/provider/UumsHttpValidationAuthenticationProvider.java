@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.ApplicationConstants;
-import com.simbest.boot.security.auth.token.HttpRemoteUsernameAuthentication;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class HttpRemoteUsernameAuthenticationProvider implements AuthenticationProvider {
+public class UumsHttpValidationAuthenticationProvider implements AuthenticationProvider {
 
     private final static String UUMS_URL = "/uums/httpauth/validate";
 
@@ -48,18 +48,22 @@ public class HttpRemoteUsernameAuthenticationProvider implements AuthenticationP
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        String jsonStr = HttpClient.post(address + UUMS_URL)
-                .param("username", encryptor.encrypt(username))
-                .asString();
-        JsonNode node = JacksonUtils.json2obj(jsonStr, JsonNode.class);
-        if (null != node.findPath("errcode") && JsonResponse.SUCCESS_CODE == node.findPath("errcode").intValue()) {
-//            Collection<? extends GrantedAuthority> authorities = JacksonUtils.json2obj(node.findPath("authorities")
-//                    .asText(ApplicationConstants.EMPTY), Collection.class);
-            Collection<? extends GrantedAuthority> authorities = JacksonUtils.json2list(node.findPath("authorities")
-                    .asText(ApplicationConstants.EMPTY), new TypeReference<List<GrantedAuthority>>(){});
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(node.findPath("principal").textValue(),
-                                node.findPath("credentials").textValue(), authorities);
-            return token;
+        if (!StringUtils.isEmpty(username)) {
+            String jsonStr = HttpClient.post(address + UUMS_URL)
+                    .param("username", encryptor.encrypt(username))
+                    .asString();
+            JsonNode node = JacksonUtils.json2obj(jsonStr, JsonNode.class);
+            if (null != node.findPath("errcode") && JsonResponse.SUCCESS_CODE == node.findPath("errcode").intValue()) {
+                Collection<? extends GrantedAuthority> authorities = JacksonUtils.json2list(node.findPath("authorities")
+                        .asText(ApplicationConstants.EMPTY), new TypeReference<List<GrantedAuthority>>() {
+                });
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(node.findPath("principal").textValue(),
+                        node.findPath("credentials").textValue(), authorities);
+                return token;
+            } else {
+                throw new
+                        BadCredentialsException(username + " authenticate failed.");
+            }
         } else {
             throw new
                     BadCredentialsException(username + " authenticate failed.");
@@ -68,6 +72,6 @@ public class HttpRemoteUsernameAuthenticationProvider implements AuthenticationP
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.equals(HttpRemoteUsernameAuthentication.class);
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 }

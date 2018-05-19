@@ -10,7 +10,7 @@ import com.simbest.boot.security.auth.handle.FailedLoginHandler;
 import com.simbest.boot.security.auth.handle.SsoSuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLogoutHandler;
-import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationRegister;
+import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -35,7 +35,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Autowired
-    private SsoUsernameAuthenticationRegister ssoAuthenticationRegister;
+    private SsoAuthenticationRegister ssoAuthenticationRegister;
 
     @Autowired
     private SuccessLoginHandler successLoginHandler;

@@ -3,15 +3,13 @@
  */
 package com.simbest.boot.security.auth.filter;
 
-import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationRegister;
-import com.simbest.boot.security.auth.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
@@ -35,12 +33,12 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Setter
-    private SsoUsernameAuthenticationRegister ssoAuthenticationRegister;
+    private SsoAuthenticationRegister ssoAuthenticationRegister;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        String username = ssoAuthenticationRegister.getUsername(request);
+        String username = ssoAuthenticationRegister.retriveFindUsername(request);
         if (StringUtils.isEmpty(username)) {
             throw new BadCredentialsException(
                     "Authentication principal can not be null: " + username);
@@ -48,7 +46,7 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
         if (authenticationIsRequired(existingAuth, username)) {
-            return this.getAuthenticationManager().authenticate(ssoAuthenticationRegister.getToken(request));
+            return this.getAuthenticationManager().authenticate(ssoAuthenticationRegister.retriveMakeToken(request));
         }
         return existingAuth;
     }

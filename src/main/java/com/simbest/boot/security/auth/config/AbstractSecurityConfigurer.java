@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.config;
 
-import com.simbest.boot.security.auth.provider.HttpRemoteUsernameAuthenticationProvider;
+import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
     private SsoUsernameAuthenticationProvider ssoUsernameAuthenticationProvider;
 
     @Autowired
-    private HttpRemoteUsernameAuthenticationProvider httpRemoteUsernameAuthenticationProvider;
+    private UumsHttpValidationAuthenticationProvider httpValidationAuthenticationProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -62,7 +62,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
         auth.authenticationProvider(jdbcAuthenticationProvider());
         //auth.userDetailsService(sysUserInfoService).passwordEncoder(passwordEncoder());
         //基于远程校验账户密码
-        auth.authenticationProvider(httpRemoteUsernameAuthenticationProvider);
+        auth.authenticationProvider(httpValidationAuthenticationProvider);
     }
 
 }

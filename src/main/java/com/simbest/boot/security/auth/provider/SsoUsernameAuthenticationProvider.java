@@ -4,7 +4,7 @@
 package com.simbest.boot.security.auth.provider;
 
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
-import com.simbest.boot.security.auth.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
