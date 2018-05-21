@@ -20,7 +20,10 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
@@ -81,6 +84,20 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         connectionFactory.setPort(port);
         return connectionFactory;
     }
+
+//    @Bean
+//    public LettuceConnectionFactory connectionFactory() {
+//        RedisStandaloneConfiguration redisStandaloneConfiguration=new RedisStandaloneConfiguration();
+//        //redis服务器主机ip
+//        redisStandaloneConfiguration.setHostName("127.0.0.1");
+//        //使用第几个数据库
+//        redisStandaloneConfiguration.setDatabase(0);
+//        //redis密码
+//        redisStandaloneConfiguration.setPassword(RedisPassword.of("lgdsj2017"));
+//        //端口
+//        redisStandaloneConfiguration.setPort(9379);
+//        return new LettuceConnectionFactory(redisStandaloneConfiguration);
+//    }
 
 //    @Bean
 //    public RedisCacheConfiguration redisCacheConfiguration() {

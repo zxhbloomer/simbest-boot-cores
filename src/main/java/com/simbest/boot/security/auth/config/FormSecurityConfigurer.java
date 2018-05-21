@@ -12,6 +12,7 @@ import com.simbest.boot.security.auth.handle.SuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLogoutHandler;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -92,6 +93,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .addFilterAfter(ssoAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(captchaUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .antMatchers("/error", "/login", "/logout").permitAll()  // 都可以访问
                 .antMatchers("/h2-console/**", "/html/**").permitAll()  // 都可以访问
                 .antMatchers("/httpauth/**").permitAll()  // 都可以访问
@@ -105,7 +107,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .and().exceptionHandling().accessDeniedPage("/403")// 处理异常，拒绝访问就重定向到 403 页面
                 .and().headers().frameOptions().sameOrigin()
                 .and().csrf().disable()
-                .sessionManagement().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
+                .sessionManagement().sessionFixation().migrateSession().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
                 .sessionRegistry(sessionRegistry).expiredUrl(ApplicationConstants.LOGIN_PAGE);
     }
 
