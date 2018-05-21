@@ -40,4 +40,8 @@ public abstract class GenericModel implements Serializable {
     @Transient
     //分页每页记录数
     private Integer pagesize;
+
+    //保存和更新标识 add:新增 update:更新
+    @Transient
+    private String operatorFlag;
 }

@@ -11,13 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * 用途：数据字典
@@ -33,8 +27,8 @@ public class SysDict extends LogicModel {
 
     @Id
     @Column(name = "id")
-//    @SequenceGenerator(name = "sys_dict_seq", sequenceName = "sys_dict_seq")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator (name = "sys_dict_seq", sequenceName = "sys_dict_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_dict_seq")
     private Long id;
 
     @Column(nullable = true, length = 20)

@@ -43,7 +43,7 @@ public interface SysPermissionRepository extends BaseRepository<SysPermission, I
             "            WHERE up.username=u.username AND up.permission_id=p.id \n" +
             "            AND u.username=:username AND p.PERMISSION_TYPE='MENU')\n" +
             ") \n" +
-            "AS tbl ORDER BY ORDER_BY ASC", nativeQuery = true)
+            "tbl ORDER BY ORDER_BY ASC", nativeQuery = true)
     List<Map<String, Object>> findMenu(@Param("username") String username);
 
     @Query(value = "SELECT DISTINCT * FROM \n" +
@@ -56,7 +56,7 @@ public interface SysPermissionRepository extends BaseRepository<SysPermission, I
             "            WHERE up.username=u.username AND up.permission_id=p.id \n" +
             "            AND u.username=:username  AND p.PERMISSION_TYPE='MENU')\n" +
             ") \n" +
-            "AS tbl ORDER BY ORDER_BY ASC", nativeQuery = true)
+            "tbl ORDER BY ORDER_BY ASC", nativeQuery = true)
     Set<SysPermission> getPermissionByUsername(@Param("username") String username);
 
     @Query(value = "SELECT p FROM SysPermission p, SysUserPermission up, SysUserInfoFull u WHERE up.username=u.username AND up.permissionId=p.id AND u.username=:username")

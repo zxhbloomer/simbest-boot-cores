@@ -4,18 +4,9 @@
 package com.simbest.boot.sys.model;
 
 import com.simbest.boot.base.model.LogicModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * 用途：统一系统文件管理
@@ -31,7 +22,8 @@ import javax.persistence.Id;
 public class SysFile extends LogicModel {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator (name = "sys_dict_value_seq", sequenceName = "sys_dict_value_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_dict_value_seq")
     private Long id;
 
     //文件名称

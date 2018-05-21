@@ -11,6 +11,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.criteria.Predicate;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +34,7 @@ import java.util.Map;
  * @version v0.0.1
  */
 @NoRepositoryBean
-public interface BaseRepository<T, ID> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
+public interface BaseRepository<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
 
 	/**
 	 * 在这里封装一个分页对象

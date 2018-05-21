@@ -29,7 +29,7 @@ public class SysUserInfoFull extends SysUserInfo {
 
     private String employeeNumber; //定义员工号（与人力资源系统中的员工号一致），例如：“00120211”
 
-    private String level; //【1-19】级岗位，职级。可选值参见附录员工职级的数据字典定义，例如：“12”表示12级。
+    private String levelId; //【1-19】级岗位，职级。可选值参见附录员工职级的数据字典定义，例如：“12”表示12级。
 
     private String levelName; //岗位名称。如：IT规划，系统管理员等。
 

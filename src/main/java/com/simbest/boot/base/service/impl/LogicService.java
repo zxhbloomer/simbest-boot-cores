@@ -1,0 +1,112 @@
+package com.simbest.boot.base.service.impl;
+
+import com.simbest.boot.base.model.LogicModel;
+import com.simbest.boot.base.repository.BaseRepository;
+import com.simbest.boot.base.service.ILogicService;
+import com.simbest.boot.util.DateUtil;
+import com.simbest.boot.util.security.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+
+/**
+ * <strong>Title : 业务实体通用服务层</strong><br>
+ * <strong>Description : 涉及业务实体的所有操作需要记录创建人信息和更新人信息</strong><br>
+ * <strong>Create on : 2018/5/17</strong><br>
+ * <strong>Modify on : 2018/5/17</strong><br>
+ * <strong>Copyright (C) Ltd.</strong><br>
+ *
+ * @author LJW lijianwu@simbest.com.cn
+ * @version <strong>V1.0.0</strong><br>
+ * <strong>修改历史:</strong><br>
+ * 修改人 修改日期 修改描述<br>
+ * -------------------------------------------<br>
+ */
+@Slf4j
+public class LogicService<T extends LogicModel,PK extends Serializable> extends SystemService<T,PK> implements ILogicService<T,PK> {
+
+    private BaseRepository<T,PK> baseRepository;
+
+    @Autowired
+    private ApplicationContext appContext;
+
+    public LogicService () {
+        baseRepository = (BaseRepository<T,PK> )appContext.getBean("baseRepository");
+    }
+
+    /**
+     * @see
+     * @param enabled
+     * @param id
+     * @return
+     */
+    @Override
+    public int updateEnable ( boolean enabled, PK id ) {
+        T obj =  super.getById( id );
+        if (obj == null) {
+            return 0;
+        }
+        obj.setEnabled( enabled );
+        super.save( obj );
+        return 1;
+    }
+
+    public T save ( T o) {
+        String operatorFlag = o.getOperatorFlag();
+        if ( "add".equals( operatorFlag ) ){
+            wrapCreateInfo( o );
+        } else {
+            wrapUpdateInfo( o );
+        }
+        return super.save( o );
+    }
+
+    /**
+     * @see
+     * @param o
+     * @return
+     */
+    public int logicDelete(T o) {
+        int flag = 0;
+        if(!StringUtils.isEmpty(o)){
+            log.debug("@Logic Service delete objects by object: "+ o);
+            wrapUpdateInfo(o);
+            super.save( o );
+            flag = 1;
+        }
+        return flag;
+    }
+
+    @Override
+    public void deleteAll ( Iterable<? extends T> iterable ) {
+        for(T t:iterable){
+            wrapUpdateInfo(t);
+            super.save( t );
+        }
+    }
+
+
+
+    @Override
+    protected void wrapUpdateInfo(T o) {
+        String userName = SecurityUtils.getCurrentUserName();
+        o.setEnabled( false );
+        o.setRemoved( true );
+        o.setModifier(userName);
+        o.setModifiedTime(DateUtil.getCurrent());
+    }
+
+    @Override
+    protected void wrapCreateInfo(T o) {
+        String userName = SecurityUtils.getCurrentUserName();
+        o.setEnabled( true );
+        o.setRemoved( false );
+        o.setCreator(userName);
+        o.setCreatedTime(DateUtil.getCurrent());
+        o.setModifiedTime(DateUtil.getCurrent());
+        wrapUpdateInfo(o);
+    }
+}

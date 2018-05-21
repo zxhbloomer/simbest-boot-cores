@@ -25,8 +25,8 @@ public class SysDictValue extends LogicModel {
 
     @Id
     @Column(name = "id")
-//    @SequenceGenerator(name = "sys_dict_value_seq", sequenceName = "sys_dict_value_seq")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "sys_dict_value_seq", sequenceName = "sys_dict_value_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_dict_value_seq")
     private Long id;
 
     @Column(nullable = true, length = 20)
