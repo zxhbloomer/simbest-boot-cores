@@ -1,6 +1,7 @@
 package com.simbest.boot.base.service.impl;
 
 import com.simbest.boot.base.model.GenericModel;
+import com.simbest.boot.base.repository.BaseRepository;
 import com.simbest.boot.base.repository.GenericRepository;
 import com.simbest.boot.base.service.IGenericService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ import java.util.List;
  * -------------------------------------------<br>
  */
 @Slf4j
-public class GenericRepositoryService<T extends GenericModel,PK extends Serializable> implements IGenericService<T,PK> {
+public class GenericService<T extends GenericModel,PK extends Serializable> implements IGenericService<T,PK> {
 
     @Autowired
     protected GenericRepository<T,PK> genericRepository;

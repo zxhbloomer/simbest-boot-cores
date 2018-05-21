@@ -3,6 +3,7 @@ package com.simbest.boot.base.service.impl;
 import com.google.common.collect.Lists;
 import com.simbest.boot.base.model.SystemModel;
 import com.simbest.boot.base.repository.BaseRepository;
+import com.simbest.boot.base.repository.SystemRepository;
 import com.simbest.boot.base.service.ISystemService;
 import com.simbest.boot.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -28,16 +29,9 @@ import java.util.List;
  * -------------------------------------------<br>
  */
 @Slf4j
-public class SystemService<T extends SystemModel,PK extends Serializable> extends GenericRepositoryService<T,PK> implements ISystemService<T,PK> {
+public class SystemService<T extends SystemModel,PK extends Serializable> extends GenericService<T,PK> implements ISystemService<T,PK> {
 
-    private BaseRepository<T,PK> baseRepository;
-
-    @Autowired
-    private ApplicationContext appContext;
-
-    public SystemService () {
-        baseRepository = (BaseRepository<T,PK> )appContext.getBean("baseRepository");
-    }
+    private SystemRepository<T,PK> systemRepository;
 
     @Override
     public T save ( T o) {

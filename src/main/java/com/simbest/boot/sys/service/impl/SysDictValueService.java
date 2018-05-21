@@ -1,8 +1,6 @@
 package com.simbest.boot.sys.service.impl;
 
-import com.simbest.boot.base.repository.BaseRepository;
 import com.simbest.boot.base.repository.Condition;
-import com.simbest.boot.base.service.impl.GenericRepositoryService;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import com.simbest.boot.sys.model.SysDictValue;
 import com.simbest.boot.sys.repository.SysDictValueRepository;

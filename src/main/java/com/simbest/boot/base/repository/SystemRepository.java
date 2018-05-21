@@ -1,7 +1,6 @@
 package com.simbest.boot.base.repository;
 
-import com.simbest.boot.base.model.GenericModel;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
 
@@ -18,8 +17,8 @@ import java.io.Serializable;
  * 修改人 修改日期 修改描述<br>
  * -------------------------------------------<br>
  */
-@Repository
-public interface SystemRepository<T extends GenericModel, PK extends Serializable> extends BaseRepository<T, PK>{
+@NoRepositoryBean
+public interface SystemRepository<T, PK extends Serializable> extends GenericRepository<T, PK>{
 
 
 }
