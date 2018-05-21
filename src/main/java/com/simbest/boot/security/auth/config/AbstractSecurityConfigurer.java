@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.config;
 
-import com.simbest.boot.security.auth.provider.HttpRemoteUsernameAuthenticationProvider;
+import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * 用途：
+ * 用途： Spring Security 认证与鉴权
+ * 认证原理 https://blog.csdn.net/dandandeshangni/article/details/78959131
+ * 鉴权原理 https://blog.csdn.net/honghailiang888/article/details/53925514
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
  */
@@ -29,7 +31,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
     private SsoUsernameAuthenticationProvider ssoUsernameAuthenticationProvider;
 
     @Autowired
-    private HttpRemoteUsernameAuthenticationProvider httpRemoteUsernameAuthenticationProvider;
+    private UumsHttpValidationAuthenticationProvider httpValidationAuthenticationProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,7 +44,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
         DaoAuthenticationProvider impl = new DaoAuthenticationProvider();
         impl.setUserDetailsService(sysUserInfoService);
         impl.setPasswordEncoder(passwordEncoder());
-        impl.setHideUserNotFoundExceptions(false);
+        impl.setHideUserNotFoundExceptions(true);
         return impl;
     }
 
@@ -60,7 +62,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
         auth.authenticationProvider(jdbcAuthenticationProvider());
         //auth.userDetailsService(sysUserInfoService).passwordEncoder(passwordEncoder());
         //基于远程校验账户密码
-        auth.authenticationProvider(httpRemoteUsernameAuthenticationProvider);
+        auth.authenticationProvider(httpValidationAuthenticationProvider);
     }
 
 }

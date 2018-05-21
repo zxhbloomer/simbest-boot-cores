@@ -9,11 +9,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 /**
  * 用途：Actuator监控安全配置
+ * 参考：https://blog.csdn.net/alinyua/article/details/80009435
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
  */
 @EnableWebSecurity
-@Order(50)
+@Order(10)
 public class MonitorSecurityConfigurer extends AbstractSecurityConfigurer {
     /**
      * Actuator监控安全验证器
@@ -24,9 +25,9 @@ public class MonitorSecurityConfigurer extends AbstractSecurityConfigurer {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .antMatcher("/management/**")
+                .antMatcher("/actuator/**")
                 .httpBasic()
                 .and()
-                .authorizeRequests().antMatchers("/management/**").hasRole("ACT_MGMT");
+                .authorizeRequests().antMatchers("/actuator/**").hasRole("SAFE");
     }
 }

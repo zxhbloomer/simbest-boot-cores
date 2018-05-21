@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.config;
 
-import com.simbest.exclude.GlobalErrorController;
+import com.simbest.exclude.web.GlobalErrorController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

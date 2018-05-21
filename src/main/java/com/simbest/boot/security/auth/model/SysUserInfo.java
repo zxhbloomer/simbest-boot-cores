@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
+import com.google.common.collect.Sets;
 import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.security.IUser;
 import lombok.AllArgsConstructor;
@@ -105,7 +106,7 @@ public class SysUserInfo extends LogicModel implements IUser, UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> sortedAuthorities = new TreeSet<>();
+        Collection<GrantedAuthority> sortedAuthorities = Sets.newLinkedHashSet();
         if(null != authRoles && authRoles.size() > 0)
             sortedAuthorities.addAll(authRoles);
         if(null != authPermissions && authPermissions.size() > 0)
