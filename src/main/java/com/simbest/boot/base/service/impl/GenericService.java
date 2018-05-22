@@ -1,11 +1,9 @@
 package com.simbest.boot.base.service.impl;
 
 import com.simbest.boot.base.model.GenericModel;
-import com.simbest.boot.base.repository.BaseRepository;
 import com.simbest.boot.base.repository.GenericRepository;
 import com.simbest.boot.base.service.IGenericService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,8 +27,13 @@ import java.util.List;
 @Slf4j
 public class GenericService<T extends GenericModel,PK extends Serializable> implements IGenericService<T,PK> {
 
-    @Autowired
-    protected GenericRepository<T,PK> genericRepository;
+    private GenericRepository<T,PK> genericRepository;
+
+    public GenericService(){}
+
+    public GenericService ( GenericRepository<T, PK> genericRepository ) {
+        this.genericRepository = genericRepository;
+    }
 
     /**
      * @see

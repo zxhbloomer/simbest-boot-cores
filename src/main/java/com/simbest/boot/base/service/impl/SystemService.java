@@ -2,13 +2,10 @@ package com.simbest.boot.base.service.impl;
 
 import com.google.common.collect.Lists;
 import com.simbest.boot.base.model.SystemModel;
-import com.simbest.boot.base.repository.BaseRepository;
 import com.simbest.boot.base.repository.SystemRepository;
 import com.simbest.boot.base.service.ISystemService;
 import com.simbest.boot.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,6 +29,12 @@ import java.util.List;
 public class SystemService<T extends SystemModel,PK extends Serializable> extends GenericService<T,PK> implements ISystemService<T,PK> {
 
     private SystemRepository<T,PK> systemRepository;
+
+    public SystemService(){}
+
+    public SystemService (SystemRepository<T, PK> systemRepository ) {
+        this.systemRepository = systemRepository;
+    }
 
     @Override
     public T save ( T o) {

@@ -18,7 +18,7 @@ import java.io.Serializable;
  * -------------------------------------------<br>
  */
 @NoRepositoryBean
-public interface GenericRepository<T , PK extends Serializable> extends BaseRepository<T, PK>{
+public interface GenericRepository<T, PK extends Serializable> extends BaseRepository<T, PK>{
 
 
 }

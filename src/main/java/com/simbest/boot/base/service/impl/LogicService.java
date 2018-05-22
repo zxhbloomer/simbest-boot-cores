@@ -1,14 +1,12 @@
 package com.simbest.boot.base.service.impl;
 
 import com.simbest.boot.base.model.LogicModel;
-import com.simbest.boot.base.repository.BaseRepository;
 import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.util.DateUtil;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -30,6 +28,10 @@ import java.io.Serializable;
 public class LogicService<T extends LogicModel,PK extends Serializable> extends SystemService<T,PK> implements ILogicService<T,PK> {
 
     private LogicRepository<T,PK> logicRepository;
+
+    public LogicService ( LogicRepository<T, PK> logicRepository ) {
+        this.logicRepository = logicRepository;
+    }
 
     /**
      * @see
