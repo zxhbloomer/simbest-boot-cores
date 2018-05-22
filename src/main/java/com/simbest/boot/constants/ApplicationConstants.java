@@ -18,7 +18,7 @@ public class ApplicationConstants {
     public static final String Windows = "Windows";
 
     public static final String PACKAGE_NAME = "com.simbest";
-    public static final String HOME_PAGE = "/";
+    public static final String HOME_PAGE = "/index";
     public static final String LOGIN_PAGE = "/login";
     public static final String LOGIN_ERROR_PAGE = "/login?loginError";
     public static final String LOGIN_SESSION_CODE = "validateCode";
