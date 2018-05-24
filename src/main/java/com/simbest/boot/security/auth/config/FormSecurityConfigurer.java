@@ -106,9 +106,12 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .and().logout().logoutSuccessHandler(successLogoutHandler) // 成功登出后，重定向到登陆页
                 .and().exceptionHandling().accessDeniedPage("/403")// 处理异常，拒绝访问就重定向到 403 页面
                 .and().headers().frameOptions().sameOrigin()
-                .and().csrf().disable()
-                .sessionManagement().sessionFixation().migrateSession().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
+                .and()
+                .sessionManagement().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
                 .sessionRegistry(sessionRegistry).expiredUrl(ApplicationConstants.LOGIN_PAGE);
+        http.csrf().ignoringAntMatchers("/h2-console/**"); // 禁用 H2 控制台的 CSRF 防护
+        //.sessionFixation().newSession()  Session Fixation protection
+        //Your servlet container did not change the session ID when a new session was created. You will not be adequately protected against session-fixation attacks
     }
 
     @Bean

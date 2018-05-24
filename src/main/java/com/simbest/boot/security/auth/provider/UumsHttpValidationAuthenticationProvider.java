@@ -6,12 +6,15 @@ package com.simbest.boot.security.auth.provider;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mzlion.easyokhttp.HttpClient;
+import com.mzlion.easyokhttp.exception.HttpClientException;
+import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,7 +24,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,10 +50,18 @@ public class UumsHttpValidationAuthenticationProvider implements AuthenticationP
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
-        if (!StringUtils.isEmpty(username)) {
-            String jsonStr = HttpClient.post(address + UUMS_URL)
-                    .param("username", encryptor.encrypt(username))
-                    .asString();
+        if (StringUtils.isNotEmpty(username)) {
+            String jsonStr = null;
+            try {
+                jsonStr = HttpClient.post(address + UUMS_URL)
+                        .param("username", encryptor.encrypt(username))
+                        .asString();
+            }catch (HttpClientException e){
+                log.error("Failed to connect UUMS validation");
+                Exceptions.printException(e);
+                throw new
+                        BadCredentialsException(username + " authenticate failed.");
+            }
             JsonNode node = JacksonUtils.json2obj(jsonStr, JsonNode.class);
             if (null != node.findPath("errcode") && JsonResponse.SUCCESS_CODE == node.findPath("errcode").intValue()) {
                 Collection<? extends GrantedAuthority> authorities = JacksonUtils.json2list(node.findPath("authorities")
