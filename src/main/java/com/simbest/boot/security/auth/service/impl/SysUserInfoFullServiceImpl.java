@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
+import com.simbest.boot.base.service.impl.GenericService;
 import com.simbest.boot.security.auth.model.SysUserInfo;
 import com.simbest.boot.security.auth.model.SysUserInfoFull;
 import com.simbest.boot.security.auth.repository.SysOrgInfoFullRepository;
@@ -31,7 +32,7 @@ import java.util.List;
  * @author lishuyi
  */
 @Service
-public class SysUserInfoFullServiceImpl implements SysUserInfoFullService {
+public class SysUserInfoFullServiceImpl extends GenericService<SysUserInfoFull,Integer> implements SysUserInfoFullService {
 
     @Autowired
     private SysUserInfoFullRepository userRepository;

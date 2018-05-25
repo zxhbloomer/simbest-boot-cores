@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
+import com.simbest.boot.base.service.impl.GenericService;
 import com.simbest.boot.security.auth.model.SysRole;
 import com.simbest.boot.security.auth.repository.SysRoleRepository;
 import com.simbest.boot.security.auth.service.SysRoleService;
@@ -20,7 +21,7 @@ import java.util.List;
  * @author lishuyi
  */
 @Service
-public class SysRoleServiceImpl implements SysRoleService {
+public class SysRoleServiceImpl extends GenericService<SysRole,Integer> implements SysRoleService {
 
     @Autowired
     private SysRoleRepository RoleRepository;

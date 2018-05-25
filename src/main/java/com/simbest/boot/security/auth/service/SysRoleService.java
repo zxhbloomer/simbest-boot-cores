@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.service;
 
+import com.simbest.boot.base.service.IGenericService;
 import com.simbest.boot.security.auth.model.SysRole;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * @author lishuyi
  */
-public interface SysRoleService {
+public interface SysRoleService extends IGenericService<SysRole,Integer> {
 
     List<SysRole> findAll();
 

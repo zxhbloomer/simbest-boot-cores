@@ -3,9 +3,8 @@
  */
 package com.simbest.boot.security.auth.repository;
 
-import com.simbest.boot.base.repository.BaseRepository;
+import com.simbest.boot.base.repository.GenericRepository;
 import com.simbest.boot.security.auth.model.SysPermission;
-import com.simbest.boot.security.auth.model.SysRole;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,10 +22,10 @@ import java.util.Set;
  * @author lishuyi
  */
 @Repository
-public interface SysPermissionRepository extends BaseRepository<SysPermission, Integer> {
+public interface SysPermissionRepository extends GenericRepository<SysPermission, Integer> {
 
     /**
-     * @param userId 用户Id
+     * @param username 用户Id
      * @return 用户基础信息
      */
     @Query(value = "SELECT DISTINCT * FROM \n" +

@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
+import com.simbest.boot.base.service.impl.GenericService;
 import com.simbest.boot.security.auth.model.SysPermission;
 import com.simbest.boot.security.auth.repository.SysPermissionRepository;
 import com.simbest.boot.security.auth.service.SysPermissionService;
@@ -21,7 +22,7 @@ import java.util.Map;
  * @author lishuyi
  */
 @Service
-public class SysPermissionServiceImpl implements SysPermissionService {
+public class SysPermissionServiceImpl extends GenericService<SysPermission,Integer> implements SysPermissionService {
 
     @Autowired
     private SysPermissionRepository permissionRepository;

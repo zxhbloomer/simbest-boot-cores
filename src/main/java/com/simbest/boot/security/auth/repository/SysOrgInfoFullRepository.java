@@ -1,8 +1,7 @@
 package com.simbest.boot.security.auth.repository;
 
-import com.simbest.boot.base.repository.BaseRepository;
+import com.simbest.boot.base.repository.GenericRepository;
 import com.simbest.boot.security.auth.model.SysOrgInfoFull;
-import com.simbest.boot.security.auth.model.SysRole;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,7 +16,7 @@ import java.util.Set;
  *
  * @author lishuyi
  */
-public interface SysOrgInfoFullRepository extends BaseRepository<SysOrgInfoFull, Integer> {
+public interface SysOrgInfoFullRepository extends GenericRepository<SysOrgInfoFull, Integer> {
 
     String sql1 = " SELECT t.id FROM sys_org_info_full t WHERE t.parentOrgId = :id " ;
     @Query (value = sql1, nativeQuery = true)
