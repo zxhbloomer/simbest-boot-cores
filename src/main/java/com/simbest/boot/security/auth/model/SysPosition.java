@@ -3,19 +3,10 @@
  */
 package com.simbest.boot.security.auth.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.simbest.boot.base.model.GenericModel;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
 /**
  * <strong>Description : 职务信息</strong><br>
@@ -31,7 +22,7 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @Entity
-public class SysPosition {
+public class SysPosition extends GenericModel {
 
     @Id
     @Column(name = "id")

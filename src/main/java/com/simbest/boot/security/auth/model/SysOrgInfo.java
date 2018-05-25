@@ -3,21 +3,11 @@
  */
 package com.simbest.boot.security.auth.model;
 
-import com.simbest.boot.base.model.LogicModel;
+import com.simbest.boot.base.model.GenericModel;
 import com.simbest.boot.security.IOrg;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
 /**
  * <strong>Description : 满足《用户主数据管理规范V1.0》和微信互联网应用的组织信息</strong><br>
@@ -33,7 +23,7 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @MappedSuperclass
-public class SysOrgInfo extends LogicModel implements IOrg {
+public class SysOrgInfo extends GenericModel implements IOrg {
 
     @Id
     @Column(name = "id")

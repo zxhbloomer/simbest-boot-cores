@@ -4,30 +4,18 @@
 package com.simbest.boot.security.auth.model;
 
 import com.google.common.collect.Sets;
-import com.simbest.boot.base.model.LogicModel;
+import com.simbest.boot.base.model.GenericModel;
 import com.simbest.boot.security.IUser;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * <strong>Description : 满足《用户主数据管理规范V1.0》和微信互联网应用的用户信息</strong><br>
@@ -43,7 +31,7 @@ import java.util.TreeSet;
 @AllArgsConstructor
 @Builder
 @MappedSuperclass
-public class SysUserInfo extends LogicModel implements IUser, UserDetails {
+public class SysUserInfo extends GenericModel implements IUser, UserDetails {
 
     @Id
     @Column(name = "id")

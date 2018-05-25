@@ -4,26 +4,15 @@
 package com.simbest.boot.security.auth.model;
 
 import com.simbest.boot.base.enums.SysPermissionType;
+import com.simbest.boot.base.model.GenericModel;
 import com.simbest.boot.security.IPermission;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
 /**
  * <strong>Description : 权限信息</strong><br>
@@ -39,7 +28,7 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @Entity
-public class SysPermission implements IPermission, GrantedAuthority {
+public class SysPermission extends GenericModel implements IPermission, GrantedAuthority {
 
     @Id
     @Column(name = "id")

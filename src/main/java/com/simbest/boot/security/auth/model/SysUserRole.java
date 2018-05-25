@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
+import com.simbest.boot.base.model.GenericModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +32,7 @@ import javax.persistence.SequenceGenerator;
 @AllArgsConstructor
 @Builder
 @Entity
-public class SysUserRole {
+public class SysUserRole extends GenericModel {
 
     @Id
     @Column(name = "id")
