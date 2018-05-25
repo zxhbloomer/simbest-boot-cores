@@ -32,5 +32,5 @@ public interface ILogicService<T extends LogicModel,PK extends Serializable> ext
      * @param o
      * @return
      */
-    int logicDelete(T o);
+    int deleteLogic(T o);
 }

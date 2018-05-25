@@ -6,7 +6,6 @@ import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.util.DateUtil;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -65,7 +64,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
      * @param o
      * @return
      */
-    public int logicDelete(T o) {
+    public int deleteLogic(T o) {
         int flag = 0;
         if(!StringUtils.isEmpty(o)){
             log.debug("@Logic Service delete objects by object: "+ o);
