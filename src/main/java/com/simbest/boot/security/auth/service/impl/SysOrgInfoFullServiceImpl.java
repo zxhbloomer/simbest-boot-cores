@@ -3,7 +3,6 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
-import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.security.auth.model.SysOrgInfoFull;
 import com.simbest.boot.security.auth.repository.SysOrgInfoFullRepository;
@@ -22,11 +21,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class SysOrgInfoFullServiceImpl extends LogicService<SysOrgInfoFull,Integer> implements SysOrgInfoFullService {
 
-    @Autowired
+
     private SysOrgInfoFullRepository orgRepository;
 
-    public SysOrgInfoFullServiceImpl ( LogicRepository<SysOrgInfoFull, Integer> logicRepository ) {
-        super( logicRepository );
+    @Autowired
+    public SysOrgInfoFullServiceImpl ( SysOrgInfoFullRepository sysOrgInfoFullRepository ) {
+        super( sysOrgInfoFullRepository );
+        this.orgRepository = sysOrgInfoFullRepository;
     }
 
 

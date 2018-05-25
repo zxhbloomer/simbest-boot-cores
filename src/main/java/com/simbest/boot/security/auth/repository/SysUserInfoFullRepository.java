@@ -18,7 +18,7 @@ import java.util.List;
  * @author lishuyi
  */
 @Repository
-public interface SysUserInfoFullRepository extends LogicRepository<SysUserInfoFull, Long> {
+public interface SysUserInfoFullRepository extends LogicRepository<SysUserInfoFull, Integer> {
 
     /**
      * @param username 登录标识

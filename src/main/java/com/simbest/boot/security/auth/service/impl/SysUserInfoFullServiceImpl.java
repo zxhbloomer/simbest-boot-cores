@@ -3,7 +3,6 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
-import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.security.auth.model.SysUserInfo;
 import com.simbest.boot.security.auth.model.SysUserInfoFull;
@@ -35,7 +34,6 @@ import java.util.List;
 @Service
 public class SysUserInfoFullServiceImpl extends LogicService<SysUserInfoFull,Integer> implements SysUserInfoFullService {
 
-    @Autowired
     private SysUserInfoFullRepository userRepository;
 
     @Autowired
@@ -47,8 +45,10 @@ public class SysUserInfoFullServiceImpl extends LogicService<SysUserInfoFull,Int
     @Autowired
     private SysPermissionRepository permissionRepository;
 
-    public SysUserInfoFullServiceImpl ( LogicRepository<SysUserInfoFull, Integer> logicRepository ) {
-        super( logicRepository );
+    @Autowired
+    public SysUserInfoFullServiceImpl ( SysUserInfoFullRepository sysUserInfoFullRepository ) {
+        super(sysUserInfoFullRepository);
+        this.userRepository = sysUserInfoFullRepository;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class SysUserInfoFullServiceImpl extends LogicService<SysUserInfoFull,Int
      * @param id 用户Id
      */
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         userRepository.deleteById(id);
     }
 
@@ -107,7 +107,7 @@ public class SysUserInfoFullServiceImpl extends LogicService<SysUserInfoFull,Int
      *
      */
     @Override
-    public SysUserInfoFull findById(Long id) {
+    public SysUserInfoFull findById(Integer id) {
         return userRepository.findById(id).orElse(null);
     }
 

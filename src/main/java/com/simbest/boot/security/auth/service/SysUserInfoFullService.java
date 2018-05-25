@@ -37,7 +37,7 @@ public interface SysUserInfoFullService extends UserDetailsService,ILogicService
      *
      * @param id 用户Id
      */
-    void deleteById(Long id);
+    void deleteById(Integer id);
 
     /**
      *
@@ -49,5 +49,5 @@ public interface SysUserInfoFullService extends UserDetailsService,ILogicService
      */
     SysUserInfoFull save(SysUserInfoFull user);
 
-    SysUserInfoFull findById(Long id);
+    SysUserInfoFull findById(Integer id);
 }

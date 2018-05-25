@@ -3,7 +3,6 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
-import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.security.auth.model.SysRole;
 import com.simbest.boot.security.auth.repository.SysRoleRepository;
@@ -24,25 +23,27 @@ import java.util.List;
 @Service
 public class SysRoleServiceImpl extends LogicService<SysRole,Integer> implements SysRoleService {
 
-    @Autowired
-    private SysRoleRepository RoleRepository;
 
-    public SysRoleServiceImpl ( LogicRepository<SysRole, Integer> logicRepository ) {
-        super( logicRepository );
+    private SysRoleRepository roleRepository;
+
+    @Autowired
+    public SysRoleServiceImpl ( SysRoleRepository sysRoleRepository ) {
+        super( sysRoleRepository );
+        this.roleRepository = sysRoleRepository;
     }
 
     public List<SysRole> findAll() {
-        return RoleRepository.findAll();
+        return roleRepository.findAll();
     }
 
     @Override
     public SysRole findById(Integer id) {
-        return RoleRepository.findById(id).orElse(null);
+        return roleRepository.findById(id).orElse(null);
     }
 
     @Override
     public SysRole save(SysRole role) {
-        return RoleRepository.save(role);
+        return roleRepository.save(role);
     }
 
 
