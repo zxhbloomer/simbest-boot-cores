@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.service;
 
-import com.simbest.boot.base.service.IGenericService;
+import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.security.auth.model.SysPermission;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author lishuyi
  */
-public interface SysPermissionService extends IGenericService<SysPermission,Integer> {
+public interface SysPermissionService extends ILogicService<SysPermission,Integer> {
 
     /**
      * 返回用户可见菜单

@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.service;
 
-import com.simbest.boot.base.service.IGenericService;
+import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.security.auth.model.SysUserInfo;
 import com.simbest.boot.security.auth.model.SysUserInfoFull;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author lishuyi
  */
-public interface SysUserInfoFullService extends UserDetailsService,IGenericService<SysUserInfoFull,Integer> {
+public interface SysUserInfoFullService extends UserDetailsService,ILogicService<SysUserInfoFull,Integer> {
 
     SysUserInfo getCurrentUser();
 

@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
-import com.simbest.boot.base.model.GenericModel;
+import com.simbest.boot.base.model.LogicModel;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,7 +22,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class SysOrgLevel extends GenericModel {
+public class SysOrgLevel extends LogicModel {
 
     @Id
     @Column(name = "id")

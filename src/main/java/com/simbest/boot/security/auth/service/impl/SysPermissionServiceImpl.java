@@ -3,7 +3,8 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
-import com.simbest.boot.base.service.impl.GenericService;
+import com.simbest.boot.base.repository.LogicRepository;
+import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.security.auth.model.SysPermission;
 import com.simbest.boot.security.auth.repository.SysPermissionRepository;
 import com.simbest.boot.security.auth.service.SysPermissionService;
@@ -22,10 +23,14 @@ import java.util.Map;
  * @author lishuyi
  */
 @Service
-public class SysPermissionServiceImpl extends GenericService<SysPermission,Integer> implements SysPermissionService {
+public class SysPermissionServiceImpl extends LogicService<SysPermission,Integer> implements SysPermissionService {
 
     @Autowired
     private SysPermissionRepository permissionRepository;
+
+    public SysPermissionServiceImpl ( LogicRepository<SysPermission, Integer> logicRepository ) {
+        super( logicRepository );
+    }
 
     @Override
     public List<Map<String, Object>> findMenu(String username) {

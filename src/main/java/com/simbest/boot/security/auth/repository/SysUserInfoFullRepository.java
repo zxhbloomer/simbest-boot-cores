@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.repository;
 
-import com.simbest.boot.base.repository.GenericRepository;
+import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.security.auth.model.SysUserInfoFull;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +18,7 @@ import java.util.List;
  * @author lishuyi
  */
 @Repository
-public interface SysUserInfoFullRepository extends GenericRepository<SysUserInfoFull, Long> {
+public interface SysUserInfoFullRepository extends LogicRepository<SysUserInfoFull, Long> {
 
     /**
      * @param username 登录标识

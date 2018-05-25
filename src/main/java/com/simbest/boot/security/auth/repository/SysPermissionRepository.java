@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.repository;
 
-import com.simbest.boot.base.repository.GenericRepository;
+import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.security.auth.model.SysPermission;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,7 +22,7 @@ import java.util.Set;
  * @author lishuyi
  */
 @Repository
-public interface SysPermissionRepository extends GenericRepository<SysPermission, Integer> {
+public interface SysPermissionRepository extends LogicRepository<SysPermission, Integer> {
 
     /**
      * @param username 用户Id

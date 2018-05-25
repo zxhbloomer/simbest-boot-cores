@@ -4,7 +4,7 @@
 package com.simbest.boot.security.auth.service;
 
 
-import com.simbest.boot.base.service.IGenericService;
+import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.security.auth.model.SysOrgInfoFull;
 
 import javax.transaction.Transactional;
@@ -18,7 +18,7 @@ import javax.transaction.Transactional;
  * @author lishuyi
  */
 @Transactional
-public interface SysOrgInfoFullService extends IGenericService<SysOrgInfoFull,Integer> {
+public interface SysOrgInfoFullService extends ILogicService<SysOrgInfoFull,Integer> {
 
     void deleteById(Integer id);
 }

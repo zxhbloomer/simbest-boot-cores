@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.model;
 
-import com.simbest.boot.base.model.GenericModel;
+import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.security.IOrg;
 import lombok.*;
 
@@ -23,7 +23,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @MappedSuperclass
-public class SysOrgInfo extends GenericModel implements IOrg {
+public class SysOrgInfo extends LogicModel implements IOrg {
 
     @Id
     @Column(name = "id")

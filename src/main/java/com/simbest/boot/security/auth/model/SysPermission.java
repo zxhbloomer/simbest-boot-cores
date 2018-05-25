@@ -4,7 +4,7 @@
 package com.simbest.boot.security.auth.model;
 
 import com.simbest.boot.base.enums.SysPermissionType;
-import com.simbest.boot.base.model.GenericModel;
+import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.security.IPermission;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -28,7 +28,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class SysPermission extends GenericModel implements IPermission, GrantedAuthority {
+public class SysPermission extends LogicModel implements IPermission, GrantedAuthority {
 
     @Id
     @Column(name = "id")

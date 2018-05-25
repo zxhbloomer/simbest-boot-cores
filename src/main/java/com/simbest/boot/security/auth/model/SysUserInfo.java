@@ -4,7 +4,7 @@
 package com.simbest.boot.security.auth.model;
 
 import com.google.common.collect.Sets;
-import com.simbest.boot.base.model.GenericModel;
+import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.security.IUser;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -31,7 +31,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @MappedSuperclass
-public class SysUserInfo extends GenericModel implements IUser, UserDetails {
+public class SysUserInfo extends LogicModel implements IUser, UserDetails {
 
     @Id
     @Column(name = "id")

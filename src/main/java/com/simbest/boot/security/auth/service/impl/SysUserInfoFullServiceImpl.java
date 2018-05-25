@@ -3,12 +3,13 @@
  */
 package com.simbest.boot.security.auth.service.impl;
 
-import com.simbest.boot.base.service.impl.GenericService;
+import com.simbest.boot.base.repository.LogicRepository;
+import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.security.auth.model.SysUserInfo;
 import com.simbest.boot.security.auth.model.SysUserInfoFull;
 import com.simbest.boot.security.auth.repository.SysOrgInfoFullRepository;
-import com.simbest.boot.security.auth.repository.SysRoleRepository;
 import com.simbest.boot.security.auth.repository.SysPermissionRepository;
+import com.simbest.boot.security.auth.repository.SysRoleRepository;
 import com.simbest.boot.security.auth.repository.SysUserInfoFullRepository;
 import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import com.simbest.boot.util.security.SecurityUtils;
@@ -32,7 +33,7 @@ import java.util.List;
  * @author lishuyi
  */
 @Service
-public class SysUserInfoFullServiceImpl extends GenericService<SysUserInfoFull,Integer> implements SysUserInfoFullService {
+public class SysUserInfoFullServiceImpl extends LogicService<SysUserInfoFull,Integer> implements SysUserInfoFullService {
 
     @Autowired
     private SysUserInfoFullRepository userRepository;
@@ -45,6 +46,10 @@ public class SysUserInfoFullServiceImpl extends GenericService<SysUserInfoFull,I
 
     @Autowired
     private SysPermissionRepository permissionRepository;
+
+    public SysUserInfoFullServiceImpl ( LogicRepository<SysUserInfoFull, Integer> logicRepository ) {
+        super( logicRepository );
+    }
 
     @Override
     public SysUserInfo getCurrentUser() {
