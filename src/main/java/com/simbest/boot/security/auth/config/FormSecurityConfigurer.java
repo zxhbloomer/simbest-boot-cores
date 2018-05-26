@@ -3,14 +3,15 @@
  */
 package com.simbest.boot.security.auth.config;
 
+import com.simbest.boot.config.Swagger2CsrfProtection;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.security.auth.filter.CaptchaAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationFilter;
+import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
 import com.simbest.boot.security.auth.handle.FailedLoginHandler;
 import com.simbest.boot.security.auth.handle.SsoSuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLogoutHandler;
-import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,9 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Autowired
     private SessionRegistry sessionRegistry;
+
+    @Autowired
+    private Swagger2CsrfProtection swagger2CsrfProtection;
 
     /**
      * 配置匹配路径
@@ -96,7 +100,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .antMatchers("/error", "/login", "/logout").permitAll()  // 都可以访问
                 .antMatchers("/h2-console/**", "/html/**").permitAll()  // 都可以访问
-                .antMatchers("/httpauth/**").permitAll()  // 都可以访问
+                .antMatchers("/httpauth/**", "/anonymous/**", "/services/**").permitAll()  // 都可以访问
                 .antMatchers("/action/**").hasRole("USER")   // 需要相应的角色才能访问
                 .antMatchers("/sys/admin/**").hasAnyRole("ADMIN", "SUPERVISOR")   // 需要相应的角色才能访问
                 .anyRequest().authenticated()
@@ -106,10 +110,11 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .and().logout().logoutSuccessHandler(successLogoutHandler) // 成功登出后，重定向到登陆页
                 .and().exceptionHandling().accessDeniedPage("/403")// 处理异常，拒绝访问就重定向到 403 页面
                 .and().headers().frameOptions().sameOrigin()
-                .and()
+                .and().csrf().disable()
+//                .and().csrf().requireCsrfProtectionMatcher(swagger2CsrfProtection)
+//                .and()
                 .sessionManagement().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
                 .sessionRegistry(sessionRegistry).expiredUrl(ApplicationConstants.LOGIN_PAGE);
-        http.csrf().ignoringAntMatchers("/h2-console/**"); // 禁用 H2 控制台的 CSRF 防护
         //.sessionFixation().newSession()  Session Fixation protection
         //Your servlet container did not change the session ID when a new session was created. You will not be adequately protected against session-fixation attacks
     }
