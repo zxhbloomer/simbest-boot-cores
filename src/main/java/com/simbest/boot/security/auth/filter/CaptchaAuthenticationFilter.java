@@ -5,6 +5,7 @@ package com.simbest.boot.security.auth.filter;
 
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.constants.ErrorCodeConstants;
+import com.simbest.boot.util.AppSessionUtil;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -67,8 +68,7 @@ public class CaptchaAuthenticationFilter extends AbstractAuthenticationProcessin
 
     protected boolean checkValidateCode(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        HttpSession session = request.getSession();
-        String sessionValidateCode = obtainSessionValidateCode(session);
+        String sessionValidateCode = obtainSessionValidateCode(request);
         String validateCodeParameter = obtainValidateCodeParameter(request);
         if (StringUtils.isEmpty(validateCodeParameter)
                 || !sessionValidateCode.equalsIgnoreCase(validateCodeParameter)) {
@@ -84,7 +84,8 @@ public class CaptchaAuthenticationFilter extends AbstractAuthenticationProcessin
         return null == obj ? "" : obj.toString();
     }
 
-    private String obtainSessionValidateCode(HttpSession session) {
+    private String obtainSessionValidateCode(HttpServletRequest request) {
+        HttpSession session = AppSessionUtil.getSession(request);
         Object obj = session.getAttribute(ApplicationConstants.LOGIN_SESSION_CODE);
         // 让上一次的验证码失效
         session.setAttribute(ApplicationConstants.LOGIN_SESSION_CODE, null);

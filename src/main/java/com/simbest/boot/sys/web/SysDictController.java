@@ -8,12 +8,14 @@ import com.simbest.boot.base.enums.SysDictType;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.service.ISysDictService;
+import com.simbest.boot.util.redis.RedisCacheUtils;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -165,9 +167,11 @@ public class SysDictController {
      * @return
      */
     @PreAuthorize("hasAuthority('ROLE_USER')")  // 指定角色权限才能操作方法
-    @RequestMapping(value = "/json/list")
+    @PostMapping(value = "/json/list")
     @ResponseBody
     public JsonResponse listJson() {
+        RedisCacheUtils.saveString("hello", "lishuyi指定角色权限才能操作方法");
+        RedisCacheUtils.saveString("hello100", "lishuyi指定角色权限才能操作方法", 100);
         List<SysDict> list = dictService.findByEnabled(true);
         return JsonResponse.builder().errcode(JsonResponse.SUCCESS_CODE).message("OK").data(list).build();
     }

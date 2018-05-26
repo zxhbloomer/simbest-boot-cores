@@ -4,9 +4,11 @@
 package com.simbest.boot.util.captcha;
 
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.util.AppSessionUtil;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -85,7 +87,8 @@ public class SpecCaptcha extends Captcha {
             }
 
             //存入Session
-            request.getSession().setAttribute(ApplicationConstants.LOGIN_SESSION_CODE, text().toLowerCase());
+            HttpSession session = AppSessionUtil.getSession(request);
+            session.setAttribute(ApplicationConstants.LOGIN_SESSION_CODE, text().toLowerCase());
 
             ImageIO.write(bi, "png", out);
             out.flush();

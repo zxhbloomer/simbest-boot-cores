@@ -26,9 +26,11 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import redis.clients.jedis.JedisPoolConfig;
 
+import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +55,25 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     @Value("${spring.redis.password}")
     private String password;
 
+    @Value("${server.servlet.session.timeout}")
+    private Integer maxInactiveIntervalInSeconds;
+
+    @Value("${spring.session.redis.namespace}")
+    private String redisNamespace;
+
     @Autowired
     private RedisKeyGenerator redisKeyGenerator;
+
+    @Autowired
+    private RedisOperationsSessionRepository sessionRepository;
+
+    @PostConstruct
+    private void afterPropertiesSet() {
+        log.info("setting spring session with redis timeout {} seconds", maxInactiveIntervalInSeconds);
+        sessionRepository.setDefaultMaxInactiveInterval(maxInactiveIntervalInSeconds);
+        log.info("setting spring session with redis namespace {} ", redisNamespace);
+        sessionRepository.setRedisKeyNamespace(redisNamespace);
+    }
 
     public static final RedisSerializationContext.SerializationPair<String> STRING_PAIR = RedisSerializationContext
             .SerializationPair.fromSerializer(new StringRedisSerializer());

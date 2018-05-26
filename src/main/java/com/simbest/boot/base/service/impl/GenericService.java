@@ -3,7 +3,9 @@ package com.simbest.boot.base.service.impl;
 import com.simbest.boot.base.model.GenericModel;
 import com.simbest.boot.base.repository.GenericRepository;
 import com.simbest.boot.base.service.IGenericService;
+import com.simbest.boot.constants.ApplicationConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,9 +24,11 @@ import java.util.List;
  * @version <strong>V1.0.0</strong><br>
  * <strong>修改历史:</strong><br>
  * 修改人 修改日期 修改描述<br>
+ * 增加缓存
  * -------------------------------------------<br>
  */
 @Slf4j
+@CacheConfig(cacheNames = ApplicationConstants.REDIS_DEFAULT_CACHE_PREFIX)
 public class GenericService<T extends GenericModel,PK extends Serializable> implements IGenericService<T,PK> {
 
     private GenericRepository<T,PK> genericRepository;

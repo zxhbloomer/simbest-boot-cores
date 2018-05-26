@@ -1,12 +1,13 @@
 package com.simbest.boot.sys.service;
 
 import com.simbest.boot.base.repository.Condition;
+import com.simbest.boot.base.service.IGenericService;
 import com.simbest.boot.sys.model.SysDict;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
-public interface ISysDictService {
+public interface ISysDictService extends IGenericService<SysDict,Long>{
 
     int updateEnableByIds(Boolean enabled, List<Long> ids);
 
