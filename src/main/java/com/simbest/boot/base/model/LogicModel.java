@@ -37,7 +37,7 @@ public abstract class LogicModel extends SystemModel {
     @Setter
     @Getter
     @NonNull
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = true, updatable = false)
     //创建人 CREATOR
     protected String creator;
 

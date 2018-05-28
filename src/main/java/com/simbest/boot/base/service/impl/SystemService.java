@@ -33,6 +33,7 @@ public class SystemService<T extends SystemModel,PK extends Serializable> extend
     public SystemService(){}
 
     public SystemService (SystemRepository<T, PK> systemRepository ) {
+        super(systemRepository);
         this.systemRepository = systemRepository;
     }
 

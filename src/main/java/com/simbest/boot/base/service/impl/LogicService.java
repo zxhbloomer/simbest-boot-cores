@@ -29,6 +29,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     private LogicRepository<T,PK> logicRepository;
 
     public LogicService ( LogicRepository<T, PK> logicRepository ) {
+        super(logicRepository);
         this.logicRepository = logicRepository;
     }
 
