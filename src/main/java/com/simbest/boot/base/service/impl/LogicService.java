@@ -46,18 +46,14 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
             return 0;
         }
         obj.setEnabled( enabled );
-        super.save( obj );
+        wrapUpdateStateInfo(obj);
+        logicRepository.save( obj );
         return 1;
     }
 
     public T save ( T o) {
-        String operatorFlag = o.getOperatorFlag();
-        if ( "add".equals( operatorFlag ) ){
-            wrapCreateInfo( o );
-        } else {
-            wrapUpdateInfo( o );
-        }
-        return super.save( o );
+        wrapCreateInfo( o );
+        return logicRepository.save( o );
     }
 
     /**
@@ -70,7 +66,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         if(!StringUtils.isEmpty(o)){
             log.debug("@Logic Service delete objects by object: "+ o);
             wrapUpdateInfo(o);
-            super.save( o );
+            logicRepository.save( o );
             flag = 1;
         }
         return flag;
@@ -84,9 +80,13 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         }
     }
 
+    protected void wrapUpdateStateInfo(T o){
+        String userName = SecurityUtils.getCurrentUserName();
+        o.setModifier(userName);
+        o.setModifiedTime(DateUtil.getCurrent());
+    }
 
 
-    @Override
     protected void wrapUpdateInfo(T o) {
         String userName = SecurityUtils.getCurrentUserName();
         o.setEnabled( false );
@@ -95,7 +95,6 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         o.setModifiedTime(DateUtil.getCurrent());
     }
 
-    @Override
     protected void wrapCreateInfo(T o) {
         String userName = SecurityUtils.getCurrentUserName();
         o.setEnabled( true );
@@ -103,6 +102,5 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         o.setCreator(userName);
         o.setCreatedTime(DateUtil.getCurrent());
         o.setModifiedTime(DateUtil.getCurrent());
-        wrapUpdateInfo(o);
     }
 }

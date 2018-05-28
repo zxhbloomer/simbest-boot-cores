@@ -39,13 +39,8 @@ public class SystemService<T extends SystemModel,PK extends Serializable> extend
 
     @Override
     public T save ( T o) {
-        String operatorFlag = o.getOperatorFlag();
-        if ( "add".equals( operatorFlag ) ){
-            wrapCreateInfo( o );
-        } else {
-            wrapUpdateInfo( o );
-        }
-        return super.save( o );
+        wrapCreateInfo( o );
+        return systemRepository.save( o );
     }
 
     @Override
