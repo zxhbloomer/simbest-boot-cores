@@ -97,6 +97,6 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         o.setCreator(userName);
         o.setCreatedTime(DateUtil.getCurrent());
         o.setModifiedTime(DateUtil.getCurrent());
-        wrapCreateInfo(o);
+        wrapUpdateInfo(o);
     }
 }
