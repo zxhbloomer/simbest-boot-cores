@@ -86,21 +86,17 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         o.setModifiedTime(DateUtil.getCurrent());
     }
 
-
     protected void wrapUpdateInfo(T o) {
         String userName = SecurityUtils.getCurrentUserName();
-        o.setEnabled( false );
-        o.setRemoved( true );
         o.setModifier(userName);
         o.setModifiedTime(DateUtil.getCurrent());
     }
 
     protected void wrapCreateInfo(T o) {
         String userName = SecurityUtils.getCurrentUserName();
-        o.setEnabled( true );
-        o.setRemoved( false );
         o.setCreator(userName);
         o.setCreatedTime(DateUtil.getCurrent());
         o.setModifiedTime(DateUtil.getCurrent());
+        wrapCreateInfo(o);
     }
 }
