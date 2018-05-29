@@ -30,7 +30,7 @@ public abstract class SystemModel extends GenericModel {
     @Setter @Getter
     @NonNull
     @Column(nullable = true, updatable = false)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp// 创建时自动更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createdTime;
@@ -39,7 +39,7 @@ public abstract class SystemModel extends GenericModel {
     @Getter
     @NonNull
     @Column(nullable = true)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp// 更新时自动更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     //最后更新时间

@@ -3,23 +3,33 @@
  */
 package com.simbest.boot.util.server;
 
-import com.simbest.boot.base.exception.Exceptions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.stereotype.Component;
 
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
+import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * 用途：主机工具栏
  * 作者: lishuyi
  * 时间: 2018/5/12  15:53
  */
+@Component
 public class HostUtil {
+
+    @Autowired
+    private ServletWebServerApplicationContext server;
+
+    private static HostUtil hostUtil;
+
+    @PostConstruct
+    public void init() {
+        hostUtil = this;
+    }
 
     public static boolean isWindowsOS() {
         boolean isWindowsOS = false;
@@ -30,7 +40,15 @@ public class HostUtil {
         return isWindowsOS;
     }
 
-    public static String getIpAddress() {
+    public static String getHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            return InetAddress.getLoopbackAddress().getHostName();
+        }
+    }
+
+    public static String getHostAddress() {
         String sIP = "";
         InetAddress ip = null;
         try {
@@ -82,26 +100,7 @@ public class HostUtil {
      *
      * @return
      */
-    public static String getContainerRunPort() {
-        try {
-            MBeanServer server = null;
-            if (MBeanServerFactory.findMBeanServer(null).size() > 0) {
-                server = MBeanServerFactory.findMBeanServer(null).get(0);
-            }
-            Set names = server.queryNames(new ObjectName("Catalina:type=Connector,*"), null);
-            Iterator iterator = names.iterator();
-            ObjectName name = null;
-            while (iterator.hasNext()) {
-                name = (ObjectName) iterator.next();
-                String protocol = server.getAttribute(name, "protocol").toString();
-                String port = server.getAttribute(name, "port").toString();
-                if (protocol.equals("HTTP/1.1")) {
-                    return port;
-                }
-            }
-        } catch (Exception e) {
-            Exceptions.printException(e);
-        }
-        return "";
+    public int getRunningPort() {
+        return server.getWebServer().getPort();
     }
 }

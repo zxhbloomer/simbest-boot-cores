@@ -7,6 +7,7 @@ import com.distributed.lock.redis.RedisReentrantLock;
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.util.server.HostUtil;
 import com.simbest.boot.util.server.SocketUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -37,25 +38,32 @@ public class RedisDistributedLocker {
     @Autowired
     private JedisConnectionFactory redisConnectionFactory;
 
-    private String hostIpAddress;
+    @Autowired
+    private HostUtil hostUtil;
 
-    private String containerRunport;
+    @Getter
+    private String hostName;
+
+    @Getter
+    private Integer runningPort;
     
     @PostConstruct
     private void init() {
         jedisPool = new JedisPool(jedisPoolConfig, redisConnectionFactory.getHostName(), redisConnectionFactory.getPort(),
                 redisConnectionFactory.getTimeout(), redisConnectionFactory.getPassword());
-        hostIpAddress = HostUtil.getIpAddress();
-        containerRunport = HostUtil.getContainerRunPort();
     }
 
     public boolean checkMasterIsMe() {
-        log.debug("My host ip: "+ hostIpAddress);
-        log.debug("Cluster master ip: "+RedisCacheUtils.getString("redis_master_ip"));
-        log.debug("My host port: "+containerRunport);
-        log.debug("Cluster master port: "+RedisCacheUtils.getString("redis_master_port"));
-        log.debug("Check master is me result: "+ (hostIpAddress.equals(RedisCacheUtils.getString("redis_master_ip")) && containerRunport.equals(RedisCacheUtils.getString("redis_master_port"))));
-        return hostIpAddress.equals(RedisCacheUtils.getString("redis_master_ip")) && containerRunport.equals(RedisCacheUtils.getString("redis_master_port"));
+        if(StringUtils.isEmpty(hostName))
+            hostName = hostUtil.getHostName();
+        if(runningPort == null || runningPort.equals(0))
+            runningPort = hostUtil.getRunningPort();
+        log.debug("My host is {} ", hostName);
+        log.debug("Cluster master is {} ", RedisCacheUtils.getString("redis_master_ip"));
+        log.debug("My host port is {}", runningPort);
+        log.debug("Cluster master port is {}", RedisCacheUtils.getBean("redis_master_port", Integer.class));
+        log.debug("Check master is me result is {} ", hostName.equals(RedisCacheUtils.getString("redis_master_ip")) && runningPort.equals(RedisCacheUtils.getBean("redis_master_port", Integer.class)));
+        return hostName.equals(RedisCacheUtils.getString("redis_master_ip")) && runningPort.equals(RedisCacheUtils.getBean("redis_master_port", Integer.class));
     }
 
     /**
@@ -69,17 +77,17 @@ public class RedisDistributedLocker {
                 //TODO 获得锁后要做的事
                 String masterIp = RedisCacheUtils.getString("redis_master_ip");
                 String masterPort = RedisCacheUtils.getString("redis_master_port");
-                String myIp = hostIpAddress;
-                String myPort = containerRunport;
+                String myIp = hostName;
+                Integer myPort = runningPort;
                 if (StringUtils.isEmpty(masterIp) || StringUtils.isEmpty(masterPort)) {       //1.没有Master
                     RedisCacheUtils.saveString("redis_master_ip", myIp);   //设置我为Master
-                    RedisCacheUtils.saveString("redis_master_port", myPort);
+                    RedisCacheUtils.saveBean("redis_master_port", myPort);
                     log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                 } else {
                     boolean masterIsAvailable = SocketUtil.checkHeartConnection(masterIp, Integer.valueOf(masterPort));
                     if (!masterIsAvailable) {              //2.Master不可用
                         RedisCacheUtils.saveString("redis_master_ip", myIp);   //设置我为Master
-                        RedisCacheUtils.saveString("redis_master_port", myPort);
+                        RedisCacheUtils.saveBean("redis_master_port", myPort);
                         log.trace(String.format("IP: %s on port %s become cluster master...", myIp, myPort));
                     } else {
                         log.trace(String.format("Master is already at IP: %s on port %s ...", masterIp, masterPort));
