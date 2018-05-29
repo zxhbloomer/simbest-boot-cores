@@ -3,6 +3,7 @@ package com.simbest.boot.base.service;
 import com.simbest.boot.base.model.GenericModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.io.Serializable;
@@ -71,6 +72,20 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
      * @return
      */
     Page<T> findAll ( Pageable pageable );
+
+    /**
+     * 查询全部记录
+     * @param <S>
+     * @return
+     */
+    List<T> getAll();
+
+    /**
+     * 根据排序字段查询全部记录
+     * @param sort  排序字段
+     * @return
+     */
+    List<T> getAllBySort(Sort sort);
 
     long count();
 

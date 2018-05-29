@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.io.Serializable;
@@ -102,6 +103,27 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
     public Page<T>  findAll ( Pageable pageable ) {
         log.debug("@Generic Repository Service findAll object PageSize:" + pageable.getPageSize() + ":PageNumber:" + pageable.getPageNumber());
         return genericRepository.findAll( pageable );
+    }
+
+    /**
+     * @see
+     * @return
+     */
+    @Override
+    public List<T> getAll ( ) {
+        log.debug("@Generic Repository Service getAll");
+        return genericRepository.findAll();
+    }
+
+    /**
+     * @see
+     * @param sort  排序字段
+     * @return
+     */
+    @Override
+    public List<T> getAllBySort ( Sort sort ) {
+        log.debug("@Generic Repository Service object by Sort");
+        return genericRepository.findAll( sort );
     }
 
     /**
