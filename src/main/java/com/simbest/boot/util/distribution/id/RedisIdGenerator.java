@@ -1,7 +1,7 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.util.distribution;
+package com.simbest.boot.util.distribution.id;
 
 import com.google.common.base.Strings;
 import com.simbest.boot.base.exception.Exceptions;

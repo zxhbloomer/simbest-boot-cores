@@ -1,10 +1,9 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.util.distribution;
+package com.simbest.boot.util.distribution.id;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
 
 /**
  * 用途：分布式ID生成器

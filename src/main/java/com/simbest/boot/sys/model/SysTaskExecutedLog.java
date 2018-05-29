@@ -54,7 +54,7 @@ public class SysTaskExecutedLog extends SystemModel {
     private Long durationTime;
 
     //文件大小
-    @Column(nullable = false, length = 2000)
+    @Column(nullable = false, length = 4000)
     @NonNull
     private String content;
 }
