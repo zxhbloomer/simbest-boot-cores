@@ -42,7 +42,7 @@ public class RedisDistributedLocker {
     private HostUtil hostUtil;
 
     @Getter
-    private String hostName;
+    private String hostAddress;
 
     @Getter
     private Integer runningPort;
@@ -54,16 +54,16 @@ public class RedisDistributedLocker {
     }
 
     public boolean checkMasterIsMe() {
-        if(StringUtils.isEmpty(hostName))
-            hostName = hostUtil.getHostName();
+        if(StringUtils.isEmpty(hostAddress))
+            hostAddress = HostUtil.getHostAddress();
         if(runningPort == null || runningPort.equals(0))
             runningPort = hostUtil.getRunningPort();
-        log.debug("My host is {} ", hostName);
+        log.debug("My host is {} ", hostAddress);
         log.debug("Cluster master is {} ", RedisCacheUtils.getString("redis_master_ip"));
         log.debug("My host port is {}", runningPort);
         log.debug("Cluster master port is {}", RedisCacheUtils.getBean("redis_master_port", Integer.class));
-        log.debug("Check master is me result is {} ", hostName.equals(RedisCacheUtils.getString("redis_master_ip")) && runningPort.equals(RedisCacheUtils.getBean("redis_master_port", Integer.class)));
-        return hostName.equals(RedisCacheUtils.getString("redis_master_ip")) && runningPort.equals(RedisCacheUtils.getBean("redis_master_port", Integer.class));
+        log.debug("Check master is me result is {} ", hostAddress.equals(RedisCacheUtils.getString("redis_master_ip")) && runningPort.equals(RedisCacheUtils.getBean("redis_master_port", Integer.class)));
+        return hostAddress.equals(RedisCacheUtils.getString("redis_master_ip")) && runningPort.equals(RedisCacheUtils.getBean("redis_master_port", Integer.class));
     }
 
     /**
@@ -77,7 +77,7 @@ public class RedisDistributedLocker {
                 //TODO 获得锁后要做的事
                 String masterIp = RedisCacheUtils.getString("redis_master_ip");
                 String masterPort = RedisCacheUtils.getString("redis_master_port");
-                String myIp = hostName;
+                String myIp = hostAddress;
                 Integer myPort = runningPort;
                 if (StringUtils.isEmpty(masterIp) || StringUtils.isEmpty(masterPort)) {       //1.没有Master
                     RedisCacheUtils.saveString("redis_master_ip", myIp);   //设置我为Master

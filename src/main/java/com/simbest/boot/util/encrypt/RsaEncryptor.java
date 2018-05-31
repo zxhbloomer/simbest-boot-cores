@@ -4,6 +4,7 @@
 package com.simbest.boot.util.encrypt;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
@@ -65,7 +66,9 @@ public class RsaEncryptor extends AbstractEncryptor {
     }
 
     private String getKeyFromFile(String filePath) throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(ResourceUtils.getFile(filePath)));
+        ClassPathResource resource = new ClassPathResource(filePath);
+        InputStream inputStream = resource.getInputStream();
+        BufferedReader bufferedReader =new BufferedReader(new InputStreamReader(inputStream));
         String line = null;
         List<String> list = new ArrayList<String>();
         while ((line = bufferedReader.readLine()) != null) {

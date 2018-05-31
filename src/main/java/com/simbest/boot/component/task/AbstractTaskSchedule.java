@@ -22,9 +22,6 @@ public abstract class AbstractTaskSchedule {
 
     public final static String CHECK_FAILED = "FAILED";
 
-    @Setter
-    protected String taskName = null;
-
     private RedisDistributedLocker distriLocker;
 
     private TaskExecutedLogRepository repository;
@@ -36,20 +33,20 @@ public abstract class AbstractTaskSchedule {
 
     public void checkAndExecute() {
         if (distriLocker.checkMasterIsMe()) {
-            log.debug("This host {} run with port {} is master, begin execute task job.", distriLocker.getHostName(), distriLocker.getRunningPort());
+            log.debug("This host {} run with port {} is master, begin execute task job.", distriLocker.getHostAddress(), distriLocker.getRunningPort());
             Long beginTime = System.currentTimeMillis();
             String content = CHECK_FAILED;
             try {
                 content = this.execute();
             }catch (Exception e){
-                log.error("Execute taskName with {} failed.", taskName);
+                log.error("Execute taskName with {} failed.", this.getClass().getSimpleName());
                 Exceptions.printException(e);
             }
             Long endTime = System.currentTimeMillis();
-            SysTaskExecutedLog log = SysTaskExecutedLog.builder().taskName(taskName).hostname(distriLocker.getHostName()).port(distriLocker.getRunningPort()).durationTime(endTime - beginTime).content(StringUtils.substring(content, 0, 2000)).build();
+            SysTaskExecutedLog log = SysTaskExecutedLog.builder().taskName(this.getClass().getSimpleName()).hostname(distriLocker.getHostAddress()).port(distriLocker.getRunningPort()).durationTime(endTime - beginTime).content(StringUtils.substring(content, 0, 2000)).build();
             repository.save(log);
         } else{
-            log.debug("This host {} run with port {} is not master, give up execute task job.", distriLocker.getHostName(), distriLocker.getRunningPort());
+            log.debug("This host {} run with port {} is not master, give up execute task job.", distriLocker.getHostAddress(), distriLocker.getRunningPort());
         }
     }
 

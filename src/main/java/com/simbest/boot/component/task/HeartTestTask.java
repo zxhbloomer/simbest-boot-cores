@@ -45,11 +45,6 @@ public class HeartTestTask extends AbstractTaskSchedule {
         super(distriLocker, repository);
     }
 
-    @PostConstruct
-    public void init(){
-        super.setTaskName(HeartTestTask.class.getSimpleName());
-    }
-
     @Scheduled(cron = "${app.task.heart.test.job}")
     public void checkAndExecute() {
         super.checkAndExecute();
