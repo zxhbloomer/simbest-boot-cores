@@ -59,8 +59,9 @@ public class SysUserInfoFullServiceImpl extends LogicService<SysUserInfoFull,Int
     @Override
     public SysUserInfo loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUserInfoFull userInfo = userRepository.findByUsername(username);
-        if(userInfo == null)
-            throw new UsernameNotFoundException(username + " not found!");
+        if(userInfo == null) {
+            throw new UsernameNotFoundException( username + " not found!" );
+        }
         userInfo.setOrgs(orgRepository.getOrgByUsername(username));
         userInfo.setAuthRoles(roleRepository.getRoleByUsername(username));
         userInfo.setAuthPermissions(permissionRepository.getPermissionByUsername(username));
@@ -122,4 +123,31 @@ public class SysUserInfoFullServiceImpl extends LogicService<SysUserInfoFull,Int
         }
     }
 
+    /**
+     * 查询某角色下面的所有人员信息
+     * @param roleId     角色ID
+     * @return
+     */
+    public List<SysUserInfoFull> getUserByRole(Integer roleId){
+        return userRepository.getUserByRole( roleId );
+    }
+
+    /**
+     * 获取所属部门系统用户
+     * @param orgCode
+     * @return
+     */
+    @Override
+    public List<SysUserInfoFull> getByOrg ( Integer orgCode ) {
+        return userRepository.getByOrg( orgCode );
+    }
+
+    /**
+     * 根据用户名查询用户基础信息
+     * @param username     用户名即OA登录用户名（英文全拼）
+     * @return              用户基础信息
+     */
+    public SysUserInfoFull findByUsername(String username){
+        return userRepository.findByUsername( username );
+    }
 }

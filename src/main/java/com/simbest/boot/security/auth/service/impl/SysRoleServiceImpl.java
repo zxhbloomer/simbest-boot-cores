@@ -46,5 +46,13 @@ public class SysRoleServiceImpl extends LogicService<SysRole,Integer> implements
         return roleRepository.save(role);
     }
 
-
+    /**
+     * 根据用户名查询所属角色列表
+     * @param username  用户名即OA登录用户名（英文全拼）
+     * @return
+     */
+    @Override
+    public List<SysRole> getByUser ( String username ) {
+        return ( List<SysRole> ) roleRepository.getRoleByUsername( username );
+    }
 }

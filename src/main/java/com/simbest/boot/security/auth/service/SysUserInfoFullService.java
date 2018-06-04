@@ -50,4 +50,25 @@ public interface SysUserInfoFullService extends UserDetailsService,ILogicService
     SysUserInfoFull save(SysUserInfoFull user);
 
     SysUserInfoFull findById(Integer id);
+
+    /**
+     * 查询某角色下面的所有人员信息
+     * @param roleId     角色ID
+     * @return
+     */
+    List<SysUserInfoFull> getUserByRole(Integer roleId);
+
+    /**
+     * 获取所属部门系统用户
+     * @param orgCode
+     * @return
+     */
+    List<SysUserInfoFull> getByOrg(Integer orgCode);
+
+    /**
+     * 根据用户名查询用户基础信息
+     * @param username     用户名即OA登录用户名（英文全拼）
+     * @return              用户基础信息
+     */
+    SysUserInfoFull findByUsername(String username);
 }

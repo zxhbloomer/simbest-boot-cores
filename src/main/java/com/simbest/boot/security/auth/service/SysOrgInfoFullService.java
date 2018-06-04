@@ -8,6 +8,7 @@ import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.security.auth.model.SysOrgInfoFull;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * <strong>Description : 基于Spring Security的组织逻辑层</strong><br>
@@ -21,4 +22,31 @@ import javax.transaction.Transactional;
 public interface SysOrgInfoFullService extends ILogicService<SysOrgInfoFull,Integer> {
 
     void deleteById(Integer id);
+
+    /**
+     * 获取根组织
+     * @return
+     */
+    SysOrgInfoFull getRoot();
+
+    /**
+     * 获取下属部门（不包括传入部门）
+     * @param id
+     * @return
+     */
+    List<SysOrgInfoFull> getChildrenOrg( Integer id);
+
+    /**
+     * 通过父亲部门获取部门
+     * @param parentId
+     * @return
+     */
+    List<SysOrgInfoFull> getByParent(Integer parentId);
+
+    /**
+     * 根据组件编号查询组织基本信息
+     * @param orgCode   组织编码
+     * @return
+     */
+    SysOrgInfoFull getByOrgCode(String orgCode);
 }

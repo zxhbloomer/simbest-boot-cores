@@ -23,4 +23,11 @@ public interface SysRoleService extends ILogicService<SysRole,Integer> {
     SysRole findById(Integer id);
 
     SysRole save(SysRole role);
+
+    /**
+     * 根据用户名查询所属角色列表
+     * @param username  用户名即OA登录用户名（英文全拼）
+     * @return
+     */
+    List<SysRole> getByUser(String username);
 }
