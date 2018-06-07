@@ -3,8 +3,8 @@
  */
 package com.simbest.boot.security.auth.filter;
 
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,7 @@ public class SsoAuthenticationRegister {
     private ApplicationContext appContext;
 
     @Autowired
-    private SysUserInfoFullService sysUserInfoService;
+    private IAuthService authService;
 
     /**
      * 尝试从HttpServletRequest获取认证用户名
@@ -54,7 +54,7 @@ public class SsoAuthenticationRegister {
     public SsoUsernameAuthentication retriveMakeToken(HttpServletRequest request){
         Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);
         for(SsoAuthenticationService auth : auths.values()){
-            UserDetails userDetails = sysUserInfoService.loadUserByUsername(retriveFindUsername(request));
+            UserDetails userDetails = authService.loadUserByUsername(retriveFindUsername(request));
             if (userDetails != null) {
                 return new SsoUsernameAuthentication(userDetails.getUsername(), userDetails.getPassword());
             } else {

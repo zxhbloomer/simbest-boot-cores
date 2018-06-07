@@ -25,35 +25,23 @@ public class SysDictValue extends LogicModel {
 
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name = "sys_dict_value_seq", sequenceName = "sys_dict_value_seq")
+    @SequenceGenerator(name = "sys_dict_value_seq", sequenceName = "sys_dict_value_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_dict_value_seq")
-    private Long id;
+    private Integer id;
 
-    @Column(nullable = true, length = 20)
-    private String code;
-
-    @Column(nullable = true, length = 50)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = true, length = 100)
+    @Column(nullable = false, length = 100)
     private String value;
 
-    @Column(nullable = true, length = 11)
-    private Integer orderLevel;
+    private String description;
 
-    @Column(nullable = true)
-    private Long parentId;
+    private Integer displayOrder;
 
-    @Column(nullable = true)
-    private Long dictId;
+    private Integer parentId;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    //根节点允许为空
-//    @JoinColumn(name = "parent_id", nullable = true)
-//    private SysDictValue parent;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "dict_id", nullable = false)
-//    private SysDict sysDict;
-
+    @ManyToOne(cascade=CascadeType.REFRESH, optional=false)
+    @JoinColumn(name = "dict_id")
+    private SysDict sysDict;
 }

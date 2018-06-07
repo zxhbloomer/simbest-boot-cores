@@ -3,9 +3,9 @@
  */
 package com.simbest.boot.security.auth.config;
 
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider;
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -25,7 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private SysUserInfoFullService sysUserInfoService;
+    private IAuthService authService;
 
     @Autowired
     private SsoUsernameAuthenticationProvider ssoUsernameAuthenticationProvider;
@@ -42,7 +42,7 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
     @Bean
     public AuthenticationProvider jdbcAuthenticationProvider() {
         DaoAuthenticationProvider impl = new DaoAuthenticationProvider();
-        impl.setUserDetailsService(sysUserInfoService);
+        impl.setUserDetailsService(authService);
         impl.setPasswordEncoder(passwordEncoder());
         impl.setHideUserNotFoundExceptions(true);
         return impl;

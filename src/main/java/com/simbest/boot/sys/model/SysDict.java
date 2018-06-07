@@ -4,14 +4,16 @@
 package com.simbest.boot.sys.model;
 
 
-import com.simbest.boot.base.enums.SysDictType;
+import com.google.common.collect.Lists;
 import com.simbest.boot.base.model.LogicModel;
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 用途：数据字典
@@ -27,31 +29,19 @@ public class SysDict extends LogicModel {
 
     @Id
     @Column(name = "id")
-    @SequenceGenerator (name = "sys_dict_seq", sequenceName = "sys_dict_seq")
+    @SequenceGenerator (name = "sys_dict_seq", sequenceName = "sys_dict_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_dict_seq")
-    private Long id;
-
-    @Column(nullable = true, length = 20)
-    private String code;
+    private Integer id;
 
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
-    private SysDictType dictType;
-
-    @Column(nullable = true, length = 100)
     private String description;
 
-    @Column(nullable = true, length = 11)
-    private Integer orderLevel;
+    private Integer displayOrder;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    //根节点允许为空
-//    @JoinColumn(name = "parent_id", nullable = true)
-//    private SysDict parent;
+    private Integer parentId;
 
-    @Column(nullable = true)
-    private Long parentId;
+    @OneToMany(mappedBy="sysDict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SysDictValue> values = Lists.newArrayList();
 }

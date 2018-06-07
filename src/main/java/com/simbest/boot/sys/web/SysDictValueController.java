@@ -58,7 +58,7 @@ public class SysDictValueController {
     public ModelAndView list(@RequestParam(defaultValue = "1") int page,
                              @RequestParam(defaultValue = "10") int size, //
                              @RequestParam(required = false, defaultValue = "") String searchCode,
-                             @RequestParam Long id) {
+                             @RequestParam Integer id) {
 
         SysDict dict = dictService.findById(id);
         if (dict == null) {
@@ -93,18 +93,6 @@ public class SysDictValueController {
         return new ModelAndView("sys/sysdict/dictionaryList", "dictModel", map);
     }
 
-
-    @RequestMapping(value = "/queryByDict")
-    @ResponseBody
-    public Map<String, Object> queryByDict(Long dictId) {
-        Map<String, Object> result = Maps.newHashMap();
-        List<SysDictValue> list = dictValueService.findByDictId(dictId);
-
-        result.put("iTotalRecords", list.size());
-        result.put("iTotalDisplayRecords", list.size());
-        result.put("aaData", list);
-        return result;
-    }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -160,7 +148,7 @@ public class SysDictValueController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public JsonResponse delete(@RequestBody long id) {
+    public JsonResponse delete(@RequestBody Integer id) {
         SysDictValue newSysDictValue = dictValueService.findById(id);
         if (newSysDictValue == null) {
             return JsonResponse.defaultErrorResponse();
@@ -178,8 +166,8 @@ public class SysDictValueController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
     @RequestMapping(value = "/deleteList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public JsonResponse deleteList(@RequestBody List<Long> ids) {
-        for (Long id : ids) {
+    public JsonResponse deleteList(@RequestBody List<Integer> ids) {
+        for (Integer id : ids) {
             SysDictValue newSysDictValue = dictValueService.findById(id);
             if (newSysDictValue == null) {
                 continue;
@@ -198,7 +186,7 @@ public class SysDictValueController {
     @RequestMapping(value = "/updateEnable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public JsonResponse updateEnable(@RequestBody Map<String, Object> params) {
-        Long id = Long.parseLong(params.get("id").toString());
+        Integer id = Integer.parseInt(params.get("id").toString());
         Boolean enabled = (Boolean) params.get("enabled");
         int state = dictValueService.updateEnable(enabled, id);
         if (state < 1) {
@@ -209,7 +197,7 @@ public class SysDictValueController {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
     @GetMapping(value = "/getById")
-    public ModelAndView getById(@RequestParam(defaultValue = "-1") final long id, @RequestParam long dictId) {
+    public ModelAndView getById(@RequestParam(defaultValue = "-1") final Integer id, @RequestParam Integer dictId) {
         SysDictValue dictValue;
         if (id == -1) {
             dictValue = new SysDictValue();

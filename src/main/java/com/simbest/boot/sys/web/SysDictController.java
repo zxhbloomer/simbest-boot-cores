@@ -4,7 +4,6 @@
 package com.simbest.boot.sys.web;
 
 import com.google.common.collect.Maps;
-import com.simbest.boot.base.enums.SysDictType;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.service.ISysDictService;
@@ -41,35 +40,6 @@ public class SysDictController {
     @Autowired
     private ISysDictService dictService;
 
-    /**
-     * @param model model
-     * @return ModelAndView
-     */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
-    @RequestMapping(value = "/dataDictionary", method = RequestMethod.GET)
-    public ModelAndView dataDictionary(Model model) {
-        model.addAttribute("title", "数据字典");
-        model.addAttribute("type", 1);
-        model.addAttribute("tree", queryDict());
-        model.addAttribute("dictType", getDictTypeMap());
-        return new ModelAndView("sys/sysdict/dataDictionary", "dictModel", model);
-    }
-
-    /**
-     * 获取字典类型
-     *
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/getDictTypeMap")
-    @ResponseBody
-    public Map<SysDictType, String> getDictTypeMap() {
-        Map<SysDictType, String> map = Maps.newHashMap();
-        for (SysDictType type : SysDictType.values()) {
-            map.put(type, type.getValue());
-        }
-        return map;
-    }
 
     /**
      * 获取字典树
@@ -137,27 +107,6 @@ public class SysDictController {
     @ResponseBody
     public JsonResponse update(@RequestBody SysDict dict) {
         dictService.save(dict);
-        return JsonResponse.defaultSuccessResponse();
-    }
-
-    /**
-     * 启用、停用
-     *
-     * @param params
-     * @return
-     */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
-    @RequestMapping(value = "/updateEnable", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public JsonResponse updateEnable(@RequestBody Map<String, Object> params) {
-        Long id = Long.parseLong(params.get("id").toString());
-        Boolean enabled = (Boolean) params.get("enabled");
-        List<Long> ids = new ArrayList<Long>();
-        ids.add(new Long(id));
-        int state = dictService.updateEnableByIds(enabled, ids);
-        if (state < 1) {
-            return JsonResponse.defaultErrorResponse();
-        }
         return JsonResponse.defaultSuccessResponse();
     }
 

@@ -5,7 +5,7 @@ package com.simbest.boot.security.auth.controller;
 
 import com.google.common.collect.Lists;
 import com.simbest.boot.base.web.response.JsonResponse;
-import com.simbest.boot.security.auth.model.SysUserInfo;
+import com.simbest.boot.security.IUser;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ public class AdminController {
     public JsonResponse listOnlineUsers() {
         List<Object> principals = sessionRegistry.getAllPrincipals();
         List<String> usersNamesList = Lists.newArrayList();
-        usersNamesList.addAll(principals.stream().filter(principal -> principal instanceof SysUserInfo).map(principal
-                -> ((SysUserInfo) principal).getUsername()).collect(Collectors.toList()));
+        usersNamesList.addAll(principals.stream().filter(principal -> principal instanceof IUser).map(principal
+                -> ((IUser) principal).getUsername()).collect(Collectors.toList()));
         return JsonResponse.success(usersNamesList);
     }
 }

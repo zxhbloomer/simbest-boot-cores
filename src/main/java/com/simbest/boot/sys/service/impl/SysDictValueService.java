@@ -1,7 +1,6 @@
 package com.simbest.boot.sys.service.impl;
 
 import com.simbest.boot.base.repository.Condition;
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import com.simbest.boot.sys.model.SysDictValue;
 import com.simbest.boot.sys.repository.SysDictValueRepository;
 import com.simbest.boot.sys.service.ISysDictValueService;
@@ -22,22 +21,8 @@ public class SysDictValueService implements ISysDictValueService {
     @Autowired
     private SysDictValueRepository dictValueRepository;
 
-    @Autowired
-    private SysUserInfoFullService userService;
-
-
     @Override
-    public int updateEnableByDictId(boolean enabled, Long dictId) {
-        List<SysDictValue> list = dictValueRepository.findByDictId(dictId);
-        for (SysDictValue val : list) {
-            val.setEnabled(enabled);
-            dictValueRepository.save(val);
-        }
-        return 1;
-    }
-
-    @Override
-    public int updateEnable(boolean enabled, Long dictValueId) {
+    public int updateEnable(boolean enabled, Integer dictValueId) {
         SysDictValue val = findById(dictValueId);
         if (val == null) {
             return 0;
@@ -52,25 +37,11 @@ public class SysDictValueService implements ISysDictValueService {
     }
 
     @Override
-    public List<SysDictValue> findByDictId(Long dictId) {
-        return dictValueRepository.findByDictIdAndEnabledAndRemoved(dictId, true, false);
-    }
-
-    public Map<Long, SysDictValue> findByDictIdForKV(Long dictId) {
-        List<SysDictValue> values = dictValueRepository.findByDictIdAndEnabledAndRemoved(dictId, true, false);
-        Map<Long, SysDictValue> map = new HashMap<>();
-        for (SysDictValue v : values) {
-            map.put(v.getId(), v);
-        }
-        return map;
-    }
-
-    @Override
-    public List<SysDictValue> findByParentId(Long parentId) {
+    public List<SysDictValue> findByParentId(Integer parentId) {
         return dictValueRepository.findByParentId(parentId);
     }
 
-    public SysDictValue findById(Long id) {
+    public SysDictValue findById(Integer id) {
         return dictValueRepository.findById(id).orElse(null);
     }
 
@@ -85,7 +56,7 @@ public class SysDictValueService implements ISysDictValueService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         SysDictValue dictValue = findById(id);
         dictValue.setRemoved(true);
         save(dictValue);

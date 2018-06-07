@@ -4,8 +4,8 @@
 package com.simbest.boot.security.auth.authentication.sso.impl;
 
 import com.mochasoft.portal.encrypt.EncryptorUtil;
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
-import com.simbest.boot.security.auth.repository.SysUserInfoFullRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class MochaSsoAuthenticationServiceImpl implements SsoAuthenticationServi
     private String portalToken;
 
     @Autowired
-    private SysUserInfoFullRepository userRepository;
+    private IAuthService authService;
 
     /**
      * 从请求中获取用户名
@@ -43,7 +43,7 @@ public class MochaSsoAuthenticationServiceImpl implements SsoAuthenticationServi
             if(StringUtils.isNotEmpty(username)) {
                 username = EncryptorUtil.decode(portalToken, request.getParameter("username"), TIMEOUT);
                 log.debug("Actually get username from request with: {}", username);
-                if (userRepository.findByUsername(username) == null) {
+                if (authService.findByUsername(username) == null) {
                     username = null;
                 }
             }else{

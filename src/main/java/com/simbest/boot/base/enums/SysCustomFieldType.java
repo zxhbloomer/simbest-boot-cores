@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 public enum SysCustomFieldType implements GenericEnum, Comparable<SysCustomFieldType> {
 
-    TEXT("文本"), TEXTAREA("长文本"), NUMBER("数字"), DATE("日期"), DATETIME("时间"), ZDICT("数据字典");
+    TEXT("文本"), TEXTAREA("长文本"), INTEGER("数字"),  PRICE("金额"), DATE("日期"), TIME("时间"), TIMESTAMP("时间戳"), ZDICT("数据字典");
 
     @Setter @Getter
     private String value;

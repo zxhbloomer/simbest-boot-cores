@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.security.auth.provider;
 
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,13 +31,13 @@ public class SsoUsernameAuthenticationProvider implements AuthenticationProvider
     protected boolean hideUserNotFoundExceptions = false;
 
     @Autowired
-    private SysUserInfoFullService sysUserInfoService;
+    private IAuthService authService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         if (!StringUtils.isEmpty(username)) {
-            UserDetails userDetails = sysUserInfoService.loadUserByUsername(username);
+            UserDetails userDetails = authService.loadUserByUsername(username);
             if (userDetails != null) {
                 return new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
                         userDetails.getPassword(), userDetails.getAuthorities());

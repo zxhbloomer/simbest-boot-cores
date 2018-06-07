@@ -7,13 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SysDictValueRepository extends BaseRepository<SysDictValue, Long> {
+public interface SysDictValueRepository extends BaseRepository<SysDictValue, Integer> {
 
-    List<SysDictValue> findByParentId(Long parentId);
+    List<SysDictValue> findByParentId(Integer parentId);
 
     List<SysDictValue> findByEnabled(Boolean enabled);
 
-    List<SysDictValue> findByDictId(Long dictId);
-
-    List<SysDictValue> findByDictIdAndEnabledAndRemoved(Long dictId, Boolean enabled, Boolean removed);
 }

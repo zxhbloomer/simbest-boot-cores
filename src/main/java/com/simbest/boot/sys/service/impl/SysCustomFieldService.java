@@ -6,7 +6,6 @@ package com.simbest.boot.sys.service.impl;
 
 import com.simbest.boot.base.annotations.AnnotationUtils;
 import com.simbest.boot.base.repository.Condition;
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import com.simbest.boot.sys.model.SysCustomField;
 import com.simbest.boot.sys.repository.SysCustomFieldRepository;
 import com.simbest.boot.sys.service.ISysCustomFieldService;
@@ -33,9 +32,6 @@ public class SysCustomFieldService implements ISysCustomFieldService {
 
     @Autowired
     private AnnotationUtils annotationUtils;
-
-    @Autowired
-    private SysUserInfoFullService userService;
 
     @Override
     public Map<String, String> getFieldClassifyMap() {

@@ -3,8 +3,6 @@ package com.simbest.boot.sys.service.impl;
 
 import com.simbest.boot.base.repository.Condition;
 import com.simbest.boot.base.service.impl.GenericService;
-import com.simbest.boot.base.service.impl.LogicService;
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
 import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.repository.SysDictRepository;
 import com.simbest.boot.sys.service.ISysDictService;
@@ -18,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SysDictService extends GenericService<SysDict,Long> implements ISysDictService {
+public class SysDictService extends GenericService<SysDict, Integer> implements ISysDictService {
 
     @Autowired
     private SysDictRepository dictRepository;
@@ -26,48 +24,13 @@ public class SysDictService extends GenericService<SysDict,Long> implements ISys
     @Autowired
     private ISysDictValueService dictValueService;
 
-    @Autowired
-    private SysUserInfoFullService userService;
-
     @Override
-    public int updateEnableByIds(Boolean enabled, List<Long> ids) {
-        for (Long dictId : ids) {
-            SysDict dict = findById(dictId);
-            if (dict == null) {
-                continue;
-            }
-            dict.setEnabled(enabled);
-            dictRepository.save(dict);
-            dictValueService.updateEnableByDictId(enabled, dictId);
-            List<SysDict> list = findByParentId(dictId);
-            if (list.size() > 0) {
-                updateEnable(enabled, list);
-            }
-        }
-        return 1;
-    }
-
-    public int updateEnable(boolean enabled, List<SysDict> dicts) {
-        int ret = 0;
-        for (SysDict dict : dicts) {
-            dict.setEnabled(enabled);
-            dictRepository.save(dict);
-            dictValueService.updateEnableByDictId(enabled, dict.getId());
-            List<SysDict> list = findByParentId(dict.getId());
-            if (list.size() > 0) {
-                updateEnable(enabled, list);
-            }
-        }
-        return ret;
-    }
-
-    @Override
-    public List<SysDict> findByParentId(Long parentId) {
+    public List<SysDict> findByParentId(Integer parentId) {
         return dictRepository.findByParentId(parentId);
     }
 
     @Override
-    public SysDict findById(Long id) {
+    public SysDict findById(Integer id) {
         return dictRepository.findById(id).orElse(null);
     }
 

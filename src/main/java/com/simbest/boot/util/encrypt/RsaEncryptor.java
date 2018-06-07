@@ -14,6 +14,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,9 +67,14 @@ public class RsaEncryptor extends AbstractEncryptor {
     }
 
     private String getKeyFromFile(String filePath) throws Exception {
-        ClassPathResource resource = new ClassPathResource(filePath);
-        InputStream inputStream = resource.getInputStream();
-        BufferedReader bufferedReader =new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader bufferedReader = null;
+        try {
+            ClassPathResource resource = new ClassPathResource(filePath);
+            InputStream inputStream = resource.getInputStream();
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        } catch (FileNotFoundException e){
+            bufferedReader = new BufferedReader(new FileReader(ResourceUtils.getFile(filePath)));
+        }
         String line = null;
         List<String> list = new ArrayList<String>();
         while ((line = bufferedReader.readLine()) != null) {

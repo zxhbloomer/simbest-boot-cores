@@ -3,8 +3,8 @@
  */
 package com.simbest.boot.security.auth.authentication.sso.impl;
 
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
-import com.simbest.boot.security.auth.repository.SysUserInfoFullRepository;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ public class Des3SsoAuthenticationServiceImpl implements SsoAuthenticationServic
     private Des3Encryptor encryptor;
 
     @Autowired
-    private SysUserInfoFullRepository userRepository;
+    private IAuthService authService;
 
     /**
      * 从请求中获取用户名
@@ -39,7 +39,7 @@ public class Des3SsoAuthenticationServiceImpl implements SsoAuthenticationServic
             username = encryptor.decrypt(username);
             log.debug("Actually get username from request with: {}", username);
             if(StringUtils.isNotEmpty(username)){
-                if(userRepository.findByUsername(username) == null){
+                if(authService.findByUsername(username) == null){
                     username = null;
                 }
             }

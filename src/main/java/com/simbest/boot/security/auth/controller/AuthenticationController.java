@@ -2,7 +2,7 @@ package com.simbest.boot.security.auth.controller;
 
 
 import com.simbest.boot.base.web.response.JsonResponse;
-import com.simbest.boot.security.auth.service.SysUserInfoFullService;
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +30,14 @@ public class AuthenticationController {
     private Des3Encryptor encryptor;
 
     @Autowired
-    private SysUserInfoFullService sysUserInfoService;
+    private IAuthService authService;
 
     @PostMapping("/validate")
     public JsonResponse validate(@RequestParam String username) {
         if(StringUtils.isNotEmpty(username)){
             username = encryptor.decrypt(username);
             if(StringUtils.isNotEmpty(username)) {
-                UserDetails userDetails = sysUserInfoService.loadUserByUsername(username);
+                UserDetails userDetails = authService.loadUserByUsername(username);
                 if (userDetails != null) {
                     UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
                             userDetails.getPassword(), userDetails.getAuthorities());

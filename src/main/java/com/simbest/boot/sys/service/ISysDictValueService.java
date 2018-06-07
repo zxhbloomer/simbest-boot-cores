@@ -11,22 +11,15 @@ import java.util.Map;
 
 public interface ISysDictValueService {
 
-    int updateEnableByDictId(boolean enabled, Long dictId);
+    int updateEnable(boolean enabled, Integer dictValueId);
 
-    int updateEnable(boolean enabled, Long dictValueId);
+    SysDictValue findById(Integer Id);
 
-
-    List<SysDictValue> findByDictId(Long dictId);
-
-    Map<Long, SysDictValue> findByDictIdForKV(Long dictId);
-
-    SysDictValue findById(Long Id);
-
-    List<SysDictValue> findByParentId(Long parentId);
+    List<SysDictValue> findByParentId(Integer parentId);
 
     SysDictValue save(SysDictValue dictValue);
 
-    void deleteById(Long id);
+    void deleteById(Integer id);
 
 
     /**

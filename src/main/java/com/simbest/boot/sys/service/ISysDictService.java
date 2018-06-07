@@ -7,15 +7,12 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
-public interface ISysDictService extends IGenericService<SysDict,Long>{
-
-    int updateEnableByIds(Boolean enabled, List<Long> ids);
-
-    List<SysDict> findByParentId(Long parentId);
+public interface ISysDictService extends IGenericService<SysDict, Integer> {
+    List<SysDict> findByParentId(Integer parentId);
     List<SysDict> findByEnabled(Boolean enabled);
     List<SysDict> findByAll();
 
-    SysDict  findById(Long Id);
+    SysDict  findById(Integer Id);
 
     SysDict save(SysDict dict);
 
