@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <strong>Title</strong> : BaseRepository.java<br>
@@ -168,6 +170,56 @@ public interface BaseRepository<T, ID extends Serializable> extends JpaRepositor
 			return cb.and(list.toArray(p));
 		};
 	}
+
+    /**
+     * 根据更新对象的数据更新原始对象
+     *
+     * 1.基于Spring Data JPA的特性，从数据库取出来的对象，只要修改了其字段便是修改了数据库。
+     * 2.函数形参一般情况下都是引用传递
+     * 3.getDeclaredMethods可以获得所有public修饰的方法
+     * 4.Method.invoke(对象, 参数)可以执行指定对象的指定方法
+     * 5.原理就是：调用newObject的getOOXX方法获取该值，判断不为空的话，调用rawObject的setOOXX方法，实现改变rawObject的值
+     * 6.一次遍历即可完成更新操作，对任意对象均可实现更新
+     *
+     * @param rawObject   原始对象
+     * @param newObject   更新对象
+     * @return
+     */
+    default boolean updateNotNullField(Object rawObject, Object newObject) {
+        //如果两个对象不一致。不进行更新字段值的操作
+        if (rawObject.getClass().getName() != newObject.getClass().getName()) {
+            return false;
+        }
+        //获取原始对象中的所有public方法
+        Method[] methods = rawObject.getClass().getDeclaredMethods();
+        //用于提取不包含指定关键词的方法
+        String regExpression = "^(get)(?!Id)(\\w+)";
+        Pattern pattern = Pattern.compile(regExpression);
+        Matcher m;
+        try {
+            for (Method method : methods) {
+                m = pattern.matcher(method.getName());
+                //正则匹配以get开头，后面不能匹配Id、CreateTime这两个单词的方法
+                if (m.find()) {
+                    Object o = method.invoke(newObject, null);
+                    //忽略值为空的字段
+                    if (o == null) {
+                        continue;
+                    }
+                    //取出get方法名后面的字段名
+                    String fieldName = m.group(2);
+                    //找到该字段名的set方法
+                    Method rawMethod = rawObject.getClass().getMethod("set" + fieldName, method.getReturnType());
+                    //调用实体对象的set方法更新字段值
+                    rawMethod.invoke(rawObject, o);
+                }
+            }
+        }catch ( InvocationTargetException | IllegalAccessException | NoSuchMethodException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+
 
 	/**
 	 * 在这里封装一个单表查询的方法（Condition）
