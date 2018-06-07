@@ -33,4 +33,10 @@ public interface ILogicService<T extends LogicModel,PK extends Serializable> ext
      * @return
      */
     int deleteLogic(T o);
+
+    /**
+     * 批量逻辑删除
+     * @param iterable
+     */
+    void deleteAllLogic ( Iterable<? extends T> iterable );
 }

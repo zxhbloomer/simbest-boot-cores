@@ -72,8 +72,8 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         return flag;
     }
 
-    @Override
-    public void deleteAll ( Iterable<? extends T> iterable ) {
+
+    public void deleteAllLogic ( Iterable<? extends T> iterable ) {
         for(T t:iterable){
             wrapUpdateInfo(t);
             super.save( t );
