@@ -41,4 +41,5 @@ public interface ILogicService<T extends LogicModel,PK extends Serializable> ext
      * @param localDateTime
      */
     void scheduleLogicDelete(T entity, LocalDateTime localDateTime);
+
 }

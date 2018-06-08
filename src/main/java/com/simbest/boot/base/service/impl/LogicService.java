@@ -41,24 +41,19 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         super(logicRepository);
         this.logicRepository = logicRepository;
     }
+
     @Override
     public long count ( ) {
         log.debug("@Logic Repository Service count null param");
         return logicRepository.countActive();
     }
 
-    /**
-     * @see
-     */
     @Override
     public long count ( Specification<T> specification ) {
         log.debug("@Logic Repository Service count Specification param");
         return logicRepository.countActive( specification );
     }
 
-    /**
-     * @see
-     */
     @Override
     public boolean exists ( PK id ) {
         log.debug("@Logic Repository Service exists object by id: " + id);
@@ -158,11 +153,10 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     @Transactional
     public void deleteAllByIds ( Iterable<? extends PK> pks ) {
         log.debug("@Logic Repository Service deleteAllByIds Iterable param");
-        Set<T> psSet = Sets.newHashSet();
         for(PK pk: pks){
-            psSet.add(super.findById(pk));
+            deleteById(pk);
         }
-        deleteAll( psSet );
+
     }
 
     @Override
