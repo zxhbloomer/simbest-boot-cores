@@ -17,13 +17,15 @@ public class ApplicationConstants {
     public static final String Linux = "Linux";
     public static final String Windows = "Windows";
 
-    public static final String PACKAGE_NAME = "com.simbest";
-    public static final String HOME_PAGE = "/index";
+    public static final String PACKAGE_NAME = "com.simbest.boot";
+    public static final String HOME_PAGE = "/";
     public static final String LOGIN_PAGE = "/login";
     public static final String LOGIN_ERROR_PAGE = "/login?loginError";
     public static final String LOGIN_SESSION_CODE = "validateCode";
     public static final String LOGIN_VALIDATE_CODE = "verifyCode";
 
+    public static final int DEFAULT_PAGE = 1;
+    public static final int DEFAULT_SIZE = 100;
 
     public final static String HTTPPROTOCAL = "http://";
     public final static String HTTP = "http";

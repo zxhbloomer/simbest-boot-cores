@@ -7,6 +7,8 @@ package com.simbest.boot.base.exception;
 import com.google.common.collect.Maps;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.ErrorCodeConstants;
+import com.simbest.boot.exceptions.InsertExistObjectException;
+import com.simbest.boot.exceptions.UpdateNotExistObjectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -47,47 +49,13 @@ public final class GlobalExceptionRegister {
                 JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value()).error("Attachment size exceeds the allowable limit!")
                         .build());
 
-//
-//        errorMap.put("800", "参数不合法");
-//        errorMap.put("801", "无效的Token");
-//        errorMap.put("802", "解密失败,密文数据已损坏");
-//        errorMap.put("803", "请重新登录");
-//
-//        errorMap.put("1000", "[服务器]运行时异常");
-//        errorMap.put("1001", "[服务器]空值异常");
-//        errorMap.put("1002", "[服务器]数据类型转换异常");
-//        errorMap.put("1003", "[服务器]IO异常");
-//        errorMap.put("1004", "[服务器]未知方法异常");
-//        errorMap.put("1005", "[服务器]数组越界异常");
-//        errorMap.put("1006", "[服务器]网络异常");
-//
-//        errorMap.put("1010", "数据已失效");
-//        errorMap.put("1011", "数据违法唯一性约束");
-//        errorMap.put("1012", "无数据返回");
-//        errorMap.put("1013", "多条数据返回");
-//        errorMap.put("1014", "缺少参数或值为空");
-//        errorMap.put("1014", "参数格式不合法");
-//
-//        errorMap.put("1020", "用户未注册");
-//        errorMap.put("1021", "用户已注册");
-//        errorMap.put("1022", "用户未绑定");
-//        errorMap.put("1023", "用户已失效");
-//        errorMap.put("1024", "用户名或密码错误");
-//        errorMap.put("1025", "用户帐号冻结");
-//
-//        errorMap.put("1020", "验证码发送失败");
-//        errorMap.put("1021", "验证码失效");
-//        errorMap.put("1022", "验证码错误");
-//        errorMap.put("1023", "验证码不可用");
-//        errorMap.put("1024", "短信平台异常");
-//
-//        errorMap.put("1030", "邮件发送错误");
-//        errorMap.put("1031", "邮箱地址不存在");
-//        errorMap.put("1032", "邮箱地址格式错误");
-//        errorMap.put("1033", "手机号码不存在");
-//        errorMap.put("1034", "手机号码格式错误");
-//        errorMap.put("1035", "电话号码不存在");
-//        errorMap.put("1036", "电话号码格式错误");
+        errorMap.put(InsertExistObjectException.class,
+                JsonResponse.builder().errcode(HttpStatus.INTERNAL_SERVER_ERROR.value()).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).error("Cant not insert an exist object.")
+                        .build());
+        errorMap.put(UpdateNotExistObjectException.class,
+                JsonResponse.builder().errcode(HttpStatus.INTERNAL_SERVER_ERROR.value()).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).error("Cant not update a already exist object.")
+                        .build());
+
     }
 
     private GlobalExceptionRegister() {
@@ -103,8 +71,10 @@ public final class GlobalExceptionRegister {
         JsonResponse response = errorMap.get(e.getClass());
         if (response == null) {
             response = JsonResponse.defaultErrorResponse();
+            response.setData(ErrorCodeConstants.UNKNOW_ERROR);
+        } else {
+            response.setData(e.getMessage());
         }
-        response.setData(e.getMessage());
         return response;
     }
 }

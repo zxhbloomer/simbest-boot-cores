@@ -3,6 +3,7 @@ package com.simbest.boot.base.service;
 import com.simbest.boot.base.model.LogicModel;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <strong>Title : 业务实体通用服务层</strong><br>
@@ -25,12 +26,19 @@ public interface ILogicService<T extends LogicModel,PK extends Serializable> ext
      * @param id
      * @return
      */
-    int updateEnable(boolean enabled, PK id);
+    T updateEnable(PK id, boolean enabled);
 
     /**
-     * 删除记录，并且更新更新人信息
-     * @param o
-     * @return
+     * 根据设定时间，定时删除
+     * @param id
+     * @param localDateTime
      */
-    int deleteLogic(T o);
+    void scheduleLogicDelete(PK id, LocalDateTime localDateTime);
+
+    /**
+     * 根据设定时间，定时删除
+     * @param entity
+     * @param localDateTime
+     */
+    void scheduleLogicDelete(T entity, LocalDateTime localDateTime);
 }

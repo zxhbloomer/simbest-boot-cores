@@ -3,17 +3,22 @@
  */
 package com.simbest.boot.util;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.simbest.boot.base.exception.Exceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,6 +81,57 @@ public class ObjectUtil extends org.apache.commons.lang3.ObjectUtils {
     }
 
     /**
+     * 获取持久化对象的主键Id字段值
+     * @param obj
+     * @return
+     */
+    public static Object getEntityIdVaue(Object obj) {
+        try {
+            Field id = getEntityIdField(obj);
+            id.setAccessible(true);
+            return id.get(obj);
+        } catch (IllegalAccessException e) {
+            Exceptions.printException(e);
+        }
+        return null;
+    }
+
+    /**
+     * 获取被Column标注的持久化字段
+     * @param obj
+     * @return
+     */
+    public static Set<Field> getEntityPersistentFieldExceptId(Object obj) {
+        Set<Field> fields = Sets.newHashSet();
+        for (Field field : getAllFields(obj.getClass())) {
+            if (field.isAnnotationPresent(Column.class)) {
+                fields.add(field);
+            }
+        }
+        return fields;
+    }
+
+    /**
+     * 获取被Column标注的持久化字段值
+     * @param obj
+     * @return
+     */
+    public static Map<String, Object> getEntityPersistentFieldValueExceptId(Object obj) {
+        Map<String, Object> persistentFieldValues = Maps.newHashMap();
+        Set<Field> persistentFields = getEntityPersistentFieldExceptId(obj);
+        final BeanWrapper src = new BeanWrapperImpl(obj);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+        Set<String> propertyNames = new HashSet<String>();
+        for (PropertyDescriptor pd : pds) {
+            Field f = getIndicateField(obj, pd.getName());
+            if(persistentFields.contains(f) && src.getPropertyValue(pd.getName()) != null){
+                persistentFieldValues.put(pd.getName(), src.getPropertyValue(pd.getName()));
+            }
+        }
+        return persistentFieldValues;
+    }
+
+    /**
      * 获取指定字段的Field
      * @param obj
      * @param fieldName
@@ -90,17 +146,6 @@ public class ObjectUtil extends org.apache.commons.lang3.ObjectUtils {
             }
         }
         return indicateField;
-    }
-
-    public static Object getEntityIdVaue(Object obj) {
-        try {
-            Field id = getEntityIdField(obj);
-            id.setAccessible(true);
-            return id.get(obj);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**

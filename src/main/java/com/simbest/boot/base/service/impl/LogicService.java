@@ -1,14 +1,23 @@
 package com.simbest.boot.base.service.impl;
 
+import com.google.common.collect.Sets;
 import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.ILogicService;
-import com.simbest.boot.util.DateUtil;
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <strong>Title : 业务实体通用服务层</strong><br>
@@ -32,71 +41,152 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         super(logicRepository);
         this.logicRepository = logicRepository;
     }
+    @Override
+    public long count ( ) {
+        log.debug("@Logic Repository Service count null param");
+        return logicRepository.countActive();
+    }
 
     /**
      * @see
-     * @param enabled
-     * @param id
-     * @return
      */
     @Override
-    public int updateEnable ( boolean enabled, PK id ) {
-        T obj =  super.getById( id );
+    public long count ( Specification<T> specification ) {
+        log.debug("@Logic Repository Service count Specification param");
+        return logicRepository.countActive( specification );
+    }
+
+    /**
+     * @see
+     */
+    @Override
+    public boolean exists ( PK id ) {
+        log.debug("@Logic Repository Service exists object by id: " + id);
+        return logicRepository.existsById( id );
+    }
+
+    @Override
+    public T getOne ( PK id ){
+        log.debug("@Logic Repository Service getOne");
+        return logicRepository.findOneActive(id);
+    }
+
+    @Override
+    public Page<T> findAll ( ) {
+        log.debug("@Logic Repository Service findAll");
+        return logicRepository.findAllActive();
+    }
+
+    @Override
+    public Page<T>  findAll ( Pageable pageable ) {
+        log.debug("@Logic Repository Service findAll object PageSize:" + pageable.getPageSize() + ":PageNumber:" + pageable.getPageNumber());
+        return logicRepository.findAllActive( pageable );
+    }
+
+    @Override
+    public Page<T>  findAll ( Sort sort ) {
+        log.debug("@Logic Repository Service object by Sort");
+        return logicRepository.findAllActive(PageRequest.of(ApplicationConstants.DEFAULT_PAGE, ApplicationConstants.DEFAULT_SIZE, sort));
+    }
+
+    @Override
+    public List<T> findAllByIDs(Iterable<PK> ids) {
+        log.debug("@Logic Repository Service object by findAllByIDs");
+        return logicRepository.findAllActive(ids);
+    }
+
+    @Override
+    public Page<T> findAll (Specification<T> conditions, Pageable pageable ) {
+        log.debug("@Logic Repository Service findAll");
+        return logicRepository.findAllActive(conditions, pageable);
+    }
+
+    @Override
+    @Transactional
+    public T updateEnable (PK id, boolean enabled) {
+        T obj =  super.findById( id );
         if (obj == null) {
-            return 0;
+            return null;
         }
         obj.setEnabled( enabled );
-        wrapUpdateStateInfo(obj);
-        logicRepository.save( obj );
-        return 1;
-    }
-
-    public T save ( T o) {
-        wrapCreateInfo( o );
-        return logicRepository.save( o );
-    }
-
-    /**
-     * @see
-     * @param o
-     * @return
-     */
-    public int deleteLogic(T o) {
-        int flag = 0;
-        if(!StringUtils.isEmpty(o)){
-            log.debug("@Logic Service delete objects by object: "+ o);
-            wrapUpdateInfo(o);
-            logicRepository.save( o );
-            flag = 1;
-        }
-        return flag;
+        return update(obj);
     }
 
     @Override
+    @Transactional
+    public T insert ( T o) {
+        wrapCreateInfo( o );
+        return logicRepository.save(o);
+    }
+
+    @Override
+    @Transactional
+    public T update ( T o) {
+        wrapUpdateInfo( o );
+        return logicRepository.save(o);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById ( PK id ) {
+        log.debug("@Logic Repository Service deleteById object by id: " + id);
+        logicRepository.logicDelete( id );
+    }
+
+    @Override
+    @Transactional
+    public void delete ( T o ) {
+        log.debug("@Logic Repository Service delete object: " + o);
+        logicRepository.logicDelete( o );
+    }
+
+    @Override
+    @Transactional
     public void deleteAll ( Iterable<? extends T> iterable ) {
-        for(T t:iterable){
-            wrapUpdateInfo(t);
-            super.save( t );
+        log.debug("@Logic Repository Service deleteAll Iterable param");
+        logicRepository.logicDelete( iterable );
+    }
+
+    @Override
+    @Transactional
+    public void deleteAll ( ) {
+        log.debug("@Logic Repository Service deleteAll null param");
+        logicRepository.logicDeleteAll();
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllByIds ( Iterable<? extends PK> pks ) {
+        log.debug("@Logic Repository Service deleteAllByIds Iterable param");
+        Set<T> psSet = Sets.newHashSet();
+        for(PK pk: pks){
+            psSet.add(super.findById(pk));
         }
+        deleteAll( psSet );
     }
 
-    protected void wrapUpdateStateInfo(T o){
-        String userName = SecurityUtils.getCurrentUserName();
-        o.setModifier(userName);
-        o.setModifiedTime(DateUtil.getCurrent());
+    @Override
+    public void scheduleLogicDelete(PK id, LocalDateTime localDateTime) {
+        log.debug("@Logic Repository Service schedule logic delete object with id: %s at %s", id, localDateTime.now());
+        logicRepository.scheduleLogicDelete(id, localDateTime);
     }
 
-    protected void wrapUpdateInfo(T o) {
-        String userName = SecurityUtils.getCurrentUserName();
-        o.setModifier(userName);
-        o.setModifiedTime(DateUtil.getCurrent());
+    @Override
+    public void scheduleLogicDelete(T entity, LocalDateTime localDateTime) {
+        log.debug("@Logic Repository Service schedule logic delete object : %s at %s", entity, localDateTime.now());
+        logicRepository.scheduleLogicDelete(entity, localDateTime);
     }
 
     protected void wrapCreateInfo(T o) {
         String userName = SecurityUtils.getCurrentUserName();
         o.setCreator(userName);
-        o.setCreatedTime(DateUtil.getCurrent());
-        o.setModifiedTime(DateUtil.getCurrent());
         wrapUpdateInfo(o);
     }
+
+    protected void wrapUpdateInfo(T o) {
+        String userName = SecurityUtils.getCurrentUserName();
+        o.setModifier(userName);
+    }
+
+
 }

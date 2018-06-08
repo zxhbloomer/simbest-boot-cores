@@ -1,5 +1,7 @@
 package com.simbest.boot.base.repository;
 
+import com.simbest.boot.constants.ApplicationConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,13 +32,27 @@ import java.util.regex.Pattern;
  * <strong>Copyright (C) ___ Ltd.</strong><br>
  *
  * @param <T>
- * @param <ID>
+ * @param <PK>
  *
  * @author baimengqi baimengqi@simbest.com.cn
  * @version v0.0.1
  */
 @NoRepositoryBean
-public interface BaseRepository<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
+public interface BaseRepository<T, PK extends Serializable> extends JpaRepository<T, PK>, JpaSpecificationExecutor<T> {
+
+    default Pageable getPageable(){
+        return getPageable(ApplicationConstants.DEFAULT_PAGE, ApplicationConstants.DEFAULT_SIZE);
+    }
+
+    /**
+     *
+     * @param page       条件-当前页码，必须大于0，从1开始
+     * @param size       条件-每页条数，必须大于0，每页最多不超过100
+     * @return
+     */
+    default Pageable getPageable(int page, int size){
+        return getPageable(page, size, null, null);
+    }
 
 	/**
 	 * 在这里封装一个分页对象
@@ -55,7 +71,7 @@ public interface BaseRepository<T, ID extends Serializable> extends JpaRepositor
 
 		Pageable pageable;
 
-		if (direction != null && !direction.equals("") && properties != null && !properties.equals("")) {
+		if (StringUtils.isNotEmpty(direction) && StringUtils.isNotEmpty(properties)) {
 			// 生成指定排序规则-顺序
 			Sort.Direction sortDirection;
 			String[] sortProperties;

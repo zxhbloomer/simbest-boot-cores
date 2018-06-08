@@ -38,27 +38,12 @@ public class SystemService<T extends SystemModel,PK extends Serializable> extend
     }
 
     @Override
-    public T save ( T o) {
-        wrapCreateInfo( o );
-        return systemRepository.save( o );
-    }
-
-    @Override
     public <S extends T> List<S> saveAll ( Iterable<? extends T> iterable ) {
         List<S> dataList = Lists.newArrayList();
         for(T t:iterable){
-            dataList.add((S)this.save( t ));
+            dataList.add((S)this.insert( t ));
         }
         return dataList;
     }
 
-    protected void wrapUpdateInfo( T o) {
-        o.setModifiedTime(DateUtil.getCurrent());
-    }
-
-    protected void wrapCreateInfo(T o) {
-        o.setCreatedTime(DateUtil.getCurrent());
-        o.setModifiedTime(DateUtil.getCurrent());
-        wrapUpdateInfo(o);
-    }
 }

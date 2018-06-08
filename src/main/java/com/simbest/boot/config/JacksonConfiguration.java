@@ -2,6 +2,7 @@ package com.simbest.boot.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -24,6 +25,17 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class JacksonConfiguration {
+
+
+    @Bean
+    public Module JavaTimeModule() {
+        return new JavaTimeModule();
+    }
+
+    @Bean
+    public Module Jdk8Module() {
+        return new Jdk8Module();
+    }
 
     @Bean
     public ObjectMapper objectMapper() {

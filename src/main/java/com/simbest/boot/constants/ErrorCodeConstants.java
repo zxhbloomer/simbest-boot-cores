@@ -15,4 +15,6 @@ public class ErrorCodeConstants {
     public static final String USERNAME_NOT_FOUND = "账号不存在";
     public static final String LOGIN_ERROR_INVALIDATE_CODE = "验证码错误";
     public static final String LOGIN_ERROR_BAD_CREDENTIALS = "密码校验错误";
+
+    public static final String UNKNOW_ERROR = "未知异常";
 }

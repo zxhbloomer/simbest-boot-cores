@@ -1,6 +1,8 @@
 package com.simbest.boot.base.service;
 
 import com.simbest.boot.base.model.GenericModel;
+import com.simbest.boot.base.repository.Condition;
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,28 +25,82 @@ import java.util.List;
  *          修改人 修改日期 修改描述<br>
  *          -------------------------------------------<br>
  */
-public interface IGenericService <T extends GenericModel,PK extends Serializable>{
+public interface IGenericService <T extends GenericModel,PK extends Serializable> {
 
-    T getById ( PK id );
+    Pageable getPageable(int page, int size, String direction, String properties);
 
-    /**
-     * getOne取出的是实体的引用
-     * @param id
-     * @return a reference to the entity with the given identifier.
-     */
-    T getOne ( PK id );
+    Specification<T> getSpecification(Condition conditions);
+
+    long count();
+
+    long count(Specification<T> specification);
 
     /**
      * 根据id判断实体是否存在
+     *
      * @param id
      * @return
      */
     boolean exists(PK id);
 
-    T save( T o );
+    /**
+     * getOne取出的是实体的引用
+     *
+     * @param id
+     * @return a reference to the entity with the given identifier.
+     */
+    T getOne(PK id);
+
+    T findById(PK id);
+
+    /**
+     * 查询全部记录
+     *
+     * @param <S>
+     * @return
+     */
+    Page<T> findAll();
+
+    /**
+     * 分页查询（含排序功能）
+     *
+     * @param pageable
+     * @return
+     */
+    Page<T> findAll(Pageable pageable);
+
+    /**
+     * 根据排序字段查询全部记录
+     *
+     * @param sort 排序字段
+     * @return
+     */
+    Page<T> findAll(Sort sort);
+
+    /**
+     * 根据主键查询
+     *
+     * @param ids
+     * @return
+     */
+    List<T> findAllByIDs(Iterable<PK> ids);
+
+    /**
+     * 分页查询（含排序功能）
+     *
+     * @param conditions
+     * @param pageable
+     * @return
+     */
+    Page<T> findAll(Specification<T> conditions, Pageable pageable);
+
+    T insert(T o);
+
+    T update(T o);
 
     /**
      * 强制执行持久化
+     *
      * @param o
      * @return
      */
@@ -52,59 +108,30 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
 
     /**
      * 保存集合(save 待区分)
+     *
      * @param iterable
      * @param <S>
      * @return
      */
-    <S extends T> List<S> saveAll( Iterable<? extends T> iterable);
-
-    /**
-     * 分页查询（含排序功能）
-     * @param conditions
-     * @param pageable
-     * @return
-     */
-    Page<T>  findAll ( Specification<T> conditions, Pageable pageable);
-
-    /**
-     * 分页查询（含排序功能）
-     * @param pageable
-     * @return
-     */
-    Page<T> findAll ( Pageable pageable );
-
-    /**
-     * 查询全部记录
-     * @param <S>
-     * @return
-     */
-    List<T> getAll();
-
-    /**
-     * 根据排序字段查询全部记录
-     * @param sort  排序字段
-     * @return
-     */
-    List<T> getAllBySort(Sort sort);
-
-    long count();
-
-    long count(Specification<T> specification);
+    <S extends T> Iterable<S> saveAll(Iterable<? extends T> iterable);
 
     /**
      * 根据主键删除数据
+     *
      * @param id
      */
     void deleteById(PK id);
 
     /**
      * 根据传入的实体对象属性删除数据
+     *
      * @param o
      */
     void delete(T o);
 
     /**
      * 根据传入的实体对象属性批量删除
+     *
      * @param iterable
      */
     void deleteAll(Iterable<? extends T> iterable);
@@ -116,7 +143,9 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
 
     /**
      * 删除一个实体集合
+     *
      * @param entities
      */
-    void deleteInBatch(Iterable<T> entities);
+    void deleteAllByIds(Iterable<? extends PK> pks);
+
 }

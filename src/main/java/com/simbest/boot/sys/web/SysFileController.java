@@ -108,11 +108,7 @@ public class SysFileController {
             SysFile sysFile = SysFile.builder().fileName(m.getFileName()).fileType(AppFileUtil.getFileSuffix(m.getFileName())).filePath(m.getFilePath())
                     .fileSize(m.getFileSize()).application(application).moudule(moudule).build();
             sysFile.setCreator(SecurityUtils.getCurrentUserName());
-            sysFile.setCreatedTime(new Date());
             sysFile.setModifier(SecurityUtils.getCurrentUserName());
-            sysFile.setModifiedTime(new Date());
-            sysFile.setEnabled(true);
-            sysFile.setRemoved(false);
             sysFiles.add(sysFile);
         }
         return fileService.saveAll(sysFiles);

@@ -58,7 +58,6 @@ public class SysDictValueService implements ISysDictValueService {
     @Override
     public void deleteById(Integer id) {
         SysDictValue dictValue = findById(id);
-        dictValue.setRemoved(true);
         save(dictValue);
         List<SysDictValue> list = findByParentId(id);
         for (SysDictValue v : list) {

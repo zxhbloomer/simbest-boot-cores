@@ -18,7 +18,7 @@ import java.io.Serializable;
  * -------------------------------------------<br>
  */
 @NoRepositoryBean
-public interface LogicRepository<T, PK extends Serializable> extends SystemRepository<T, PK>{
+public interface LogicRepository<T, PK extends Serializable> extends LogicDeleteRepository<T, PK>, SystemRepository<T, PK>{
 
 
 }

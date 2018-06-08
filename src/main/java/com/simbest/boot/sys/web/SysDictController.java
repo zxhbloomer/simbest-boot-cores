@@ -3,17 +3,15 @@
  */
 package com.simbest.boot.sys.web;
 
-import com.google.common.collect.Maps;
+import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.service.ISysDictService;
 import com.simbest.boot.util.redis.RedisCacheUtils;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +29,17 @@ import java.util.Map;
  * 作者: zlxtk
  * 时间: 2018/2/22  10:14
  */
-@Slf4j
+
 @RestController
 @RequestMapping("/sys/dict")
-public class SysDictController {
+public class SysDictController extends LogicController<SysDict, Integer> {
+
+    private ISysDictService dictService;
 
     @Autowired
-    private ISysDictService dictService;
+    public SysDictController(ISysDictService dictService) {
+        super(dictService);
+    }
 
 
     /**

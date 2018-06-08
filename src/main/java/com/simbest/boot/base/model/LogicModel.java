@@ -3,13 +3,16 @@
  */
 package com.simbest.boot.base.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
 
 /**
  * 用途：逻辑实体
@@ -29,10 +32,8 @@ public abstract class LogicModel extends SystemModel {
 
     @Setter
     @Getter
-    @NonNull
-    @Column(nullable = false)
-    //是否逻辑删除
-    protected Boolean removed = false;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    protected LocalDateTime removedTime;
 
     @Setter
     @Getter

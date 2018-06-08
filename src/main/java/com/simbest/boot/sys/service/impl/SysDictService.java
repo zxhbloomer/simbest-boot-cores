@@ -2,7 +2,7 @@ package com.simbest.boot.sys.service.impl;
 
 
 import com.simbest.boot.base.repository.Condition;
-import com.simbest.boot.base.service.impl.GenericService;
+import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.repository.SysDictRepository;
 import com.simbest.boot.sys.service.ISysDictService;
@@ -16,13 +16,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SysDictService extends GenericService<SysDict, Integer> implements ISysDictService {
+public class SysDictService extends LogicService<SysDict, Integer> implements ISysDictService {
 
-    @Autowired
     private SysDictRepository dictRepository;
 
     @Autowired
     private ISysDictValueService dictValueService;
+
+    @Autowired
+    public SysDictService(SysDictRepository dictRepository ) {
+        super(dictRepository);
+        this.dictRepository = dictRepository;
+    }
 
     @Override
     public List<SysDict> findByParentId(Integer parentId) {

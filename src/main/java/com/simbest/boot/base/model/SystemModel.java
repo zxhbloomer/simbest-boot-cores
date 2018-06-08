@@ -15,6 +15,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -29,20 +30,18 @@ public abstract class SystemModel extends GenericModel {
     //创建时间
     @Setter @Getter
     @NonNull
-    @Column(nullable = true, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
     @CreationTimestamp// 创建时自动更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createdTime;
+    private LocalDateTime createdTime;
 
     @Setter
     @Getter
     @NonNull
-    @Column(nullable = true)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     @UpdateTimestamp// 更新时自动更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     //最后更新时间
-    private Date modifiedTime;
+    private LocalDateTime modifiedTime;
 
 }

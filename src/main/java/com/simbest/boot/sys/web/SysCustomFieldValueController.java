@@ -88,11 +88,7 @@ public class SysCustomFieldValueController {
         List<SysCustomFieldValue> fields =  new ArrayList<>(  );
         for(SysCustomFieldValue field  :fieldValuess){
             field.setCreator( SecurityUtils.getCurrentUserName());
-            field.setCreatedTime(new Date());
             field.setModifier(SecurityUtils.getCurrentUserName());
-            field.setModifiedTime(new Date());
-            field.setEnabled(true);
-            field.setRemoved(false);
             fields.add( field );
         }
           fieldValueService.saveAll(fields);
@@ -106,12 +102,8 @@ public class SysCustomFieldValueController {
         List<SysCustomFieldValue> fields =  new ArrayList<>(  );
         for(SysCustomFieldValue field  :fieldValuess){
             field.setModifier(SecurityUtils.getCurrentUserName());
-            field.setModifiedTime(new Date());
             if(null == field.getId()){
                 field.setCreator( SecurityUtils.getCurrentUserName());
-                field.setCreatedTime(new Date());
-                field.setEnabled(true);
-                field.setRemoved(false);
             }
             fields.add( field );
         }
