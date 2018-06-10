@@ -5,9 +5,8 @@ package com.simbest.boot.component.task;
 
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.sys.model.SysTaskExecutedLog;
-import com.simbest.boot.sys.repository.TaskExecutedLogRepository;
+import com.simbest.boot.sys.repository.SysTaskExecutedLogRepository;
 import com.simbest.boot.util.redis.RedisDistributedLocker;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,9 +23,9 @@ public abstract class AbstractTaskSchedule {
 
     private RedisDistributedLocker distriLocker;
 
-    private TaskExecutedLogRepository repository;
+    private SysTaskExecutedLogRepository repository;
 
-    public AbstractTaskSchedule(RedisDistributedLocker distriLocker, TaskExecutedLogRepository repository){
+    public AbstractTaskSchedule(RedisDistributedLocker distriLocker, SysTaskExecutedLogRepository repository){
         this.distriLocker = distriLocker;
         this.repository = repository;
     }

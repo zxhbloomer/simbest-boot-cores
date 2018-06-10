@@ -4,7 +4,7 @@
 package com.simbest.boot.component.task;
 
 import com.mzlion.easyokhttp.HttpClient;
-import com.simbest.boot.sys.repository.TaskExecutedLogRepository;
+import com.simbest.boot.sys.repository.SysTaskExecutedLogRepository;
 import com.simbest.boot.sys.service.IHeartTestService;
 import com.simbest.boot.util.redis.RedisDistributedLocker;
 import com.simbest.boot.util.server.HostUtil;
@@ -12,14 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 /**
@@ -41,7 +37,7 @@ public class HeartTestTask extends AbstractTaskSchedule {
     private HostUtil hostUtil;
 
     @Autowired
-    public HeartTestTask(RedisDistributedLocker distriLocker, TaskExecutedLogRepository repository) {
+    public HeartTestTask(RedisDistributedLocker distriLocker, SysTaskExecutedLogRepository repository) {
         super(distriLocker, repository);
     }
 
