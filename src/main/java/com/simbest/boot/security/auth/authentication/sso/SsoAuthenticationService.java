@@ -3,7 +3,8 @@
  */
 package com.simbest.boot.security.auth.authentication.sso;
 
-import javax.servlet.http.HttpServletRequest;
+import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * 用途：单点登录验证服务
@@ -13,10 +14,17 @@ import javax.servlet.http.HttpServletRequest;
 public interface SsoAuthenticationService {
 
     /**
-     * 从请求中获取用户名
+     * 解密请求中的用户名
      * @param request 验证请求
      * @return 用户名
      */
-    String getUsername(HttpServletRequest request);
+    String decryptUsername(String username);
+
+    /**
+     * 初级认证
+     * @param authentication
+     * @return
+     */
+    SsoUsernameAuthentication attemptAuthentication(Authentication authentication);
 
 }

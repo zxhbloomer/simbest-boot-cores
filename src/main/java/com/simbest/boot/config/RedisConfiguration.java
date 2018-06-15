@@ -3,6 +3,8 @@
  */
 package com.simbest.boot.config;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.simbest.boot.constants.ApplicationConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,13 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,6 +37,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +51,9 @@ import java.util.Map;
 @EnableRedisHttpSession
 @Slf4j
 public class RedisConfiguration extends CachingConfigurerSupport {
+
+    @Autowired
+    private Environment env;
 
     @Value("${spring.redis.host}")
     private String host;
@@ -94,7 +103,16 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     }
 
     @Bean
+    public RedisClusterConfiguration redisClusterConfiguration(){
+        Map<String, Object> source = Maps.newHashMap();
+        source.put("spring.redis.cluster.nodes", env.getProperty("spring.redis.cluster.nodes"));
+        source.put("spring.redis.cluster.max-redirects", env.getProperty("spring.redis.cluster.max-redirects"));
+        return new RedisClusterConfiguration(new MapPropertySource("RedisClusterConfiguration", source));
+    }
+
+    @Bean
     public RedisConnectionFactory redisConnectionFactory() {
+        //JedisConnectionFactory connectionFactory = new JedisConnectionFactory(redisClusterConfiguration(), jedisPoolConfig());
         JedisConnectionFactory connectionFactory = new JedisConnectionFactory(jedisPoolConfig());
         connectionFactory.setUsePool(true);
         connectionFactory.setHostName(host);

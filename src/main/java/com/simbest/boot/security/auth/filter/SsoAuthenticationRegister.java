@@ -3,17 +3,14 @@
  */
 package com.simbest.boot.security.auth.filter;
 
-import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
-import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -27,41 +24,34 @@ public class SsoAuthenticationRegister {
     @Autowired
     private ApplicationContext appContext;
 
-    @Autowired
-    private IAuthService authService;
+//    /**
+//     * 尝试从HttpServletRequest获取认证用户名
+//     * @param request
+//     * @return
+//     */
+//    public String retriveFindUsername(HttpServletRequest request){
+//        Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);
+//        for(SsoAuthenticationService auth : auths.values()){
+//            String username = auth.getUsername(request);
+//            if(StringUtils.isNotEmpty(username)) {
+//               return username;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * 尝试从HttpServletRequest获取认证Token
+//     * @param request
+//     * @return
+//     */
+//    public SsoUsernameAuthentication retriveMakeToken(HttpServletRequest request){
+//        return new SsoUsernameAuthentication(request.getParameter(AuthoritiesConstants.SSO_USERNAME),
+//                request.getParameter(AuthoritiesConstants.SSO_APP_CODE));
+//    }
 
-    /**
-     * 尝试从HttpServletRequest获取认证用户名
-     * @param request
-     * @return
-     */
-    public String retriveFindUsername(HttpServletRequest request){
+    public Collection<SsoAuthenticationService> getSsoAuthenticationService(){
         Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);
-        for(SsoAuthenticationService auth : auths.values()){
-            String username = auth.getUsername(request);
-            if(StringUtils.isNotEmpty(username)) {
-               return username;
-            }
-        }
-        return null;
+        return auths.values();
     }
-
-    /**
-     * 尝试从HttpServletRequest获取认证Token
-     * @param request
-     * @return
-     */
-    public SsoUsernameAuthentication retriveMakeToken(HttpServletRequest request){
-        Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);
-        for(SsoAuthenticationService auth : auths.values()){
-            UserDetails userDetails = authService.loadUserByUsername(retriveFindUsername(request));
-            if (userDetails != null) {
-                return new SsoUsernameAuthentication(userDetails.getUsername(), userDetails.getPassword());
-            } else {
-                break;
-            }
-        }
-        return null;
-    }
-
 }

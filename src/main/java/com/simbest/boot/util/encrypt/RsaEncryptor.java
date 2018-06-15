@@ -332,17 +332,16 @@ public class RsaEncryptor extends AbstractEncryptor {
 
     public static void main(String[] args) throws Exception {
         RsaEncryptor util = new RsaEncryptor();
-        String public_key = util.getKeyFromFile("E:\\01_Work\\01_DevSpace\\worksapce\\web-apps\\workspace\\trip\\target\\classes\\certificate\\rsa\\rsa_public_key.pem");
-        String private_key = util.getKeyFromFile("E:\\01_Work\\01_DevSpace\\worksapce\\web-apps\\workspace\\trip\\target\\classes\\certificate\\rsa\\pkcs8_private_key.pem");
+        String public_key = util.getKeyFromFile("E:\\01_Work\\10_OA\\hacmcc\\01-项目库\\01-统一信息平台\\02-代码库\\04-普元电子流应用\\simbest-boot-uums\\src\\main\\resources\\certificate\\rsa\\rsa_public_key.pem");
+        String private_key = util.getKeyFromFile("E:\\01_Work\\10_OA\\hacmcc\\01-项目库\\01-统一信息平台\\02-代码库\\04-普元电子流应用\\simbest-boot-uums\\src\\main\\resources\\certificate\\rsa\\pkcs8_private_key.pem");
         util.loadPublicKey(public_key);
         util.loadPrivateKey(private_key);
-        String code = util.encrypt("public static void main(String[] args) throws Exception {\n" +
-                "        RsaEncryptor util = new RsaEncryptor();");
-        System.out.println(code);
-        System.out.println(util.decrypt(code));
+        Md5Encryptor  encryptor = new Md5Encryptor();
+        String md5 = encryptor.encryptSource("123456");
+
+        String code = util.encrypt(md5);
         System.out.println("###########################");
-        System.out.println(util.decrypt("sWhYWI38H0nlGaTnz+hRLgxUM9UkSHP+7JSSpgjBCPjuVANr+m2Owt44Jm4zroZLXKPdD79LKFLb\n" +
-                "UZNaKqCMa8TfiSTVrRh1KpBRa03NWOKTV8Ohrv4R5/R9Dm8NAF/g3hWpqZp42oOjFf+YjXsAFE+D\n" +
-                "ZzQwXRYPsA6aq9e2lmU="));
+        System.out.println(code);
+        System.out.println(util.decrypt("k9wOcGK8onngJNX4XEJcVgMWJoebU/IsV/qDFNMdhr362vvNBl6vc+hgo4R4M4yhOZvribxmHmbHLSGEY/cN0X8+VaEKnYFUD2Y0GV6xKdSHvm8IH241D2Zmcoyo/6UZzC2VuEEUUsE1Pu8zjR1cLVIVCmmrt8wnT2Om3uT74/A="));
     }
 }

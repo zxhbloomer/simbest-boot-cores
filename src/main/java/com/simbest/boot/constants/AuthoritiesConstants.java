@@ -20,4 +20,17 @@ public class AuthoritiesConstants {
     public static final String ROLE = "role";
 
     public static final String PERMISSION = "permission";
+
+    public static final String SSO_UUMS_USERNAME = "username";
+
+    public static final String SSO_UUMS_PASSWORD = "password";
+
+    public static final String SSO_API_USERNAME = "loginuser";
+
+    public static final String SSO_API_APP_CODE = "appcode";
+
+    public static final int PASSWORD_SALT_LENGTH = 12;
+
+    public static final int ATTEMPT_LOGIN_TIMES = 5;
+    public static final int ATTEMPT_LOGIN_FAILED_WAIT_SECONDS = 5;
 }

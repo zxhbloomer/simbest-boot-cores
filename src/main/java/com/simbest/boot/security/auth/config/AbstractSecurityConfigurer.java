@@ -3,9 +3,10 @@
  */
 package com.simbest.boot.security.auth.config;
 
+import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.IAuthService;
-import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider;
+import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -35,8 +36,9 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // 默认密码加密长度10
-        return new BCryptPasswordEncoder();
+        // 默认密码加密长度12
+        // 参考：http://zhjwpku.com/2017/11/30/bcrypt-in-spring-security.html
+        return new BCryptPasswordEncoder(AuthoritiesConstants.PASSWORD_SALT_LENGTH);
     }
 
     @Bean
@@ -56,13 +58,11 @@ public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAd
      */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        //仅基于用户名验证
-        auth.authenticationProvider(ssoUsernameAuthenticationProvider);
         //基于用户名和密码验证
         auth.authenticationProvider(jdbcAuthenticationProvider());
-        //auth.userDetailsService(sysUserInfoService).passwordEncoder(passwordEncoder());
         //基于远程校验账户密码
         auth.authenticationProvider(httpValidationAuthenticationProvider);
+        //仅基于用户名验证
+        auth.authenticationProvider(ssoUsernameAuthenticationProvider);
     }
-
 }

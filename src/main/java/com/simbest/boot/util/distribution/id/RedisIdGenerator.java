@@ -24,7 +24,7 @@ import java.util.Date;
 @Slf4j
 public class RedisIdGenerator {
 
-    @Value("${server.servlet.contextPath}")
+    @Value("${server.servlet.context-path}")
     private String contextPath;
 
     /**
@@ -55,7 +55,7 @@ public class RedisIdGenerator {
         String orderId = null;
         String rediskey = "runtime::"+contextPath+"::#{cacheName}::id::".replace("#{cacheName}", cacheName).concat(dateHour); // 1836517
         try {
-            Long index = RedisCacheUtils.incr(rediskey);
+            Long index = RedisCacheUtils.seqNext(rediskey);
             orderId = dateHour.concat(String.format("%1$06d", index)); // 补位操作 保证满足6位
         } catch(Exception ex) {
             log.error("Generate distributited id by redis catch an exception.");

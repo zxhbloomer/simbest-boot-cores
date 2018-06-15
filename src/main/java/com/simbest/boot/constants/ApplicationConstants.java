@@ -20,6 +20,7 @@ public class ApplicationConstants {
     public static final String PACKAGE_NAME = "com.simbest.boot";
     public static final String HOME_PAGE = "/";
     public static final String LOGIN_PAGE = "/login";
+    public static final String UUMS_LOGIN_PAGE = "/uumslogin";
     public static final String LOGIN_ERROR_PAGE = "/login?loginError";
     public static final String LOGIN_SESSION_CODE = "validateCode";
     public static final String LOGIN_VALIDATE_CODE = "verifyCode";

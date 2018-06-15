@@ -4,17 +4,20 @@
 package com.simbest.boot.security.auth.filter;
 
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
 import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.auth.authentication.token.UumsAuthentication;
+import com.simbest.boot.security.auth.authentication.token.UumsAuthenticationCredentials;
+import com.simbest.boot.util.security.SecurityUtils;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,35 +25,38 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 用途：单点登录拦截器
+ * 用途：基于UUMS主数据的单点登录拦截器
  * 作者: lishuyi
  * 时间: 2018/1/20  15:05
  */
-//@WebFilter(filterName = "ssoAuthenticationFilter", urlPatterns = "/sso/*")
 @Slf4j
-public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class UumsAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    @Setter
-    private SsoAuthenticationRegister ssoAuthenticationRegister;
-
-    public SsoAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
+    public UumsAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher);
+    }
+
+    protected UumsAuthenticationFilter(String defaultFilterProcessesUrl) {
+        super(defaultFilterProcessesUrl);
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        String username = request.getParameter(AuthoritiesConstants.SSO_API_USERNAME);
+        String username = request.getParameter(AuthoritiesConstants.SSO_UUMS_USERNAME);
+        String password = request.getParameter(AuthoritiesConstants.SSO_UUMS_PASSWORD);
         String appcode = request.getParameter(AuthoritiesConstants.SSO_API_APP_CODE);
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(appcode)) {
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(appcode)) {
             throw new BadCredentialsException(
                     "Authentication principal can not be null: " + username);
         }
 
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
         if (authenticationIsRequired(existingAuth, username)) {
-            SsoUsernameAuthentication ssoUsernameAuthentication = new SsoUsernameAuthentication(username, appcode);
-            return this.getAuthenticationManager().authenticate(ssoUsernameAuthentication);
+            UumsAuthentication uumsAuthentication = new UumsAuthentication(username, UumsAuthenticationCredentials.builder()
+                    .password(password).appcode(appcode).build());
+            return this.getAuthenticationManager().authenticate(uumsAuthentication);
         }
         return existingAuth;
     }
@@ -62,17 +68,9 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
      * @return true/false
      */
     private boolean authenticationIsRequired(Authentication existingAuth, String username) {
-        for(SsoAuthenticationService authService : ssoAuthenticationRegister.getSsoAuthenticationService()) {
-            String decryptUsername = authService.decryptUsername(username);
-            if(StringUtils.isNotEmpty(decryptUsername)) {
-                username = decryptUsername;
-                break;
-            }
-        }
-
-        if (existingAuth == null || !existingAuth.isAuthenticated()) {
+        if (existingAuth == null || !SecurityUtils.isAuthenticated()) {
             return true;
-        } else if (existingAuth instanceof SsoUsernameAuthentication
+        } else if (existingAuth instanceof UumsAuthentication
                 && !existingAuth.getName().equals(username)) {
             return true;
         }

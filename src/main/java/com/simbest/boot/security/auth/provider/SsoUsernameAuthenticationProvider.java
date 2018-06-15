@@ -4,50 +4,60 @@
 package com.simbest.boot.security.auth.provider;
 
 import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
 import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.util.Collection;
 
 /**
  * 用途：基于用户名的认证器
  * 作者: lishuyi
  * 时间: 2018/1/20  17:49
  */
-@Component
 @Slf4j
+@Component
 public class SsoUsernameAuthenticationProvider implements AuthenticationProvider {
 
     @Setter @Getter
     protected boolean hideUserNotFoundExceptions = false;
 
     @Autowired
+    private SsoAuthenticationRegister ssoAuthenticationRegister;
+
+    @Autowired
     private IAuthService authService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getName();
-        if (!StringUtils.isEmpty(username)) {
-            UserDetails userDetails = authService.loadUserByUsername(username);
-            if (userDetails != null) {
-                return new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-                        userDetails.getPassword(), userDetails.getAuthorities());
-            } else {
-                throw new
-                        BadCredentialsException("External system authentication failed");
-            }
+        Collection<SsoAuthenticationService> ssoAuthenticationServices = ssoAuthenticationRegister.getSsoAuthenticationService();
+        Authentication successToken = null;
+        for(SsoAuthenticationService authService : ssoAuthenticationServices) {
+            successToken = authService.attemptAuthentication(authentication);
+            if(null != successToken)
+                break;
+        }
+        if (null != successToken) {
+            return successToken;
         } else {
             throw new
-                    BadCredentialsException(username + " is not exist account.");
+                    BadCredentialsException("UUMS SSO authentication failed");
         }
     }
 

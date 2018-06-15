@@ -30,7 +30,7 @@ public class HeartTestTask extends AbstractTaskSchedule {
     @Autowired
     private ApplicationContext appContext;
 
-    @Value("${server.servlet.contextPath}")
+    @Value("${server.servlet.context-path}")
     private String contextPath;
 
     @Autowired

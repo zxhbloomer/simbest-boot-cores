@@ -6,12 +6,15 @@ package com.simbest.boot.security.auth.config;
 import com.simbest.boot.config.Swagger2CsrfProtection;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.security.auth.filter.CaptchaAuthenticationFilter;
+import com.simbest.boot.security.auth.filter.RsaAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
+import com.simbest.boot.security.auth.filter.UumsAuthenticationFilter;
 import com.simbest.boot.security.auth.handle.FailedLoginHandler;
 import com.simbest.boot.security.auth.handle.SsoSuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLogoutHandler;
+import com.simbest.boot.util.encrypt.RsaEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +29,7 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * 用途：通用Web请求安全配置
@@ -35,9 +39,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @Order(30)
 public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
-
-    @Autowired
-    private SsoAuthenticationRegister ssoAuthenticationRegister;
 
     @Autowired
     private SuccessLoginHandler successLoginHandler;
@@ -53,6 +54,12 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Autowired
     private Swagger2CsrfProtection swagger2CsrfProtection;
+
+    @Autowired
+    private RsaEncryptor rsaEncryptor;
+
+    @Autowired
+    private SsoAuthenticationRegister ssoAuthenticationRegister;
 
     /**
      * 配置匹配路径
@@ -94,8 +101,10 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterAfter(ssoAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAt(captchaUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(captchaUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(uumsAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(rsaAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(ssoAuthenticationFilter(), UumsAuthenticationFilter.class)
                 .authorizeRequests()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .antMatchers("/error", "/login", "/logout").permitAll()  // 都可以访问
@@ -120,22 +129,41 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
     }
 
     @Bean
+    public RsaAuthenticationFilter rsaAuthenticationFilter() throws Exception {
+        RsaAuthenticationFilter filter = new RsaAuthenticationFilter();
+        filter.setAuthenticationSuccessHandler(successLoginHandler);
+        filter.setAuthenticationFailureHandler(failedLoginHandler);
+        filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(ApplicationConstants.LOGIN_PAGE, RequestMethod.POST.name()));
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setEncryptor(rsaEncryptor);
+       return filter;
+    }
+
+    @Bean
+    public UumsAuthenticationFilter uumsAuthenticationFilter() throws Exception {
+        UumsAuthenticationFilter filter = new UumsAuthenticationFilter(new AntPathRequestMatcher(ApplicationConstants.UUMS_LOGIN_PAGE, RequestMethod.POST.name()));
+        filter.setAuthenticationSuccessHandler(successLoginHandler);
+        filter.setAuthenticationFailureHandler(failedLoginHandler);
+        filter.setAuthenticationManager(authenticationManagerBean());
+        return filter;
+    }
+
+    @Bean
     public SsoAuthenticationFilter ssoAuthenticationFilter() throws Exception {
-        SsoAuthenticationFilter ssoFilter = new SsoAuthenticationFilter(new AntPathRequestMatcher("/**/sso/**"));
-        ssoFilter.setAuthenticationManager(authenticationManagerBean());
-        ssoFilter.setSsoAuthenticationRegister(ssoAuthenticationRegister);
+        SsoAuthenticationFilter filter = new SsoAuthenticationFilter(new AntPathRequestMatcher("/**/sso/**"));
+        filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setSsoAuthenticationRegister(ssoAuthenticationRegister);
         // 不跳回首页
-        ssoFilter.setAuthenticationSuccessHandler(new SsoSuccessLoginHandler());
-        ssoFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
-        return ssoFilter;
+        filter.setAuthenticationSuccessHandler(new SsoSuccessLoginHandler());
+        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(ApplicationConstants.LOGIN_PAGE));
+        return filter;
     }
 
     @Bean
     public CaptchaAuthenticationFilter captchaUsernamePasswordAuthenticationFilter() throws Exception {
-        CaptchaAuthenticationFilter usernamePasswordAuthenticationFilter =
-                new CaptchaAuthenticationFilter();
-        usernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
-        return usernamePasswordAuthenticationFilter;
+        CaptchaAuthenticationFilter filter = new CaptchaAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        return filter;
     }
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)

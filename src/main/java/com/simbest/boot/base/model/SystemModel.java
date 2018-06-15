@@ -28,7 +28,8 @@ import java.util.Date;
 public abstract class SystemModel extends GenericModel {
 
     //创建时间
-    @Setter @Getter
+    @Setter
+    @Getter
     @NonNull
     @Column(nullable = false, updatable = false)
     @CreationTimestamp// 创建时自动更新时间

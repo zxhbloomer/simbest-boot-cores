@@ -1,19 +1,33 @@
 package com.simbest.boot.security.auth.controller;
 
 
+import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.security.IPermission;
+import com.simbest.boot.security.IUser;
+import com.simbest.boot.security.auth.authentication.token.UumsAuthentication;
+import com.simbest.boot.security.auth.authentication.token.UumsAuthenticationCredentials;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
+import com.simbest.boot.util.encrypt.RsaEncryptor;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Set;
 
 /**
  * 用途：登录校验控制器
@@ -27,32 +41,49 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     @Autowired
-    private Des3Encryptor encryptor;
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RsaEncryptor rsaEncryptor;
 
     @Autowired
     private IAuthService authService;
 
+    @ApiOperation(value = "从UUMS认证登录", notes = "应用向远程UUMS发起认证请求")
+    @ApiImplicitParams({@ApiImplicitParam(name = "username", value = "用户账号", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", required = true, dataType = "String", paramType = "query")
+    })
     @PostMapping("/validate")
-    public JsonResponse validate(@RequestParam String username) {
-        if(StringUtils.isNotEmpty(username)){
-            username = encryptor.decrypt(username);
-            if(StringUtils.isNotEmpty(username)) {
-                UserDetails userDetails = authService.loadUserByUsername(username);
-                if (userDetails != null) {
-                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-                            userDetails.getPassword(), userDetails.getAuthorities());
-                    return JsonResponse.success(token);
-                } else {
-                    return JsonResponse.defaultErrorResponse();
+    public JsonResponse validate(@RequestParam String username, @RequestParam String password, @RequestParam String appcode) {
+        try {
+            if(StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password) && StringUtils.isNotEmpty(appcode)) {
+                UsernamePasswordAuthenticationToken passwordToken = new UsernamePasswordAuthenticationToken(username, rsaEncryptor.decrypt(password));
+                Authentication authentication = authenticationManager.authenticate(passwordToken);
+                if(authentication.isAuthenticated()) {
+                    IUser authUser = (IUser) authentication.getPrincipal();
+                    Set<? extends IPermission> userAppPermission = authService.findUserPermissionByAppcode(username, appcode);
+                    if(null != userAppPermission) {
+                        authUser = authService.addAppAuthorities(authUser, userAppPermission);
+                    }
+                    return JsonResponse.success(authUser);
                 }
-            }else {
-                log.debug("Retrive username failed from request with: {}", username);
-                return JsonResponse.fail("username not exist");
+                else {
+                    log.debug("UUMS authentication failed from request with: {}", username);
+                    return JsonResponse.fail("UUMS authentication failed");
+                }
+            } else {
+                log.debug("UUMS authentication failed from request with: {}", username);
+                return JsonResponse.fail("UUMS authentication failed");
             }
-        }else {
-            log.debug("Retrive username failed from request with: {}", username);
-            return JsonResponse.fail("username not exist");
+        } catch (AuthenticationException e){
+            Exceptions.printException(e);
+            log.debug("UUMS authentication failed from request with: {}", username);
+            return JsonResponse.fail("UUMS authentication failed");
+        } catch (Exception e){
+            Exceptions.printException(e);
+            log.debug("UUMS authentication failed from request with: {}", username);
+            return JsonResponse.fail("UUMS authentication failed");
         }
-
     }
 }

@@ -2,7 +2,6 @@ package com.simbest.boot.base.service;
 
 import com.simbest.boot.base.model.GenericModel;
 import com.simbest.boot.base.repository.Condition;
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

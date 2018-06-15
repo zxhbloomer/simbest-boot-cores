@@ -5,10 +5,12 @@ package com.simbest.boot.uums;
 
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
-import com.simbest.boot.util.encrypt.Des3Encryptor;
+import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.security.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,22 +31,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/http/sys/user")
 public class SysUserInfoHttpController {
 
-    private final static String USER_MAPPING = "/uums/sys/user/sso/";
+    private final static String USER_MAPPING = "/action/user/user/sso/";
+
 
     @Value("${app.uums.address}")
     private String uumsAddress;
 
     @Autowired
-    private Des3Encryptor encryptor;
+    private RsaEncryptor encryptor;
 
     @ApiOperation(value = "查询用户信息", notes = "通过此接口来查询用户信息")
-    @ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "long", paramType = "query")
+    @ApiImplicitParams({@ApiImplicitParam(name = "id", value = "用户ID", required = true, dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", required = true, dataType = "String", paramType = "query")
+    })
     @PostMapping(value = "/query")
-    public JsonResponse query(@RequestParam(required = true) Long id) {
+    public JsonResponse query(@RequestParam Long id, @RequestParam String appcode) {
         String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        JsonResponse response = HttpClient.post(uumsAddress + USER_MAPPING + "query")
-                .param("username", encryptor.encrypt(username))
+        log.debug("Http remote request user by username: {} and appcode: {}", username, appcode);
+        JsonResponse response = HttpClient.post(uumsAddress + USER_MAPPING + "findById")
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE, appcode)
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
         return response;

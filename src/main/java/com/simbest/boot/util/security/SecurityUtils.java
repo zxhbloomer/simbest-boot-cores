@@ -4,10 +4,10 @@
 package com.simbest.boot.util.security;
 
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.security.IUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * 用途：安全工具类
@@ -19,22 +19,27 @@ public final class SecurityUtils {
     private SecurityUtils() {
     }
 
+    public static IUser getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            if (authentication.getPrincipal() instanceof IUser) {
+                return (IUser) authentication.getPrincipal();
+            } else
+                return null;
+        }
+        return null;
+    }
+
     /**
      * Get the login of the current user.
      *
      * @return the login of the current user
      */
     public static String getCurrentUserName() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
         String userName = null;
-        if (authentication != null) {
-            if (authentication.getPrincipal() instanceof UserDetails) {
-                UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
-                userName = springSecurityUser.getUsername();
-            } else if (authentication.getPrincipal() instanceof String) {
-                userName = (String) authentication.getPrincipal();
-            }
+        IUser authUser = getCurrentUser();
+        if(null != authUser){
+            userName = authUser.getUsername();
         }
         return userName;
     }
