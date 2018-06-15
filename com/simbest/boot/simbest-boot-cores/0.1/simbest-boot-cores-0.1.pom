@@ -27,11 +27,6 @@
           <artifactId>simbest-boot-orguser</artifactId>
           <version>${simbest.version}</version>
       </dependency>
-      <dependency>
-          <groupId>com.simbest.boot</groupId>
-          <artifactId>simbest-boot-orguser</artifactId>
-          <version>0.1</version>
-      </dependency>
   </dependencies>
   
   <repositories>
