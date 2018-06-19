@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.util.encrypt;
 
+import com.simbest.boot.constants.ApplicationConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -42,12 +43,6 @@ import java.util.List;
 @Component
 public class RsaEncryptor extends AbstractEncryptor {
 
-    @Value("${app.rsa.public.key.location}")
-    private String publicKeyPemFilePath;
-
-    @Value("${app.rsa.prvivate.key.location}")
-    private String prvivateKeyPemFilePath;
-
     /**
      * 私钥
      */
@@ -60,8 +55,8 @@ public class RsaEncryptor extends AbstractEncryptor {
 
     @PostConstruct
     public void init() throws Exception {
-        String public_key = getKeyFromFile(ResourceUtils.CLASSPATH_URL_PREFIX + publicKeyPemFilePath);
-        String private_key = getKeyFromFile(ResourceUtils.CLASSPATH_URL_PREFIX + prvivateKeyPemFilePath);
+        String public_key = getKeyFromFile(ResourceUtils.CLASSPATH_URL_PREFIX + ApplicationConstants.RSA_PUBLIC_KEY_PATH);
+        String private_key = getKeyFromFile(ResourceUtils.CLASSPATH_URL_PREFIX + ApplicationConstants.RSA_PRIVATE_KEY_PATH);
         loadPublicKey(public_key);
         loadPrivateKey(private_key);
     }

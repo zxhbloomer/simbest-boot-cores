@@ -54,4 +54,7 @@ public class ApplicationConstants {
 
     public final static String REDIS_DEFAULT_CACHE_PREFIX = "runtime";
     public final static int REDIS_DEFAULT_TTL_TIME_OUT_SECONDS = 3600;
+
+    public final static String RSA_PUBLIC_KEY_PATH = "certificate/rsa/rsa_public_key.pem";
+    public final static String RSA_PRIVATE_KEY_PATH = "certificate/rsa/pkcs8_private_key.pem";
 }

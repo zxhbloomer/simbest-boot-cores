@@ -31,6 +31,7 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
      * @param authentication
      * @return
      */
+    @Override
     public SsoUsernameAuthentication attemptAuthentication(Authentication authentication) {
         log.debug("Retrive username from request with: {}, appcode with {}", authentication.getPrincipal(), authentication.getCredentials());
         if(null != authentication.getPrincipal() && null != authentication.getCredentials()

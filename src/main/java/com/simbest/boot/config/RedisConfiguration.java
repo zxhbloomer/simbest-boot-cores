@@ -156,7 +156,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     public CacheManager cacheManager() {
         // 初始化一个RedisCacheWriter
         RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory());
-        // 设置默认过期时间：30 分钟
+        // 设置默认过期时间：60 分钟
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(ApplicationConstants.REDIS_DEFAULT_TTL_TIME_OUT_SECONDS))
                 // .disableCachingNullValues()
@@ -175,13 +175,25 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new JdkSerializationRedisSerializer());
+//        template.setValueSerializer(new JdkSerializationRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        template.setValueSerializer(new JdkSerializationRedisSerializer());
         template.afterPropertiesSet();
         return template;
     }
 
+    @Bean
+    public RedisTemplate<String, String> stringRedisTemplate() {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
+        template.afterPropertiesSet();
+        return template;
+    }
 
     /**
      * 自定义Key生成策略

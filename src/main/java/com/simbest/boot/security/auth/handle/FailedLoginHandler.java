@@ -5,10 +5,14 @@ package com.simbest.boot.security.auth.handle;
 
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.constants.ErrorCodeConstants;
+import com.simbest.boot.exceptions.AttempMaxLoginFaildException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -32,16 +36,17 @@ public class FailedLoginHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
             throws IOException, ServletException {
         if (exception != null) {
-//            if (exception instanceof BadCredentialsException) {
-//                request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
-//                        new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_BAD_CREDENTIALS));
-//            } else if (exception instanceof UsernameNotFoundException || exception instanceof InternalAuthenticationServiceException) {
-//                request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
-//                        new InsufficientAuthenticationException(ErrorCodeConstants.USERNAME_NOT_FOUND));
-//            }
             // 隐藏账户不存在异常，统一抛出认证密码异常
-            request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
-                    new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_BAD_CREDENTIALS));
+            if (exception instanceof BadCredentialsException || exception instanceof UsernameNotFoundException || exception instanceof InternalAuthenticationServiceException) {
+                request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
+                        new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_BAD_CREDENTIALS));
+            } else if (exception instanceof AttempMaxLoginFaildException) {
+                request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
+                        new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_EXCEED_MAX_TIMES));
+            } else {
+                request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
+                        new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_BAD_CREDENTIALS));
+            }
 
         }
         response.setStatus(HttpServletResponse.SC_OK);

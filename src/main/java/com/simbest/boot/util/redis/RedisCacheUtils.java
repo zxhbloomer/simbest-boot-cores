@@ -4,17 +4,16 @@
 package com.simbest.boot.util.redis;
 
 import com.simbest.boot.util.json.JacksonUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.connection.DataType;
+import org.springframework.data.redis.connection.RedisZSetCommands.Tuple;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.connection.RedisZSetCommands.Tuple;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +28,9 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class RedisCacheUtils {
-    @Resource
-    private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     private static RedisCacheUtils cacheUtils;
 
@@ -54,8 +54,19 @@ public class RedisCacheUtils {
      * @return
      */
     public static void saveString(String  key, String val) {
-        ValueOperations<String, String> vo = cacheUtils.redisTemplate.opsForValue();
-        vo.set(prefix + key, val);
+        cacheUtils.redisTemplate.opsForValue().set(prefix + key, val);
+    }
+
+    /**
+     * 将数据存入缓存（并设置失效时间）
+     *
+     * @param prefix + key
+     * @param val
+     * @param seconds
+     * @return
+     */
+    public static void saveString(String  key, String val, int seconds) {
+        cacheUtils.redisTemplate.opsForValue().set(prefix + key, val, seconds, TimeUnit.SECONDS);
     }
 
     /**
@@ -65,32 +76,195 @@ public class RedisCacheUtils {
      * @return 数据
      */
     public static String getString(String  key) {
-        return cacheUtils.redisTemplate.opsForValue().get(prefix + key);
+        return getBean(key, String.class);
+    }
+
+    /**
+     * 保存复杂类型数据到缓存
+     *
+     * @param prefix + key
+     * @param obj
+     * @return
+     */
+    public static void saveBean(String  key, Object obj) {
+        cacheUtils.redisTemplate.opsForValue().set(prefix + key, obj);
+    }
+
+    /**
+     * 保存复杂类型数据到缓存（并设置失效时间）
+     *
+     * @param prefix + key
+     * @param Object
+     * @param seconds
+     * @return
+     */
+    public static void saveBean(String  key, Object obj, int seconds) {
+        cacheUtils.redisTemplate.opsForValue().set(prefix + key, obj, seconds, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 取得复杂类型数据
+     *
+     * @param prefix + key
+     * @param obj
+     * @param clazz
+     * @return
+     */
+    public static <T> T getBean(String  key, Class<T> clazz) {
+        Object value = cacheUtils.redisTemplate.opsForValue().get(prefix + key);
+        if (null == value) {
+            return null;
+        } else {
+            return (T) value;
+        }
     }
 
     /**
      * 将数据存入缓存的集合中
      *
      * @param prefix + key
-     * @param val
+     * @param value
      * @return
      */
-    public static void saveToSet(String  key, String val) {
-        SetOperations<String, String> so = cacheUtils.redisTemplate.opsForSet();
-        so.add(prefix + key, val);
+    public static void saveToSet(String  key, String value) {
+        cacheUtils.redisTemplate.opsForSet().add(prefix + key, value);
+    }
+
+    /**
+     * 保存对象到Set集合
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public static <T> void saveBeanToSet(String key, T value) {
+        cacheUtils.redisTemplate.opsForSet().add(prefix + key, value);
+    }
+
+    /**
+     * 保存对象到Set集合
+     * @param key
+     * @return
+     */
+    public static String getFromSet(String  key) {
+        return getBeanFromSet(key, String.class);
+    }
+
+    public static <T> T getBeanFromSet(String  key, Class<T> clazz) {
+        DataType rType = cacheUtils.redisTemplate.type(prefix + key);
+        if(DataType.SET.equals(rType))
+            return (T) cacheUtils.redisTemplate.opsForSet().pop(prefix + key);
+        else
+            return null;
+    }
+
+    /**
+     * 功能: 存到指定的队列中<br />
+     * 左近右出
+     *
+     * @param prefix + key
+     * @param val
+     * @param size
+     *            队列大小限制 0：不限制
+     */
+    public static void saveBeanToQueue(String key, Object val, long size) {
+        ListOperations<String, Object> lo = cacheUtils.redisTemplate.opsForList();
+        if (size > 0 && lo.size(prefix + key) >= size) {
+            lo.rightPop(prefix + key);
+        }
+        lo.leftPush(prefix + key, val);
     }
 
     /**
      *
+     * 功能: 从指定队列里取得数据<br />
      *
      * @param prefix + key
-     *            缓存Key
-     * @return prefix + keyValue
-     * @author:mijp
-     * @since:2017/1/16 13:23
+     * @param size
+     *            数据长度
+     * @return
      */
-    public static String getFromSet(String  key) {
-        return cacheUtils.redisTemplate.opsForSet().pop(prefix + key);
+    public static List<Object> getFromQueue(String  key, long size) {
+        boolean flag = cacheUtils.redisTemplate.execute((RedisCallback<Boolean>) connection -> {
+            return connection.exists((prefix + key).getBytes());
+        });
+
+        if (flag) {
+            return new ArrayList<>();
+        }
+        ListOperations<String, Object> lo = cacheUtils.redisTemplate.opsForList();
+        if (size > 0) {
+            return lo.range(prefix + key, 0, size - 1);
+        } else {
+            return lo.range(prefix + key, 0, lo.size(prefix + key) - 1);
+        }
+    }
+
+    /**
+     *
+     * 功能: 从指定队列里取得数据
+     *
+     * @param prefix + key
+     * @return
+     */
+    public static Object popQueue(String key) {
+        return cacheUtils.redisTemplate.opsForList().rightPop(prefix + key);
+    }
+
+    /**
+     * 保存到hash集合中
+     * @param key
+     * @param hashkey
+     * @param value
+     */
+    public static void saveToHash(String key, String  hashkey, String value) {
+        cacheUtils.redisTemplate.opsForHash().put(prefix + key, hashkey, value);
+    }
+
+    /**
+     * 保存到hash集合中
+     * @param key
+     * @param hashkey
+     * @param value
+     * @param <T>
+     */
+    public static <T> void saveBeanToHash(String key, String hashkey, T value) {
+        cacheUtils.redisTemplate.opsForHash().put(prefix + key, hashkey, value);
+    }
+
+    /**
+     * 从hash集合获取string
+     * @param key
+     * @param hashkey
+     * @return
+     */
+    public static String getStringFromHash(String key, String hashkey) {
+        return getBeanFromHash(key, hashkey, String.class);
+    }
+
+    /**
+     * 从hash集合获取对象
+     * @param key
+     * @param hashkey
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBeanFromHash(String  key, String hashkey, Class<T> clazz) {
+        DataType rType = cacheUtils.redisTemplate.type(prefix + key);
+        if(DataType.HASH.equals(rType))
+            return (T) cacheUtils.redisTemplate.opsForHash().get(prefix + key, hashkey);
+        else
+            return null;
+    }
+
+    /**
+     * 根据prefix + key获取所以值
+     *
+     * @param prefix + key
+     * @return
+     */
+    public static Map<Object, Object> getAllFromHash(String  key) {
+        return cacheUtils.redisTemplate.opsForHash().entries(prefix + key);
     }
 
     /**
@@ -127,161 +301,10 @@ public class RedisCacheUtils {
         return ret;
     }
 
-    /**
-     * 将数据存入缓存（并设置失效时间）
-     *
-     * @param prefix + key
-     * @param val
-     * @param seconds
-     * @return
-     */
-    public static void saveString(String  key, String val, int seconds) {
-        cacheUtils.redisTemplate.opsForValue().set(prefix + key, val, seconds, TimeUnit.SECONDS);
-    }
-
-    /**
-     * 保存复杂类型数据到缓存
-     *
-     * @param prefix + key
-     * @param obj
-     * @return
-     */
-    public static void saveBean(String  key, Object obj) {
-        cacheUtils.redisTemplate.opsForValue().set(prefix + key, JacksonUtils.obj2json(obj));
-    }
-
-    /**
-     * 保存复杂类型数据到缓存（并设置失效时间）
-     *
-     * @param prefix + key
-     * @param Object
-     * @param seconds
-     * @return
-     */
-    public static void saveBean(String  key, Object obj, int seconds) {
-        cacheUtils.redisTemplate.opsForValue().set(prefix + key, JacksonUtils.obj2json(obj), seconds, TimeUnit.SECONDS);
-    }
-
-    /**
-     * 取得复杂类型数据
-     *
-     * @param prefix + key
-     * @param obj
-     * @param clazz
-     * @return
-     */
-    public static <T> T getBean(String  key, Class<T> clazz) {
-        String value = cacheUtils.redisTemplate.opsForValue().get(prefix + key);
-        if (value == null) {
-            return null;
-        }
-        return JacksonUtils.json2obj(value, clazz);
-    }
-
-    /**
-     * 功能: 存到指定的队列中<br />
-     * 左近右出
-     *
-     * @param prefix + key
-     * @param val
-     * @param size
-     *            队列大小限制 0：不限制
-     */
-    public static void saveToQueue(String  key, String val, long size) {
-        ListOperations<String, String> lo = cacheUtils.redisTemplate.opsForList();
-
-        if (size > 0 && lo.size(prefix + key) >= size) {
-            lo.rightPop(prefix + key);
-        }
-        lo.leftPush(prefix + key, val);
-    }
-
-    /**
-     *
-     * 功能: 从指定队列里取得数据<br />
-     *
-     * @param prefix + key
-     * @param size
-     *            数据长度
-     * @return
-     */
-    public static List<String> getFromQueue(String  key, long size) {
-        boolean flag = cacheUtils.redisTemplate.execute((RedisCallback<Boolean>) connection -> {
-            return connection.exists((prefix + key).getBytes());
-        });
-
-        if (flag) {
-            return new ArrayList<>();
-        }
-        ListOperations<String, String> lo = cacheUtils.redisTemplate.opsForList();
-        if (size > 0) {
-            return lo.range(prefix + key, 0, size - 1);
-        } else {
-            return lo.range(prefix + key, 0, lo.size(prefix + key) - 1);
-        }
-    }
-
-    /**
-     * 保存到hash集合中
-     *
-     * @param hName
-     *            集合名
-     * @param prefix + key
-     * @param val
-     */
-    public static void hashSet(String key, String  hashkey, String value) {
-        cacheUtils.redisTemplate.opsForHash().put(prefix + key, hashkey, value);
-    }
-
-    /**
-     * 根据prefix + key获取所以值
-     *
-     * @param prefix + key
-     * @return
-     */
-    public static Map<Object, Object> hgetAll(String  key) {
-        return cacheUtils.redisTemplate.opsForHash().entries(prefix + key);
-    }
-
-    /**
-     * 保存到hash集合中
-     *
-     * @param <T>
-     *
-     * @param hName
-     *            集合名
-     * @param prefix + key
-     * @param val
-     */
-    public static <T> void hashSet(String key, String  hashkey, T t) {
-        hashSet(prefix + key, hashkey, JacksonUtils.obj2json(t));
-    }
-
-    /**
-     *
-     * 功能: 从指定队列里取得数据
-     *
-     * @param prefix + key
-     * @return
-     */
-    public static String popQueue(String  key) {
-        return cacheUtils.redisTemplate.opsForList().rightPop(prefix + key);
-
-    }
-
     public static byte[] get(String  key) {
         return cacheUtils.redisTemplate.execute((RedisCallback<byte[]>) connection ->
                 connection.get((prefix +key).getBytes()));
     }
-
-//
-//    /**
-//     * 将自增变量存入缓存
-//     */
-//    public static void saveSeq(String  key, long seqNo) {
-//        cacheUtils.redisTemplate.delete(prefix + key);
-//        cacheUtils.redisTemplate.opsForValue().increment(prefix + key, seqNo);
-//    }
 
     /**
      * 取得序列值的下一个
@@ -386,9 +409,9 @@ public class RedisCacheUtils {
      * @param string
      * @return
      */
-    public static Boolean delKey(String  key) {
-        //cacheUtils.redisTemplate.execute((RedisCallback<Long>) connection -> connection.del((prefix + key).getBytes()));
-        return cacheUtils.redisTemplate.delete(prefix + key);
+    public static Long delKey(String  key) {
+        return cacheUtils.redisTemplate.execute((RedisCallback<Long>) connection -> connection.del((prefix + key).getBytes()));
+//        return cacheUtils.redisTemplate.delete(prefix + key);
     }
 
     public static Long deleteByPrefix(String prex) {
@@ -411,10 +434,9 @@ public class RedisCacheUtils {
      * @param prefix + key
      * @param seconds
      */
-    public static void expire(String  key, int seconds) {
+    public static void expire(String key, int seconds) {
         cacheUtils.redisTemplate
                 .execute((RedisCallback<Boolean>) connection -> connection.expire((prefix + key).getBytes(), seconds));
-
     }
 
     /**
@@ -532,20 +554,6 @@ public class RedisCacheUtils {
     }
 
 
-
-    /**
-     *
-     * @Description: 根据prefix + key获取当前计数结果
-     * @author clg
-     * @date 2016年6月30日 下午2:38:20
-     *
-     * @param prefix + key
-     * @return
-     */
-    public static String getCount(String  key) {
-        return cacheUtils.redisTemplate.opsForValue().get(prefix + key);
-    }
-
     /**
      * 将所有指定的值插入到存于 prefix + key 的列表的头部。如果 prefix + key 不存在，那么在进行 push 操作前会创建一个空列表
      *
@@ -588,7 +596,7 @@ public class RedisCacheUtils {
      * @param prefix + key
      * @return
      */
-    public static List<String> lrange(String  key, long start, long end) {
+    public static List<Object> lrange(String  key, long start, long end) {
         return cacheUtils.redisTemplate.opsForList().range(prefix + key, start, end);
     }
 
@@ -598,7 +606,7 @@ public class RedisCacheUtils {
      * @param prefix + key
      * @return
      */
-    public static String lpop(String  key) {
+    public static Object lpop(String  key) {
         return cacheUtils.redisTemplate.opsForList().leftPop(prefix + key);
     }
 

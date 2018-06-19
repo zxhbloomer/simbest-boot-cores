@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/http/sys/user")
 public class SysUserInfoHttpController {
 
-    private final static String USER_MAPPING = "/action/user/user/sso/";
+    private final static String USER_MAPPING = "/action/user/user/";
 
 
     @Value("${app.uums.address}")
@@ -48,7 +48,7 @@ public class SysUserInfoHttpController {
     public JsonResponse query(@RequestParam Long id, @RequestParam String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {} and appcode: {}", username, appcode);
-        JsonResponse response = HttpClient.post(uumsAddress + USER_MAPPING + "findById")
+        JsonResponse response = HttpClient.post(uumsAddress + USER_MAPPING + "findById/sso/")
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE, appcode)
                 .param("id", String.valueOf(id))

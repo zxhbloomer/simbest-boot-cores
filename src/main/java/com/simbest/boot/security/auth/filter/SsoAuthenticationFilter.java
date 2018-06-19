@@ -40,16 +40,16 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        String username = request.getParameter(AuthoritiesConstants.SSO_API_USERNAME);
+        String loginuser = request.getParameter(AuthoritiesConstants.SSO_API_USERNAME);
         String appcode = request.getParameter(AuthoritiesConstants.SSO_API_APP_CODE);
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(appcode)) {
+        if (StringUtils.isEmpty(loginuser) || StringUtils.isEmpty(appcode)) {
             throw new BadCredentialsException(
-                    "Authentication principal can not be null: " + username);
+                    "Authentication principal can not be null: " + loginuser);
         }
 
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (authenticationIsRequired(existingAuth, username)) {
-            SsoUsernameAuthentication ssoUsernameAuthentication = new SsoUsernameAuthentication(username, appcode);
+        if (authenticationIsRequired(existingAuth, loginuser)) {
+            SsoUsernameAuthentication ssoUsernameAuthentication = new SsoUsernameAuthentication(loginuser, appcode);
             return this.getAuthenticationManager().authenticate(ssoUsernameAuthentication);
         }
         return existingAuth;
