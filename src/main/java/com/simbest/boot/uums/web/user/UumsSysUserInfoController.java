@@ -53,6 +53,37 @@ public class UumsSysUserInfoController {
         return JsonResponse.success(uumsSysUserinfoApi.findAll(page,size,direction,properties,appcode,map));
     }
 
+    /**
+     * 获取角色信息列表并分页
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "获取角色信息列表并分页", notes = "获取角色信息列表并分页")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //
+                    required = true, example = "1"), //
+            @ApiImplicitParam(name = "size", value = "每页数量", dataType = "int", paramType = "query", //
+                    required = true, example = "10"), //
+            @ApiImplicitParam(name = "direction", value = "排序规则（asc/desc）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "properties", value = "排序规则（属性名称）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/findAllUsers")
+    public JsonResponse findAllUsers( @RequestParam(required = false, defaultValue = "1") int page, //
+                                 @RequestParam(required = false, defaultValue = "10") int size, //
+                                 @RequestParam(required = false) String direction, //
+                                 @RequestParam(required = false) String properties,
+                                 @RequestParam String appcode ) {
+        return JsonResponse.success(uumsSysUserinfoApi.findAllUsers(page,size,direction,properties,appcode));
+    }
+
 
     /**
      *根据用户名查询用户信息
@@ -85,11 +116,33 @@ public class UumsSysUserInfoController {
     }
 
     /**
-     * 查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页
-     * @param map
+     * 根据过滤条件获取决策下的用户
+     * @param appcode
+     * @param sysAppDecisionMap
      * @return
      */
-    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
+    @ApiOperation(value = "根据过滤条件获取决策下的用户", notes = "根据过滤条件获取决策下的用户")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String" ,paramType = "query")
+    })
+    @PostMapping(value ="/findUserByDecisionNoPage")
+    public JsonResponse findUserByDecisionNoPage(@RequestParam String appcode,@RequestBody Map sysAppDecisionMap){
+        return JsonResponse.success(uumsSysUserinfoApi.findUserByDecisionNoPage(appcode,sysAppDecisionMap));
+    }
+
+    /*    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //
+                    required = true, example = "1"), //
+            @ApiImplicitParam(name = "size", value = "每页数量", dataType = "int", paramType = "query", //
+                    required = true, example = "10"), //
+            @ApiImplicitParam(name = "direction", value = "排序规则（asc/desc）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "properties", value = "排序规则（属性名称）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "appcode", value = "appcode", dataType = "String", //
+                    paramType = "query"), //
+    })
     @PostMapping(value ="/findUserByApp")
     public JsonResponse findUserByApp(@RequestParam(required = false, defaultValue = "1") int page, //
                                       @RequestParam(required = false, defaultValue = "10") int size, //
@@ -102,16 +155,13 @@ public class UumsSysUserInfoController {
 
 
 
-    /**
-     * 查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息不分页
-     * @param map
-     * @return
-     */
+
     @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息不分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息不分页")
+    @ApiImplicitParam(name = "appcode", value = "appcode", dataType = "String" ,paramType = "query")
     @PostMapping(value ="/findUserByAppNoPage")
     public JsonResponse findUserByAppNoPage(@RequestParam String appcode,@RequestBody Map map){
         return JsonResponse.success(uumsSysUserinfoApi.findUserByAppNoPage(appcode,map));
-    }
+    }*/
 
 
 }

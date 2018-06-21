@@ -14,11 +14,9 @@ import com.simbest.boot.security.SimpleUser;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -45,9 +43,8 @@ import java.util.Map;
 public class UumsSysUserinfoApi {
     private static final String USER_MAPPING = "/action/user/user/";
     private static final String SSO = "/sso";
-    /*@Value ("${app.uums.address}")
-    private String uumsAddress;*/
-    private String uumsAddress="http://localhost:8001/uums";
+    @Value ("${app.uums.address}")
+    private String uumsAddress;
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -96,6 +93,25 @@ public class UumsSysUserinfoApi {
         return response;
     }
 
+    /**
+     * 获取全部用户信息列表并分页
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param appcode
+     * @return
+     */
+    public JsonResponse findAllUsers(int page, int size,String direction,String properties,String appcode) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAllUsers"+SSO+"?loginuser="+username2+"&appcode="+appcode
+                +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
+                .asBean(JsonResponse.class );
+        return response;
+    }
 
     /**
      * 根据用户名查询用户信息
@@ -254,104 +270,11 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 根据应用(及其下的流程活动决策)获取其下参与的全部用户并分页
-     * @param page
-     * @param size
-     * @param direction
-     * @param properties
-     * @param sysAppDecisionMap
-     * @return
-     */
-    public JsonResponse findUserByApp(@RequestParam int page,@RequestParam int size, @RequestParam String direction,@RequestParam String properties,@RequestParam String appcode, Map sysAppDecisionMap){
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
-        String username1=encryptor.encrypt(username);
-        String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByApp"+SSO+"?loginuser="+username2+"&appcode="+appcode
-                +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
-                .json( json0 ).
-                        asBean(JsonResponse.class );
-        return response;
-    }
-
-    //查询多个应用下参与的全部用户
-
-    /**
-     * 查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息不分页
-     * @param sysAppDecisionMap
-     * @return
-     */
-    public JsonResponse findUserByAppNoPage(String appcode, Map sysAppDecisionMap){
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
-        String username1=encryptor.encrypt(username);
-        String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByAppNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode)
-                .json( json0 ).
-                        asBean(JsonResponse.class);
-        return response;
-    }
-
-    //查询一个应用下的某一部门的领导信息，包括领导所在的部门以及领导的职位信息不分页
-
-
-    //查询多个应用下参与的全部用户，并且前台显示的页面需要用树形来显示
-
-
-   /**
-     * 查询所有应用下参与的全部用户，包含用户所在的组织以及用户的职位信息不分页
-     * @return
-     */
-    public JsonResponse findUserByAllAppNoPage(@RequestParam String appcode){
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByAllAppNoPage"+SSO)
-                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
-                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
-                .asBean(JsonResponse.class);
-        return response;
-    }
-
-    /**
-     * 根据多个/单个应用code获取拥有某个应用权限的全部用户并分页
-     * 如果应用code为空，可以获得全部的应用code
-     * @param page
-     * @param size
-     * @param direction
-     * @param properties
-     * @param sysAppGroups
-     * @return
-     */
-    public JsonResponse findUserByAppPermission( @RequestParam(required = false, defaultValue = "1") int page, //
-                                                 @RequestParam(required = false, defaultValue = "10") int size, //
-                                                 @RequestParam(required = false) String direction, //
-                                                 @RequestParam(required = false) String properties,
-                                                 @RequestParam String appcode,
-                                                 List<Map> sysAppGroups){
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(sysAppGroups);
-        String username1=encryptor.encrypt(username);
-        String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByAppPermission"+SSO+"?loginuser="+username2+"&appcode="+appcode)
-                .json( json0 ).
-                        asBean(JsonResponse.class);
-        return response;
-    }
-
-    /**
      * 查询某个人以及当前应用下的全部权限
      * @param appcode
      * @param username
      * @return
      */
-    @ApiOperation (value = "查询某个人以及应用下的全部权限", notes = "查询某个人以及应用下的全部权限")
-    @ApiImplicitParams ({
-            @ApiImplicitParam (name = "username", value = "用户名", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "appcode", value = "应用code", required = true, dataType = "String", paramType = "query")
-    })
     public List<IPermission> findUserAppPermission( String username, String appcode) {
         String username1 = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username1);
@@ -369,6 +292,90 @@ public class UumsSysUserinfoApi {
         }
         return permissionList;
     }
+
+    /**
+     * 根据过滤条件获取决策下的用户
+     * @param appcode
+     * @param sysAppDecisionmap
+     * @return
+     */
+    public List<IUser> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(sysAppDecisionmap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByDecisionNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        +"&username"+username)
+                .json( json0 )
+                .asBean(JsonResponse.class);
+        List<IUser> sysPermissionList=(List<IUser>)response.getData();
+        List<IUser> userList=new ArrayList<>(  );
+        for(IUser sysUser:userList){
+            String json = JacksonUtils.obj2json(sysUser);
+            IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
+            userList.add(auth);
+        }
+        return userList;
+    }
+
+
+    /*
+    public JsonResponse findUserByApp(@RequestParam int page,@RequestParam int size, @RequestParam String direction,@RequestParam String properties,@RequestParam String appcode, Map sysAppDecisionMap){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByApp"+SSO+"?loginuser="+username2+"&appcode="+appcode
+                +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
+                .json( json0 ).
+                        asBean(JsonResponse.class );
+        return response;
+    }
+
+    //查询多个应用下参与的全部用户
+
+
+    public JsonResponse findUserByAppNoPage(String appcode, Map sysAppDecisionMap){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByAppNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode)
+                .json( json0 ).
+                        asBean(JsonResponse.class);
+        return response;
+    }
+
+    public JsonResponse findUserByAllAppNoPage(@RequestParam String appcode){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByAllAppNoPage"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .asBean(JsonResponse.class);
+        return response;
+    }
+
+
+    public JsonResponse findUserByAppPermission( @RequestParam(required = false, defaultValue = "1") int page, //
+                                                 @RequestParam(required = false, defaultValue = "10") int size, //
+                                                 @RequestParam(required = false) String direction, //
+                                                 @RequestParam(required = false) String properties,
+                                                 @RequestParam String appcode,
+                                                 List<Map> sysAppGroups){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(sysAppGroups);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByAppPermission"+SSO+"?loginuser="+username2+"&appcode="+appcode)
+                .json( json0 )
+                .asBean(JsonResponse.class);
+        return response;
+    }*/
 
 }
 

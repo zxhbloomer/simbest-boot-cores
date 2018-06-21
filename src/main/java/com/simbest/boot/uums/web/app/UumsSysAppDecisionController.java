@@ -81,6 +81,19 @@ public class UumsSysAppDecisionController {
         return JsonResponse.success(uumsSysAppDecisionApi.findAll(page, size,direction,properties,appcode,map));
     }
 
+    /**
+     *根据appcode以及其下的流程id及活动id获取其下全部决策信息
+     * @param appcode
+     * @param sysAppDecisionmap
+     * @return
+     */
+    @ApiOperation(value = "根据appcode以及其下的流程id及活动id获取其下全部决策信息", notes = "根据appcode以及其下的流程id及活动id获取其下全部决策信息")
+    @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String", paramType = "query")
+    @PostMapping(value = "/findDecisions")
+    public JsonResponse findAll( @RequestParam String appcode,@RequestBody Map sysAppDecisionmap) {
+        return JsonResponse.success(uumsSysAppDecisionApi.findDecisions(appcode,sysAppDecisionmap));
+    }
+
 }
 
 
