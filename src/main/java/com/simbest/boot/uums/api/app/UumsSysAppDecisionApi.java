@@ -6,14 +6,17 @@ package com.simbest.boot.uums.api.app;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.security.ISysAppDecision;
+import com.simbest.boot.security.SimpleSysAppDecision;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,9 +37,9 @@ import java.util.Map;
 public class UumsSysAppDecisionApi {
     private static final String USER_MAPPING = "/action/app/decision/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
-    //private String uumsAddress="http://localhost:8080/uums";
+    /*@Value ("${app.uums.address}")
+    private String uumsAddress;*/
+    private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -46,7 +49,7 @@ public class UumsSysAppDecisionApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findById(Long id,String appcode){
+    public ISysAppDecision findById( Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -54,7 +57,9 @@ public class UumsSysAppDecisionApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
-        return response;
+        String json = JacksonUtils.obj2json(response.getData());
+        ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
+        return auth;
     }
 
     /**
@@ -86,7 +91,7 @@ public class UumsSysAppDecisionApi {
      * @param sysAppDecisionMap
      * @return
      */
-    public JsonResponse findDecisions(String appcode,Map sysAppDecisionMap) {
+    public List<ISysAppDecision> findDecisions(String appcode,Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
@@ -95,6 +100,13 @@ public class UumsSysAppDecisionApi {
         JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findDecisions"+SSO+"?loginuser="+username2+"&appcode="+appcode)
                 .json( json0 )
                 .asBean(JsonResponse.class );
-        return response;
+        List<Object> appDecisions=(ArrayList<Object> )response.getData();
+        List<ISysAppDecision> appDecisionList=new ArrayList<>(  );
+        for(Object appDecision:appDecisions){
+            String json = JacksonUtils.obj2json(appDecision);
+            ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
+            appDecisionList.add(auth);
+        }
+        return appDecisionList;
     }
 }
