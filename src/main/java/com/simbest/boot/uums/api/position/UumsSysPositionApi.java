@@ -40,6 +40,7 @@ public class UumsSysPositionApi {
     private static final String SSO = "/sso";
     @Value ("${app.uums.address}")
     private String uumsAddress;
+    //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -94,14 +95,14 @@ public class UumsSysPositionApi {
     public List<IPosition> findPositionByUsername(String username,String appcode) {
         String usernameCurrent = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", usernameCurrent);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionByUsername")
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionByUsername"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(usernameCurrent))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("username",username)
                 .asBean(JsonResponse.class);
-        List<IPosition> sysPositionList=(List<IPosition>)response.getData();
+        List<Object> sysPositionList=(ArrayList<Object>)response.getData();
         List<IPosition> positionList=new ArrayList<>(  );
-        for(IPosition sysPosition:sysPositionList){
+        for(Object sysPosition:sysPositionList){
             String json = JacksonUtils.obj2json(sysPosition);
             IPosition auth = JacksonUtils.json2obj(json, SimplePosition.class);
             positionList.add(auth);
@@ -118,7 +119,7 @@ public class UumsSysPositionApi {
     public JsonResponse findPositionOrgcodeAndUsername(String orgCode,String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionOrgcodeAndUsername")
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionOrgcodeAndUsername"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("orgCode", orgCode)

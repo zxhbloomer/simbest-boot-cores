@@ -99,9 +99,9 @@ public class UumsSysPermissionApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "roleName",roleName )
                 .asBean(JsonResponse.class);
-        List<IPermission> sysPermissionList=(List<IPermission>)response.getData();
+        List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
         List<IPermission> permissionList=new ArrayList<>(  );
-        for(IPermission sysPermission:sysPermissionList){
+        for(Object sysPermission:sysPermissionList){
             String json = JacksonUtils.obj2json(sysPermission);
             IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
             permissionList.add(auth);
@@ -123,9 +123,9 @@ public class UumsSysPermissionApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "positionName",positionName)
                 .asBean(JsonResponse.class);
-        List<IPermission> sysPermissionList=(List<IPermission>)response.getData();
+        List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
         List<IPermission> permissionList=new ArrayList<>(  );
-        for(IPermission sysPermission:sysPermissionList){
+        for(Object sysPermission:sysPermissionList){
             String json = JacksonUtils.obj2json(sysPermission);
             IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
             permissionList.add(auth);

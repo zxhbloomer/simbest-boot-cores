@@ -36,6 +36,7 @@ public class UumsSysAppDecisionApi {
     private static final String SSO = "/sso";
     @Value ("${app.uums.address}")
     private String uumsAddress;
+    //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 

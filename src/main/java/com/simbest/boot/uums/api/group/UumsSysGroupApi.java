@@ -1,13 +1,11 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.uums.api.org;
+package com.simbest.boot.uums.api.group;
 
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.IOrg;
-import com.simbest.boot.security.SimpleOrg;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
@@ -16,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,11 +31,12 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-public class UumsSysOrgApi {
-    private static final String USER_MAPPING = "/action/org/org";
+public class UumsSysGroupApi {
+    private static final String USER_MAPPING = "/action/group/group/";
     private static final String SSO = "/sso";
     @Value ("${app.uums.address}")
     private String uumsAddress;
+    //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -49,7 +46,7 @@ public class UumsSysOrgApi {
      * @param appcode
      * @return
      */
-    public IOrg findById( Integer id, String appcode){
+    public JsonResponse findById(Long id,String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -57,25 +54,23 @@ public class UumsSysOrgApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
-        String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-        return auth;
+        return response;
     }
 
     /**
-     * 单表条件查询并分页
+     * 单表条件查询
      * @param page
      * @param size
      * @param direction
      * @param properties
      * @param appcode
-     * @param sysOrgMap
+     * @param sysAppDecisionMap
      * @return
      */
-    public JsonResponse findAll( int page, int size, String direction,String properties,String appcode,Map sysOrgMap) {
+    public JsonResponse findAll( int page, int size, String direction,String properties,String appcode,Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(sysOrgMap);
+        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
         JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
@@ -86,116 +81,106 @@ public class UumsSysOrgApi {
     }
 
     /**
-     *根据组织code查询组织信息
+     * 根据sid查看父群组信息
      * @param appcode
-     * @param orgCode
+     * @param sid
      * @return
      */
-    public IOrg findListByOrgCode(String appcode,String orgCode) {
+    public JsonResponse findParentGroup(String appcode,String sid) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findListByOrgCode"+SSO)
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findParentGroup"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
-                .param("orgCode", orgCode)
-                .asBean(JsonResponse.class);
-        String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-        return auth;
-    }
-
-    /**
-     *查看某个父组织的子组织
-     * @param appcode
-     * @param orgCode
-     * @return
-     */
-    public List<IOrg> findSonByParentOrgId( String appcode, String orgCode) {
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findSonByParentOrgId"+SSO)
-                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
-                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
-                .param("orgCode", orgCode)
-                .asBean(JsonResponse.class);
-        List<Object> orgs=(ArrayList<Object>)response.getData();
-        List<IOrg> orgList=new ArrayList<>();
-        for( Object org:orgs){
-            String json = JacksonUtils.obj2json(response.getData());
-            IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-            orgList.add(auth);
-        }
-        return orgList;
-    }
-
-    /**
-     * 查看某个父组织的全部子组织
-     * @param appcode
-     * @param orgCode
-     * @return
-     */
-    public JsonResponse findAllOrgByParentoCode (String appcode,String orgCode ) {
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAllOrgByParentoCode"+SSO)
-                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
-                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
-                .param("orgCode", orgCode)
+                .param("sid", String.valueOf(sid))
                 .asBean(JsonResponse.class);
         return response;
     }
 
     /**
-     * 根据子组织查父组织
+     *查看一个群组下的全部子群组
      * @param appcode
-     * @param orgCode
+     * @param sid
      * @return
      */
-    public IOrg findParentBySon (String appcode,String orgCode ) {
+    public JsonResponse findAllSonGroup(String appcode,String sid) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findParentBySon"+SSO)
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAllSonGroup"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
-                .param("orgCode", orgCode)
+                .param("sid", String.valueOf(sid))
                 .asBean(JsonResponse.class);
-        String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-        return auth;
+        return response;
     }
 
     /**
-     * 获取根组织
+     *查看某个应用下群组的信息并分页
      * @param appcode
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param sysAppDecisionMap
      * @return
      */
-    public IOrg findRoot(String appcode) {
+    public JsonResponse findGroupByApp( String appcode,int page,int size,String direction,String properties, Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findRoot"+SSO)
-                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
-                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
-                .asBean(JsonResponse.class);
-        String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-        return auth;
+        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findGroupByApp"+SSO+"?loginuser="+username2+"&appcode="+appcode
+                +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
+                .json( json0 )
+                .asBean(JsonResponse.class );
+        return response;
     }
 
     /**
-     * 查询应用的厂商组织
+     *查看某个用户所属群组的信息并分页
      * @param appcode
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param sysUserGroupMap
      * @return
      */
-    public IOrg findOrgByAppCode(String appcode) {
+    public JsonResponse findGroupByUsername( String appcode,int page,int size,String direction,String properties,Map sysUserGroupMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findOrgByAppCode"+SSO)
+        String json0=JacksonUtils.obj2json(sysUserGroupMap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findGroupByUsername"+SSO+"?loginuser="+username2+"&appcode="+appcode
+                +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
+                .json( json0 )
+                .asBean(JsonResponse.class );
+        return response;
+    }
+
+    /**
+     *根据应用编码查询拥有改应用编码合法权限的群组信息
+     * @param appcode
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @return
+     */
+    public JsonResponse findGroupByPermission(String appcode,int page,int size,String direction,String properties) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findGroupByPermission"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
-                .param( "appCode",appcode )
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size))
+                .param("direction", direction)
+                .param("properties", properties)
+                .param("appCode", appcode)
                 .asBean(JsonResponse.class);
-        String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-        return auth;
+        return response;
     }
 }

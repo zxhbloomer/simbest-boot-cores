@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +44,7 @@ public class UumsSysUserinfoApi {
     private static final String SSO = "/sso";
     @Value ("${app.uums.address}")
     private String uumsAddress;
+    //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -134,7 +134,7 @@ public class UumsSysUserinfoApi {
 
 
     /**
-     * 根据群组查询用户信息并分页
+     * 根据群组sid查询用户信息并分页
      * @param page
      * @param size
      * @param direction
@@ -161,7 +161,7 @@ public class UumsSysUserinfoApi {
 
 
     /**
-     * 根据组织获取用户并分页
+     * 根据组织orgcode获取用户并分页
      * @param page
      * @param size
      * @param direction
@@ -197,11 +197,7 @@ public class UumsSysUserinfoApi {
      * @param positionName
      * @return
      */
-    public JsonResponse findUserByPosition( int page, int size, //
-                                            @RequestParam(required = false) String direction, //
-                                            @RequestParam(required = false) String properties,
-                                            @RequestParam String appcode,
-                                            @RequestParam String positionName ){
+    public JsonResponse findUserByPosition( int page, int size, String direction, String properties,String appcode, String positionName ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByPosition"+SSO)
@@ -221,7 +217,7 @@ public class UumsSysUserinfoApi {
      * @param roleId
      * @return
      */
-    public List<IUser> findUserByRoleNoPage( @RequestParam Integer roleId ,@RequestParam String appcode){
+    public List<IUser> findUserByRoleNoPage(Integer roleId ,String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByRoleNoPage"+SSO)
@@ -229,9 +225,9 @@ public class UumsSysUserinfoApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("roleId", String.valueOf(roleId))
                 .asBean(JsonResponse.class);
-        ArrayList<IUser> users=(ArrayList)response.getData();
+        ArrayList<Object> users=(ArrayList<Object>)response.getData();
         List<IUser> authList=new ArrayList<>();
-        for( IUser user:users){
+        for( Object user:users){
             String json = JacksonUtils.obj2json(response.getData());
             IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
             authList.add(auth);
@@ -249,12 +245,7 @@ public class UumsSysUserinfoApi {
      * @param roleId
      * @return
      */
-    public JsonResponse findUserByRole(@RequestParam(required = false, defaultValue = "1") int page, //
-                                        @RequestParam(required = false, defaultValue = "10") int size, //
-                                        @RequestParam(required = false) String direction, //
-                                        @RequestParam(required = false) String properties,
-                                        @RequestParam String appcode,
-                                        @RequestParam Integer roleId ){
+    public JsonResponse findUserByRole(int page, int size, String direction,  String properties,String appcode,Integer roleId ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByRole"+SSO)
@@ -281,11 +272,11 @@ public class UumsSysUserinfoApi {
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionByUsername"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username1))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
-                .param("username",username,true)
+                .param("username",username)
                 .asBean(JsonResponse.class);
-        List<IPermission> sysPermissionList=(List<IPermission>)response.getData();
+        List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
         List<IPermission> permissionList=new ArrayList<>(  );
-        for(IPermission sysPermission:sysPermissionList){
+        for(Object sysPermission:sysPermissionList){
             String json = JacksonUtils.obj2json(sysPermission);
             IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
             permissionList.add(auth);
@@ -302,17 +293,18 @@ public class UumsSysUserinfoApi {
     public List<IUser> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
+        //sysAppDecisionmap.put("spare2",username);
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
         JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByDecisionNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode
-        +"&username"+username)
+        +"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class);
-        List<IUser> sysPermissionList=(List<IUser>)response.getData();
+        List<Object> users=(ArrayList<Object>)response.getData();
         List<IUser> userList=new ArrayList<>(  );
-        for(IUser sysUser:userList){
-            String json = JacksonUtils.obj2json(sysUser);
+        for(Object user:users){
+            String json = JacksonUtils.obj2json(user);
             IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
             userList.add(auth);
         }
@@ -329,7 +321,8 @@ public class UumsSysUserinfoApi {
         String username2=username1.replace("+","%2B");
         JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByApp"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
-                .json( json0 ).
+                .json( js
+    }on0 ).
                         asBean(JsonResponse.class );
         return response;
     }
