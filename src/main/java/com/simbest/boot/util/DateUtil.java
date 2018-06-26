@@ -7,10 +7,18 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * 一些有用的日期时间工具类
@@ -518,4 +526,61 @@ public final class DateUtil {
 		DateTimeFormatter fmt = DateTimeFormat.forPattern(datePattern);//自定义日期格式
 		return DateTime.parse(dateStr, fmt);
 	}
+
+    /**
+     * 将Date类转换为XMLGregorianCalendar
+     * @param date
+     * @return
+     */
+    public static XMLGregorianCalendar date2XmlDate(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        DatatypeFactory dtf = null;
+        try {
+            dtf = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException e) {
+        }
+        XMLGregorianCalendar dateType = dtf.newXMLGregorianCalendar();
+        dateType.setYear(cal.get(Calendar.YEAR));
+        //由于Calendar.MONTH取值范围为0~11,需要加1
+        dateType.setMonth(cal.get(Calendar.MONTH)+1);
+        dateType.setDay(cal.get(Calendar.DAY_OF_MONTH));
+        dateType.setHour(cal.get(Calendar.HOUR_OF_DAY));
+        dateType.setMinute(cal.get(Calendar.MINUTE));
+        dateType.setSecond(cal.get(Calendar.SECOND));
+        return dateType;
+    }
+
+    /**
+     * 将XMLGregorianCalendar转换为Date
+     * @param cal
+     * @return
+     */
+    public static Date xmlDate2Date(XMLGregorianCalendar cal){
+        return cal.toGregorianCalendar().getTime();
+    }
+
+    /**
+     * 将LocalDateTime类转换为XMLGregorianCalendar
+     * @param localDateTime
+     * @return
+     */
+    public static XMLGregorianCalendar LocalDateTimeToXmlDate(LocalDateTime localDateTime){
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime zdt = localDateTime.atZone(zoneId);
+        Date date = Date.from(zdt.toInstant());
+        return date2XmlDate(date);
+    }
+
+    /**
+     * 将XMLGregorianCalendar转换为LocalDateTime
+     * @param cal
+     * @return
+     */
+    public static LocalDateTime xmlDate2LocalDateTime(XMLGregorianCalendar cal){
+        Date date = xmlDate2Date(cal);
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        return instant.atZone(zoneId).toLocalDateTime();
+    }
 }

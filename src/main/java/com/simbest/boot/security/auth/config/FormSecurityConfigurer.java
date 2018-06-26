@@ -109,7 +109,7 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .antMatchers("/error", "/login", "/logout").permitAll()  // 都可以访问
                 .antMatchers("/h2-console/**", "/html/**").permitAll()  // 都可以访问
-                .antMatchers("/httpauth/**", "/action/anonymous/**", "/anonymous/**", "/ws/**").permitAll()  // 都可以访问
+                .antMatchers("/httpauth/**", "/action/anonymous/**", "/anonymous/**", "/services/**").permitAll()  // 都可以访问
                 .antMatchers("/action/**").hasRole("USER")   // 需要相应的角色才能访问
                 .antMatchers("/sys/admin/**").hasAnyRole("ADMIN", "SUPERVISOR")   // 需要相应的角色才能访问
                 .anyRequest().authenticated()
