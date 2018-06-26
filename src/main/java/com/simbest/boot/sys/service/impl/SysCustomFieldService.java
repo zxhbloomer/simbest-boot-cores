@@ -6,11 +6,15 @@ package com.simbest.boot.sys.service.impl;
 
 import com.simbest.boot.base.annotations.AnnotationUtils;
 import com.simbest.boot.base.repository.Condition;
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysCustomField;
 import com.simbest.boot.sys.repository.SysCustomFieldRepository;
 import com.simbest.boot.sys.service.ISysCustomFieldService;
 import com.simbest.boot.util.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,6 +29,7 @@ import java.util.Optional;
  * 时间: 2017/12/22  15:51
  */
 @Service
+@CacheConfig(cacheNames = ApplicationConstants.REDIS_DEFAULT_CACHE_PREFIX)
 public class SysCustomFieldService implements ISysCustomFieldService {
 
     @Autowired
@@ -48,9 +53,10 @@ public class SysCustomFieldService implements ISysCustomFieldService {
         return fieldRepository.findAll(conditions, pageable);
     }
 
+    @Cacheable(key = "#p0")
     @Override
-    public Optional<SysCustomField> findById(Long id) {
-        return fieldRepository.findById(id);
+    public SysCustomField findById(Long id) {
+        return fieldRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -63,13 +69,19 @@ public class SysCustomFieldService implements ISysCustomFieldService {
         fieldRepository.deleteById(id);
     }
 
+    @CachePut(key = "#p0.id")
     @Override
     public SysCustomField save(SysCustomField field) {
         if (field.getId() == null) {
             field.setCreator(SecurityUtils.getCurrentUserName());
+            field.setModifier(SecurityUtils.getCurrentUserName());
+            return fieldRepository.save(field);
+        } else {
+            SysCustomField dbFiled = findById(field.getId());
+            dbFiled.setFieldName(field.getFieldName());
+            dbFiled.setModifier(SecurityUtils.getCurrentUserName());
+            return fieldRepository.save(dbFiled);
         }
-        field.setModifier(SecurityUtils.getCurrentUserName());
-        return fieldRepository.save(field);
     }
 
 }

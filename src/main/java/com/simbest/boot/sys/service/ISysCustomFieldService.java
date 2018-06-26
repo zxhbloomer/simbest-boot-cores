@@ -34,7 +34,7 @@ public interface ISysCustomFieldService {
      * @param id 自定义字段Id
      * @return
      */
-    Optional<SysCustomField> findById(Long id);
+    SysCustomField findById(Long id);
 
     /**
      * 查询某个自定义字段

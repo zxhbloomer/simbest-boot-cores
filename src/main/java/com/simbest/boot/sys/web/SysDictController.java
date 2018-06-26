@@ -7,7 +7,6 @@ import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.service.ISysDictService;
-import com.simbest.boot.util.redis.RedisCacheUtils;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,8 +119,6 @@ public class SysDictController extends LogicController<SysDict, Integer> {
     @PostMapping(value = "/json/list")
     @ResponseBody
     public JsonResponse listJson() {
-        RedisCacheUtils.saveString("hello", "lishuyi指定角色权限才能操作方法");
-        RedisCacheUtils.saveString("hello100", "lishuyi指定角色权限才能操作方法", 100);
         List<SysDict> list = dictService.findByEnabled(true);
         return JsonResponse.builder().errcode(JsonResponse.SUCCESS_CODE).message("OK").data(list).build();
     }

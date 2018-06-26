@@ -3,11 +3,16 @@
  */
 package com.simbest.boot.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.simbest.boot.component.distributed.lock.DistributedLockFactoryBean;
 import com.simbest.boot.constants.ApplicationConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -17,6 +22,7 @@ import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.data.redis.RedisConnectionFailureException;
@@ -25,7 +31,9 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
@@ -33,11 +41,9 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import redis.clients.jedis.JedisPoolConfig;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,14 +61,14 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     @Autowired
     private Environment env;
 
-    @Value("${spring.redis.host}")
-    private String host;
+    @Value("${spring.redis.cluster.nodes}")
+    private String clusterNodes;
 
-    @Value("${spring.redis.port}")
-    private int port;
-
-    @Value("${spring.redis.password}")
+    @Value("${spring.redis.cluster.password}")
     private String password;
+
+    @Value("${spring.redis.cluster.max-redirects}")
+    private String maxRedirects;
 
     @Value("${server.servlet.session.timeout}")
     private Integer maxInactiveIntervalInSeconds;
@@ -76,6 +82,16 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     @Autowired
     private RedisOperationsSessionRepository sessionRepository;
 
+
+    //    public static final RedisSerializationContext.SerializationPair<String> STRING_PAIR = RedisSerializationContext
+//            .SerializationPair.fromSerializer(new StringRedisSerializer());
+//    /**
+//     * value serializer pair
+//     */
+//    public static final RedisSerializationContext.SerializationPair<Object> JACKSON_PAIR = RedisSerializationContext
+//            .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
+
+
     @PostConstruct
     private void afterPropertiesSet() {
         log.info("setting spring session with redis timeout {} seconds", maxInactiveIntervalInSeconds);
@@ -84,56 +100,61 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         sessionRepository.setRedisKeyNamespace(redisNamespace);
     }
 
-    public static final RedisSerializationContext.SerializationPair<String> STRING_PAIR = RedisSerializationContext
-            .SerializationPair.fromSerializer(new StringRedisSerializer());
+//    @Bean
+//    public JedisPoolConfig jedisPoolConfig() {
+//        JedisPoolConfig poolConfig = new JedisPoolConfig();
+//        poolConfig.setMaxTotal(100);
+//        poolConfig.setTestOnBorrow(true);
+//        poolConfig.setTestOnReturn(true);
+//        return poolConfig;
+//    }
+
     /**
-     * value serializer pair
+     * @see RedisClusterConfiguration
+     * @return
      */
-    public static final RedisSerializationContext.SerializationPair<Object> JACKSON_PAIR = RedisSerializationContext
-            .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
-
-
-    @Bean
-    public JedisPoolConfig jedisPoolConfig() {
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setMaxTotal(100);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestOnReturn(true);
-        return poolConfig;
-    }
-
     @Bean
     public RedisClusterConfiguration redisClusterConfiguration(){
         Map<String, Object> source = Maps.newHashMap();
-        source.put("spring.redis.cluster.nodes", env.getProperty("spring.redis.cluster.nodes"));
-        source.put("spring.redis.cluster.max-redirects", env.getProperty("spring.redis.cluster.max-redirects"));
+        source.put("spring.redis.cluster.nodes", clusterNodes);
+        log.debug("Redis cluster nodes: {}", clusterNodes);
+        source.put("spring.redis.cluster.max-redirects", maxRedirects);
+        log.info("Redis cluster max redirects: {}", maxRedirects);
         return new RedisClusterConfiguration(new MapPropertySource("RedisClusterConfiguration", source));
     }
 
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory() {
+//        JedisConnectionFactory factory;
+//        if (clusterNodes.split(ApplicationConstants.COMMA).length == 1) {
+//            factory = new JedisConnectionFactory(jedisPoolConfig());
+//            factory.setHostName(clusterNodes.split(ApplicationConstants.COLON)[0]);
+//            factory.setPort(Integer.valueOf(clusterNodes.split(ApplicationConstants.COLON)[1]));
+//        } else {
+//            factory = new JedisConnectionFactory(redisClusterConfiguration(), jedisPoolConfig());
+//        }
+//        factory.setPassword(password);
+//        factory.setUsePool(true);
+//        return factory;
+//    }
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        //JedisConnectionFactory connectionFactory = new JedisConnectionFactory(redisClusterConfiguration(), jedisPoolConfig());
-        JedisConnectionFactory connectionFactory = new JedisConnectionFactory(jedisPoolConfig());
-        connectionFactory.setUsePool(true);
-        connectionFactory.setHostName(host);
-        connectionFactory.setPassword(password);
-        connectionFactory.setPort(port);
-        return connectionFactory;
+        LettuceConnectionFactory factory;
+        if (clusterNodes.split(ApplicationConstants.COMMA).length == 1) {
+            RedisStandaloneConfiguration standaloneConfig = new RedisStandaloneConfiguration();
+            standaloneConfig.setHostName(clusterNodes.split(ApplicationConstants.COLON)[0]);
+            standaloneConfig.setPort(Integer.valueOf(clusterNodes.split(ApplicationConstants.COLON)[1]));
+            standaloneConfig.setPassword(RedisPassword.of(password));
+            standaloneConfig.setDatabase(0);
+            factory = new LettuceConnectionFactory(standaloneConfig);
+        } else {
+            RedisClusterConfiguration clusterConfig = redisClusterConfiguration();
+            clusterConfig.setPassword(RedisPassword.of(password));
+            factory = new LettuceConnectionFactory(clusterConfig);
+        }
+        return factory;
     }
-
-//    @Bean
-//    public LettuceConnectionFactory connectionFactory() {
-//        RedisStandaloneConfiguration redisStandaloneConfiguration=new RedisStandaloneConfiguration();
-//        //redis服务器主机ip
-//        redisStandaloneConfiguration.setHostName("127.0.0.1");
-//        //使用第几个数据库
-//        redisStandaloneConfiguration.setDatabase(0);
-//        //redis密码
-//        redisStandaloneConfiguration.setPassword(RedisPassword.of("lgdsj2017"));
-//        //端口
-//        redisStandaloneConfiguration.setPort(9379);
-//        return new LettuceConnectionFactory(redisStandaloneConfiguration);
-//    }
 
 //    @Bean
 //    public RedisCacheConfiguration redisCacheConfiguration() {
@@ -158,7 +179,8 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory());
         // 设置默认过期时间：60 分钟
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(ApplicationConstants.REDIS_DEFAULT_TTL_TIME_OUT_SECONDS))
+                .entryTtl(Duration.ofSeconds(maxInactiveIntervalInSeconds))
+                //.prefixKeysWith("cache:key:uums:") //无法区分不同对象相同id时的key
                 // .disableCachingNullValues()
                 // 使用注解时的序列化、反序列化
                 .serializeKeysWith(RedisSerializationContext
@@ -166,31 +188,19 @@ public class RedisConfiguration extends CachingConfigurerSupport {
                 .serializeValuesWith(RedisSerializationContext
                         .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
         Map<String, RedisCacheConfiguration> initialCacheConfigurations = new HashMap<>();
-//        initialCacheConfigurations.put("runtime::", defaultCacheConfig.entryTtl(Duration.ofSeconds(60)));
         return new RedisCacheManager(cacheWriter, defaultCacheConfig, initialCacheConfigurations);
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    @Qualifier("redisTemplate")
+    public <T> RedisTemplate<String, T> redisTemplate() {
+        RedisTemplate<String, T> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
-//        template.setValueSerializer(new JdkSerializationRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setValueSerializer(new JdkSerializationRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        template.afterPropertiesSet();
-        return template;
-    }
-
-    @Bean
-    public RedisTemplate<String, String> stringRedisTemplate() {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory());
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new JdkSerializationRedisSerializer());
+        template.setDefaultSerializer(new JdkSerializationRedisSerializer());
         template.afterPropertiesSet();
         return template;
     }
@@ -265,5 +275,36 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         };
         return cacheErrorHandler;
     }
+
+    @Bean(destroyMethod = "shutdown")
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        if (clusterNodes.split(ApplicationConstants.COMMA).length == 1) {
+            config.useSingleServer().setAddress("redis://"+clusterNodes)
+            .setPassword(password);
+        } else {
+            String[] nodes = clusterNodes.split(ApplicationConstants.COMMA);
+            for(int i=0; i<nodes.length; i++){
+                nodes[i] = "redis://"+ nodes[i];
+            }
+            config.useClusterServers()
+                    .setScanInterval(2000) // cluster state scan interval in milliseconds
+                    .setPassword(password)
+                    .addNodeAddress(nodes);
+//                    .addNodeAddress("redis://10.92.80.70:26379", "redis://10.92.80.70:26389", "redis://10.92.80.70:26399")
+//                    .addNodeAddress("redis://10.92.80.71:26379", "redis://10.92.80.71:26389", "redis://10.92.80.71:26399");
+        }
+        return Redisson.create(config);
+    }
+
+    @Bean
+    @DependsOn("redissonClient")
+    public DistributedLockFactoryBean distributeLockTemplate(){
+        DistributedLockFactoryBean d = new DistributedLockFactoryBean();
+        d.setMode("SINGLE");
+        return d;
+    }
+
+
 }
 

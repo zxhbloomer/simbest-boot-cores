@@ -4,9 +4,10 @@
 package com.simbest.boot.component.task;
 
 import com.mzlion.easyokhttp.HttpClient;
+import com.simbest.boot.component.distributed.lock.AppRuntimeMaster;
+import com.simbest.boot.component.distributed.lock.DistributedRedisLock;
 import com.simbest.boot.sys.repository.SysTaskExecutedLogRepository;
 import com.simbest.boot.sys.service.IHeartTestService;
-import com.simbest.boot.util.redis.RedisDistributedLocker;
 import com.simbest.boot.util.server.HostUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +38,8 @@ public class HeartTestTask extends AbstractTaskSchedule {
     private HostUtil hostUtil;
 
     @Autowired
-    public HeartTestTask(RedisDistributedLocker distriLocker, SysTaskExecutedLogRepository repository) {
-        super(distriLocker, repository);
+    public HeartTestTask(AppRuntimeMaster master, SysTaskExecutedLogRepository repository) {
+        super(master, repository);
     }
 
     @Scheduled(cron = "${app.task.heart.test.job}")

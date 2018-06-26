@@ -6,17 +6,17 @@ package com.simbest.boot.security.auth.filter;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.exceptions.AttempMaxLoginFaildException;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
-import com.simbest.boot.util.redis.RedisCacheUtils;
+import com.simbest.boot.util.redis.RedisUtil;
 import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用途：重载UsernamePasswordAuthenticationFilter
@@ -54,7 +54,7 @@ public class RsaAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
         String key = LOGIN_FAILED_KEY + obtainUsername(request);
-        Integer failedTimes = RedisCacheUtils.getBean(key, Integer.class);
+        Integer failedTimes = RedisUtil.getBean(key, Integer.class);
         if(null != failedTimes && failedTimes >= AuthoritiesConstants.ATTEMPT_LOGIN_MAX_TIMES){
             throw new AttempMaxLoginFaildException("Login faild exceed max times");
         } else {
@@ -76,10 +76,10 @@ public class RsaAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throws IOException, ServletException {
 
         String key = LOGIN_FAILED_KEY + obtainUsername(request);
-        Integer failedTimes = RedisCacheUtils.getBean(key, Integer.class);
+        Integer failedTimes = RedisUtil.getBean(key, Integer.class);
         failedTimes = null == failedTimes ? ATTEMPT_LOGIN_INIT_TIMES : failedTimes + ATTEMPT_LOGIN_INIT_TIMES;
-        RedisCacheUtils.saveBean(key, failedTimes);
-        RedisCacheUtils.expire(key, AuthoritiesConstants.ATTEMPT_LOGIN_FAILED_WAIT_SECONDS);
+        RedisUtil.setBean(key, failedTimes);
+        RedisUtil.expire(key, AuthoritiesConstants.ATTEMPT_LOGIN_FAILED_WAIT_SECONDS, TimeUnit.SECONDS);
 
         super.unsuccessfulAuthentication(request, response, failed);
     }

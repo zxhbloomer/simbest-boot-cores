@@ -93,8 +93,7 @@ public class SysCustomFieldController {
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @RequestMapping(value = "getById", method = RequestMethod.GET)
     public ModelAndView getById(@RequestParam(required = false, defaultValue = "-1") final long id, Model model) {
-        Optional<SysCustomField> userOptional = fieldService.findById(id);
-        SysCustomField field = fieldService.findById(id).orElse(new SysCustomField());
+        SysCustomField field = fieldService.findById(id);
         model.addAttribute("field", field);
         model.addAttribute("fieldClassifyMap", fieldService.getFieldClassifyMap());
         model.addAttribute("dictList", dictService.findByEnabled(true));

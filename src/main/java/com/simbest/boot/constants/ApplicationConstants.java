@@ -3,12 +3,17 @@
  */
 package com.simbest.boot.constants;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 用途：应用常量
  * 作者: lishuyi
  * 时间: 2018/2/27  17:45
  */
 public class ApplicationConstants {
+    public static final int ZERO = 0;
+    public static final int ONE = 1;
+
     public static final String ISO8859 = "ISO8859-1";
     public static final String UTF_8 = "UTF-8";
     public static final String GB2312 = "GB2312";
@@ -25,8 +30,13 @@ public class ApplicationConstants {
     public static final String LOGIN_SESSION_CODE = "validateCode";
     public static final String LOGIN_VALIDATE_CODE = "verifyCode";
 
-    public static final int DEFAULT_PAGE = 1;
+    public static final int DEFAULT_PAGE = ONE;
     public static final int DEFAULT_SIZE = 100;
+
+    public static final String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
+    public static final String FORMAT_DATE = "yyyy-MM-dd";
+    public static final String FORMAT_TIME = "HH:mm:ss";
+    public static final String FORMAT_TIME_ZONE = "GMT+8";
 
     public final static String HTTPPROTOCAL = "http://";
     public final static String HTTP = "http";
@@ -53,8 +63,13 @@ public class ApplicationConstants {
     public final static String VERTICAL = "|";
 
     public final static String REDIS_DEFAULT_CACHE_PREFIX = "runtime";
-    public final static int REDIS_DEFAULT_TTL_TIME_OUT_SECONDS = 3600;
 
     public final static String RSA_PUBLIC_KEY_PATH = "certificate/rsa/rsa_public_key.pem";
     public final static String RSA_PRIVATE_KEY_PATH = "certificate/rsa/pkcs8_private_key.pem";
+
+    public final static int REDIS_LOCK_DEFAULT_TIMEOUT   = 60;
+    public final static TimeUnit REDIS_LOCK_DEFAULT_TIME_UNIT = TimeUnit.SECONDS;
+    public final static String  MASTER_HOST = "master_ip";
+    public final static String  MASTER_PORT = "master_port";
+    public final static String  MASTER_LOCK = "master_lock";
 }
