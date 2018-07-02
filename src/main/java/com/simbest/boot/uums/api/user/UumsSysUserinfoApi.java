@@ -64,6 +64,10 @@ public class UumsSysUserinfoApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
         String json = JacksonUtils.obj2json(response.getData());
         IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
         return auth;
@@ -114,19 +118,21 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 根据用户名查询用户信息
+     * 根据用户名查询用户信息(BPS专用)
      * @param username
      * @param appcode
      * @return
      */
     public IUser findByUsername(String username,String appcode) {
-        String usernameCurrent = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", usernameCurrent);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findByUsername"+SSO)
-                .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(usernameCurrent))
+                .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
         String json = JacksonUtils.obj2json(response.getData());
         IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
         return auth;
@@ -225,6 +231,14 @@ public class UumsSysUserinfoApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("roleId", String.valueOf(roleId))
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
         ArrayList<Object> users=(ArrayList<Object>)response.getData();
         List<IUser> authList=new ArrayList<>();
         for( Object user:users){
@@ -274,6 +288,14 @@ public class UumsSysUserinfoApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
         List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
         List<IPermission> permissionList=new ArrayList<>(  );
         for(Object sysPermission:sysPermissionList){
@@ -301,6 +323,14 @@ public class UumsSysUserinfoApi {
         +"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
         List<Object> users=(ArrayList<Object>)response.getData();
         List<IUser> userList=new ArrayList<>(  );
         for(Object user:users){

@@ -4,16 +4,13 @@
 package com.simbest.boot.sys.model;
 
 
-import com.google.common.collect.Lists;
 import com.simbest.boot.base.model.LogicModel;
-import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * 用途：数据字典
@@ -36,12 +33,12 @@ public class SysDict extends LogicModel {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column
     private String description;
 
+    @Column(nullable = false)
     private Integer displayOrder;
 
+    @Column
     private Integer parentId;
-
-    @OneToMany(mappedBy="sysDict", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SysDictValue> values = Lists.newArrayList();
 }

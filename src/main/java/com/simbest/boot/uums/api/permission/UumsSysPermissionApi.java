@@ -57,6 +57,10 @@ public class UumsSysPermissionApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
         String json = JacksonUtils.obj2json(response.getData());
         IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
         return auth;
@@ -99,6 +103,14 @@ public class UumsSysPermissionApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "roleName",roleName )
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
         List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
         List<IPermission> permissionList=new ArrayList<>(  );
         for(Object sysPermission:sysPermissionList){
@@ -123,6 +135,14 @@ public class UumsSysPermissionApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "positionName",positionName)
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
         List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
         List<IPermission> permissionList=new ArrayList<>(  );
         for(Object sysPermission:sysPermissionList){

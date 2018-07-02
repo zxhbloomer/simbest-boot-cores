@@ -59,6 +59,10 @@ public class UumsSysPositionApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
         String json = JacksonUtils.obj2json(response.getData());
         IPosition auth = JacksonUtils.json2obj(json, SimplePosition.class);
         return auth;
@@ -100,6 +104,14 @@ public class UumsSysPositionApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("username",username)
                 .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
         List<Object> sysPositionList=(ArrayList<Object>)response.getData();
         List<IPosition> positionList=new ArrayList<>(  );
         for(Object sysPosition:sysPositionList){

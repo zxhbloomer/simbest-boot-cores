@@ -9,7 +9,6 @@ import com.simbest.boot.base.repository.Condition;
 import com.simbest.boot.base.service.IGenericService;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.util.CustomBeanUtil;
-import com.simbest.boot.util.MapUtil;
 import com.simbest.boot.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

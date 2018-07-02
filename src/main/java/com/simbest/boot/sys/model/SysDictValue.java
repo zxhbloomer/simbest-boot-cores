@@ -35,13 +35,18 @@ public class SysDictValue extends LogicModel {
     @Column(nullable = false, length = 100)
     private String value;
 
+    @Column
     private String description;
 
+    @Column(nullable = false)
     private Integer displayOrder;
 
+    @Column
     private Integer parentId;
 
-    @ManyToOne(cascade=CascadeType.REFRESH, optional=false)
-    @JoinColumn(name = "dict_id")
-    private SysDict sysDict;
+    @Column(nullable = false)
+    private Integer dictId;
+
+    @Transient
+    private Boolean isDefault;
 }

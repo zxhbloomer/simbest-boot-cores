@@ -101,6 +101,41 @@ public class UumsSysUserInfoController {
     }
 
     /**
+     * 根据组织orgcode获取用户并分页
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param appcode
+     * @param orgCode
+     * @return
+     */
+    @ApiOperation(value = "根据组织orgcode获取用户并分页", notes = "根据组织orgcode获取用户并分页")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //
+                    required = true, example = "1"), //
+            @ApiImplicitParam(name = "size", value = "每页数量", dataType = "int", paramType = "query", //
+                    required = true, example = "10"), //
+            @ApiImplicitParam(name = "direction", value = "排序规则（asc/desc）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "properties", value = "排序规则（属性名称）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "orgCode", value = "组织appcode", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/findUserByOrg")
+    public JsonResponse findUserByOrg( @RequestParam(required = false, defaultValue = "1") int page, //
+                                      @RequestParam(required = false, defaultValue = "10") int size, //
+                                      @RequestParam(required = false) String direction, //
+                                      @RequestParam(required = false) String properties,
+                                      @RequestParam String appcode,
+                                       @RequestParam String orgCode) {
+        return JsonResponse.success(uumsSysUserinfoApi.findUserByOrg(page,size,direction,properties,appcode,orgCode));
+    }
+
+    /**
      * 根据角色id获取用户但不分页
      * @param roleId
      * @return

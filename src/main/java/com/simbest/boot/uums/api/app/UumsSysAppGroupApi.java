@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,8 +33,8 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-public class UumsSysAppDecisionApi {
-    private static final String USER_MAPPING = "/action/app/decision/";
+public class UumsSysAppGroupApi {
+    private static final String USER_MAPPING = "/action/app/group/";
     private static final String SSO = "/sso";
     @Value ("${app.uums.address}")
     private String uumsAddress;
@@ -74,13 +72,13 @@ public class UumsSysAppDecisionApi {
      * @param direction
      * @param properties
      * @param appcode
-     * @param sysAppDecisionMap
+     * @param sysAppGroupMap
      * @return
      */
-    public JsonResponse findAll( int page, int size, String direction,String properties,String appcode,Map sysAppDecisionMap) {
+    public JsonResponse findAll( int page, int size, String direction,String properties,String appcode,Map sysAppGroupMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
+        String json0=JacksonUtils.obj2json(sysAppGroupMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
         JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
@@ -91,35 +89,25 @@ public class UumsSysAppDecisionApi {
     }
 
     /**
-     * 根据appcode以及其下的流程id及活动id获取其下全部决策信息
+     * 根据用户名以及应用code来查看此用户是否拥有使用应用的权限
+     * @param username
      * @param appcode
-     * @param sysAppDecisionMap
      * @return
      */
-    public List<ISysAppDecision> findDecisions(String appcode,Map sysAppDecisionMap) {
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(sysAppDecisionMap);
-        String username1=encryptor.encrypt(username);
-        String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findDecisions"+SSO+"?loginuser="+username2+"&appcode="+appcode+"&username="+username)
-                .json( json0 )
-                .asBean(JsonResponse.class );
+    public Boolean ifHasPermission( String username, String appcode)  {
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "ifHasPermission"+SSO)
+                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
+                .param("username",username )
+                .param("appCode",appcode  )
+                .asBean(JsonResponse.class);
         if(response==null){
             log.error("--response对象为空!--");
             return null;
         }
-        if(!(response.getData() instanceof ArrayList)){
-            log.error("--uums接口返回的类型不为ArrayList--");
-            return null;
-        }
-        List<Object> appDecisions=(ArrayList<Object> )response.getData();
-        List<ISysAppDecision> appDecisionList=new ArrayList<>(  );
-        for(Object appDecision:appDecisions){
-            String json = JacksonUtils.obj2json(appDecision);
-            ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
-            appDecisionList.add(auth);
-        }
-        return appDecisionList;
+        String json = JacksonUtils.obj2json(response.getData());
+        Boolean auth = JacksonUtils.json2obj(json, Boolean.class);
+        return auth;
     }
+
 }
