@@ -4,13 +4,11 @@
 
 package com.simbest.boot.uums.api.user;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.IPermission;
-import com.simbest.boot.security.IUser;
-import com.simbest.boot.security.SimplePermission;
-import com.simbest.boot.security.SimpleUser;
+import com.simbest.boot.security.*;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
@@ -93,26 +91,6 @@ public class UumsSysUserinfoApi {
         JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( json0 )
-                .asBean(JsonResponse.class );
-        return response;
-    }
-
-    /**
-     * 获取全部用户信息列表并分页
-     * @param page
-     * @param size
-     * @param direction
-     * @param properties
-     * @param appcode
-     * @return
-     */
-    public JsonResponse findAllUsers(int page, int size,String direction,String properties,String appcode) {
-        String username = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        String username1=encryptor.encrypt(username);
-        String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAllUsers"+SSO+"?loginuser="+username2+"&appcode="+appcode
-                +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .asBean(JsonResponse.class );
         return response;
     }
@@ -223,7 +201,7 @@ public class UumsSysUserinfoApi {
      * @param roleId
      * @return
      */
-    public List<IUser> findUserByRoleNoPage(Integer roleId ,String appcode){
+    public List<SimpleUser> findUserByRoleNoPage(Integer roleId ,String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByRoleNoPage"+SSO)
@@ -239,14 +217,9 @@ public class UumsSysUserinfoApi {
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        ArrayList<Object> users=(ArrayList<Object>)response.getData();
-        List<IUser> authList=new ArrayList<>();
-        for( Object user:users){
-            String json = JacksonUtils.obj2json(response.getData());
-            IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
-            authList.add(auth);
-        }
-        return authList;
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleUser> userList=JacksonUtils.json2map(json, new TypeReference<List<SimpleUser>>(){});
+        return userList;
     }
 
     /**
@@ -280,7 +253,7 @@ public class UumsSysUserinfoApi {
      * @param username
      * @return
      */
-    public List<IPermission> findUserAppPermission( String username, String appcode) {
+    public List<SimpleUser> findUserAppPermission( String username, String appcode) {
         String username1 = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username1);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionByUsername"+SSO)
@@ -296,14 +269,9 @@ public class UumsSysUserinfoApi {
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
-        List<IPermission> permissionList=new ArrayList<>(  );
-        for(Object sysPermission:sysPermissionList){
-            String json = JacksonUtils.obj2json(sysPermission);
-            IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
-            permissionList.add(auth);
-        }
-        return permissionList;
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleUser> userList=JacksonUtils.json2map(json, new TypeReference<List<SimpleUser>>(){});
+        return userList;
     }
 
     /**
@@ -312,7 +280,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    public List<IUser> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
+    public List<SimpleUser> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         //sysAppDecisionmap.put("spare2",username);
@@ -331,13 +299,8 @@ public class UumsSysUserinfoApi {
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> users=(ArrayList<Object>)response.getData();
-        List<IUser> userList=new ArrayList<>(  );
-        for(Object user:users){
-            String json = JacksonUtils.obj2json(user);
-            IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
-            userList.add(auth);
-        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleUser> userList=JacksonUtils.json2map(json, new TypeReference<List<SimpleUser>>(){});
         return userList;
     }
 

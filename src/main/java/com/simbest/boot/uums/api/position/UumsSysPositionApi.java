@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.uums.api.position;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
@@ -96,7 +97,7 @@ public class UumsSysPositionApi {
      * @param appcode
      * @return
      */
-    public List<IPosition> findPositionByUsername(String username,String appcode) {
+    public List<SimplePosition> findPositionByUsername(String username,String appcode) {
         String usernameCurrent = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", usernameCurrent);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionByUsername"+SSO)
@@ -112,13 +113,8 @@ public class UumsSysPositionApi {
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> sysPositionList=(ArrayList<Object>)response.getData();
-        List<IPosition> positionList=new ArrayList<>(  );
-        for(Object sysPosition:sysPositionList){
-            String json = JacksonUtils.obj2json(sysPosition);
-            IPosition auth = JacksonUtils.json2obj(json, SimplePosition.class);
-            positionList.add(auth);
-        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimplePosition> positionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePosition>>(){});
         return positionList;
     }
 
@@ -128,7 +124,7 @@ public class UumsSysPositionApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findPositionOrgcodeAndUsername(String orgCode,String appcode) {
+    public Map<String,List<SimplePosition>> findPositionOrgcodeAndUsername(String orgCode,String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionOrgcodeAndUsername"+SSO)
@@ -136,6 +132,16 @@ public class UumsSysPositionApi {
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("orgCode", orgCode)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof Map)){
+            log.error("--uums接口返回的类型不为Map--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Map<String,List<SimplePosition>> maps=JacksonUtils.json2map(json, new TypeReference<Map<String,List<SimplePosition>>>(){});
+        return maps;
     }
 }

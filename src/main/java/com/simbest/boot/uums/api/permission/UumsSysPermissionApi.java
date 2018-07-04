@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.uums.api.permission;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
@@ -95,7 +96,7 @@ public class UumsSysPermissionApi {
      * @param appcode
      * @return
      */
-    public List<IPermission> findRoleAppPermission(String roleName, String appcode) {
+    public List<SimplePermission> findRoleAppPermission(String roleName, String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findRoleAppPermission"+SSO)
@@ -111,13 +112,8 @@ public class UumsSysPermissionApi {
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
-        List<IPermission> permissionList=new ArrayList<>(  );
-        for(Object sysPermission:sysPermissionList){
-            String json = JacksonUtils.obj2json(sysPermission);
-            IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
-            permissionList.add(auth);
-        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePermission>>(){});
         return permissionList;
     }
 
@@ -127,7 +123,7 @@ public class UumsSysPermissionApi {
      * @param appcode
      * @return
      */
-    public List<IPermission> findPositionAppPermission( String positionName,String appcode) {
+    public List<SimplePermission> findPositionAppPermission( String positionName,String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionAppPermission"+SSO)
@@ -143,13 +139,8 @@ public class UumsSysPermissionApi {
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> sysPermissionList=(ArrayList<Object>)response.getData();
-        List<IPermission> permissionList=new ArrayList<>(  );
-        for(Object sysPermission:sysPermissionList){
-            String json = JacksonUtils.obj2json(sysPermission);
-            IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
-            permissionList.add(auth);
-        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePermission>>(){});
         return permissionList;
     }
 }

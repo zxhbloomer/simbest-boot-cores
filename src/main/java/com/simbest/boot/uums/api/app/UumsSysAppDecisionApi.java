@@ -3,10 +3,12 @@
  */
 package com.simbest.boot.uums.api.app;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.ISysAppDecision;
+import com.simbest.boot.security.SimplePermission;
 import com.simbest.boot.security.SimpleSysAppDecision;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
@@ -96,7 +98,7 @@ public class UumsSysAppDecisionApi {
      * @param sysAppDecisionMap
      * @return
      */
-    public List<ISysAppDecision> findDecisions(String appcode,Map sysAppDecisionMap) {
+    public List<SimpleSysAppDecision> findDecisions(String appcode,Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
@@ -113,13 +115,8 @@ public class UumsSysAppDecisionApi {
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> appDecisions=(ArrayList<Object> )response.getData();
-        List<ISysAppDecision> appDecisionList=new ArrayList<>(  );
-        for(Object appDecision:appDecisions){
-            String json = JacksonUtils.obj2json(appDecision);
-            ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
-            appDecisionList.add(auth);
-        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleSysAppDecision> appDecisionList=JacksonUtils.json2map(json, new TypeReference<List<SimpleSysAppDecision>>(){});
         return appDecisionList;
     }
 }

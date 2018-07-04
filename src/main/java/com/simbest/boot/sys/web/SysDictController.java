@@ -11,13 +11,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -46,7 +42,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
     //设置权限，后面再开启
     //@PreAuthorize ("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @ApiOperation(value = "新增一个字典类型", notes = "新增一个字典类型")
-    public JsonResponse create(@RequestBody SysDict sysDict) {
+    public JsonResponse create(@RequestBody(required = false) SysDict sysDict) {
         return super.create( sysDict );
     }
 
@@ -58,7 +54,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
     //设置权限，后面再开启
     //@PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @ApiOperation(value = "修改一个字典类型", notes = "修改一个字典类型")
-    public JsonResponse update( @RequestBody SysDict sysDict) {
+    public JsonResponse update( @RequestBody(required = false) SysDict sysDict) {
         return super.update(sysDict );
     }
 
@@ -70,7 +66,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
     //@PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @ApiOperation(value = "根据id删除字典类型", notes = "根据id删除字典类型")
     @ApiImplicitParam(name = "id", value = "字典类型ID",  dataType = "Integer", paramType = "query")
-    public JsonResponse deleteById(@RequestParam Integer id) {
+    public JsonResponse deleteById(@RequestParam(required = false) Integer id) {
         return super.deleteById( id );
     }
 
@@ -80,7 +76,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
      * @return
      */
     @ApiOperation(value = "先修改再逻辑删除字典类型", notes = "先修改再逻辑删除字典类型")
-    public JsonResponse delete(@RequestBody SysDict sysDict) {
+    public JsonResponse delete(@RequestBody(required = false) SysDict sysDict) {
         return super.delete(sysDict);
     }
 
@@ -92,7 +88,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
     //@PreAuthorize("hasAuthority('ROLE_SUPER')")  // 指定角色权限才能操作方法
     @ApiOperation(value = "批量逻辑删除字典类型", notes = "批量逻辑删除字典类型")
     @ApiImplicitParam(name = "ids", value = "字典类型ID", dataType = "Set<Integer>", paramType = "query")
-    public JsonResponse deleteAllByIds(@RequestBody Set<Integer> ids) {
+    public JsonResponse deleteAllByIds(@RequestBody(required = false) Set<Integer> ids) {
         return  super.deleteAllByIds(ids);
     }
 
@@ -106,7 +102,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
     @ApiImplicitParams ({@ApiImplicitParam(name = "id", value = "角色ID", required = true, dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "enabled", value = "是否可用", required = true, dataType = "Boolean", paramType = "query")
     })
-    public JsonResponse updateEnable(@RequestParam Integer id, @RequestParam Boolean enabled) {
+    public JsonResponse updateEnable(@RequestParam(required = false) Integer id, @RequestParam(required = false) Boolean enabled) {
         return  super.updateEnable( id,enabled );
     }
 
@@ -120,7 +116,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
     @ApiOperation(value = "根据id查询字典类型信息", notes = "根据id查询字典类型信息")
     @ApiImplicitParam(name = "id", value = "字典类型ID", dataType = "Integer", paramType = "query")
     @PostMapping(value = {"/findById","/findById/sso"})
-    public JsonResponse findById(@RequestParam Integer id) {
+    public JsonResponse findById(@RequestParam(required = false) Integer id) {
         return super.findById( id );
     }
 
@@ -130,7 +126,7 @@ public class SysDictController extends LogicController<SysDict, Integer> {
      * @param size
      * @param direction
      * @param properties
-     * @param sysOrgInfoFull
+     * @param sysDict
      * @return
      */
     @ApiOperation(value = "获取字典类型信息列表并分页", notes = "获取字典类型信息列表并分页")
@@ -149,23 +145,22 @@ public class SysDictController extends LogicController<SysDict, Integer> {
                                  @RequestParam(required = false, defaultValue = "10") int size, //
                                  @RequestParam(required = false) String direction, //
                                  @RequestParam(required = false) String properties, //
-                                 @RequestBody SysDict sysDict //
+                                 @RequestBody(required = false) SysDict sysDict //
     ) {
         return super.findAll( page,size,direction, properties,sysDict);
     }
 
 
     /**
-     * 获取字典树
+     * 获取字典树不分页
      *
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/queryDict")
-    @ResponseBody
-    public List<SysDict> queryDict() {
+    @PostMapping(value = "/findDictTree")
+    public JsonResponse findDictTree() {
         List<SysDict> roots = sysDictService.findByAll();
-        return roots;
+        return JsonResponse.success( roots);
     }
 
 
@@ -175,10 +170,9 @@ public class SysDictController extends LogicController<SysDict, Integer> {
      * @param dict
      * @return
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
-    @RequestMapping(value = "/createChild", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public JsonResponse createChild(@RequestBody SysDict dict) {
+    //@PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
+    @PostMapping(value = "/createChild")
+    public JsonResponse createChild(@RequestBody(required = false) SysDict dict) {
         if (dict == null) {
             return JsonResponse.defaultErrorResponse();
         }
@@ -193,19 +187,15 @@ public class SysDictController extends LogicController<SysDict, Integer> {
      * 获取json格式数据字典
      * @return
      */
-    @PreAuthorize("hasAuthority('ROLE_USER')")  // 指定角色权限才能操作方法
-    @PostMapping(value = "/json/list")
-    @ResponseBody
+    //@PreAuthorize("hasAuthority('ROLE_USER')")  // 指定角色权限才能操作方法
+    @PostMapping(value = "/listJson")
     public JsonResponse listJson() {
         List<SysDict> list = sysDictService.findByEnabled(true);
         return JsonResponse.builder().errcode(JsonResponse.SUCCESS_CODE).message("OK").data(list).build();
     }
 
-    /**
-     *查询字段树
-     * @return
-     */
-    @ApiOperation(value = "查询字段树", notes = "通过此接口来查询字段树信息")
+
+   /* @ApiOperation(value = "查询字段树", notes = "通过此接口来查询字段树信息")
     @ApiImplicitParam(name = "id", value = "字典ID", required = true, dataType = "Long", paramType = "path")
     @RequestMapping(value = "/select/tree", method = RequestMethod.GET)
     public ModelAndView getSelectTree() {
@@ -219,5 +209,5 @@ public class SysDictController extends LogicController<SysDict, Integer> {
         Map<String, Object> maps = new HashMap<>();
         maps.put("tree", map);
         return new ModelAndView("sys/sysdict/chooseDictValue", "dictModel", maps);
-    }
+    }*/
 }

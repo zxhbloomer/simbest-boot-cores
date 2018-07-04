@@ -48,7 +48,7 @@ public class UumsSysAppGroupApi {
      * @param appcode
      * @return
      */
-    public ISysAppDecision findById( Long id, String appcode){
+    public JsonResponse findById( Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -56,13 +56,13 @@ public class UumsSysAppGroupApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
-        if(response==null){
+       /* if(response==null){
             log.error("--response对象为空!--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
-        return auth;
+        ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);*/
+        return response;
     }
 
     /**
@@ -95,6 +95,7 @@ public class UumsSysAppGroupApi {
      * @return
      */
     public Boolean ifHasPermission( String username, String appcode)  {
+
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "ifHasPermission"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )

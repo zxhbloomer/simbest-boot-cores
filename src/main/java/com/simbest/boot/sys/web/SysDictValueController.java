@@ -3,10 +3,8 @@
  */
 package com.simbest.boot.sys.web;
 
-import com.simbest.boot.base.repository.Condition;
 import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
-import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.model.SysDictValue;
 import com.simbest.boot.sys.service.ISysDictService;
 import com.simbest.boot.sys.service.ISysDictValueService;
@@ -14,17 +12,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -55,7 +44,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     //设置权限，后面再开启
     //@PreAuthorize ("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @ApiOperation(value = "新增一个字典值", notes = "新增一个字典值")
-    public JsonResponse create(@RequestBody SysDictValue sysDictValue) {
+    public JsonResponse create(@RequestBody(required = false) SysDictValue sysDictValue) {
         return super.create( sysDictValue );
     }
 
@@ -67,7 +56,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     //设置权限，后面再开启
     //@PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @ApiOperation(value = "修改一个字典值", notes = "修改一个字典值")
-    public JsonResponse update( @RequestBody SysDictValue sysDictValue) {
+    public JsonResponse update( @RequestBody(required = false) SysDictValue sysDictValue) {
         return super.update(sysDictValue );
     }
 
@@ -79,7 +68,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     //@PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @ApiOperation(value = "根据id删除字典值", notes = "根据id删除字典值")
     @ApiImplicitParam (name = "id", value = "字典值ID",  dataType = "Integer", paramType = "query")
-    public JsonResponse deleteById(@RequestParam Integer id) {
+    public JsonResponse deleteById(@RequestParam(required = false) Integer id) {
         return super.deleteById( id );
     }
 
@@ -89,7 +78,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
      * @return
      */
     @ApiOperation(value = "先修改再逻辑删除字典值", notes = "先修改再逻辑删除字典值")
-    public JsonResponse delete(@RequestBody SysDictValue sysDictValue) {
+    public JsonResponse delete(@RequestBody(required = false) SysDictValue sysDictValue) {
         return super.delete(sysDictValue);
     }
 
@@ -101,7 +90,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     //@PreAuthorize("hasAuthority('ROLE_SUPER')")  // 指定角色权限才能操作方法
     @ApiOperation(value = "批量逻辑删除字典值", notes = "批量逻辑删除字典值")
     @ApiImplicitParam(name = "ids", value = "字典类型ID", dataType = "Set<Integer>", paramType = "query")
-    public JsonResponse deleteAllByIds(@RequestBody Set<Integer> ids) {
+    public JsonResponse deleteAllByIds(@RequestBody(required = false) Set<Integer> ids) {
         return  super.deleteAllByIds(ids);
     }
 
@@ -115,7 +104,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     @ApiImplicitParams ({@ApiImplicitParam(name = "id", value = "角色ID", required = true, dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "enabled", value = "是否可用", required = true, dataType = "Boolean", paramType = "query")
     })
-    public JsonResponse updateEnable(@RequestParam Integer id, @RequestParam Boolean enabled) {
+    public JsonResponse updateEnable(@RequestParam(required = false) Integer id, @RequestParam(required = false) Boolean enabled) {
         return  super.updateEnable( id,enabled );
     }
 
@@ -129,7 +118,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     @ApiOperation(value = "根据id查询字典值", notes = "根据id查询字典值")
     @ApiImplicitParam(name = "id", value = "字典类型ID", dataType = "Integer", paramType = "query")
     @PostMapping(value = {"/findById","/findById/sso"})
-    public JsonResponse findById(@RequestParam Integer id) {
+    public JsonResponse findById(@RequestParam(required = false) Integer id) {
         return super.findById( id );
     }
 
@@ -158,19 +147,12 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
                                  @RequestParam(required = false, defaultValue = "10") int size, //
                                  @RequestParam(required = false) String direction, //
                                  @RequestParam(required = false) String properties, //
-                                 @RequestBody SysDictValue sysDictValue //
+                                 @RequestBody(required = false) SysDictValue sysDictValue //
     ) {
         return super.findAll( page,size,direction, properties,sysDictValue);
     }
 
-    /**
-     * @param page
-     * @param size
-     * @param searchCode
-     * @param id         dictId
-     * @return
-     */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
+    /*@PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
     @RequestMapping(value = "/list")
     public ModelAndView list(@RequestParam(defaultValue = "1") int page,
                              @RequestParam(defaultValue = "10") int size, //
@@ -208,12 +190,17 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
         map.put("searchD", dataMap);
 
         return new ModelAndView("sys/sysdict/dictionaryList", "dictModel", map);
-    }
+    }*/
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
-    @RequestMapping(value = "/createChild", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    /**
+     * 新增子字典值
+     * @param dictValue
+     * @return
+     */
+    //@PreAuthorize("hasAuthority('ROLE_ADMIN')")  // 指定角色权限才能操作方法
+    @PostMapping(value = "/createChild")
     @ResponseBody
-    public JsonResponse createChild(@RequestBody SysDictValue dictValue) {
+    public JsonResponse createChild(@RequestBody(required = false) SysDictValue dictValue) {
         if (dictValue == null) {
             return JsonResponse.defaultErrorResponse();
         }
@@ -223,13 +210,8 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
         return JsonResponse.defaultSuccessResponse();
     }
 
-    /**
-     * 根据dictid获取字段的值
-     *
-     * @param dictId
-     * @return json
-     */
-    @PreAuthorize("hasAuthority('ROLE_USER')")  // 指定角色权限才能操作方法
+
+   /* @PreAuthorize("hasAuthority('ROLE_USER')")  // 指定角色权限才能操作方法
     @RequestMapping(value = "/json/listByDictId", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public JsonResponse listJson(@RequestParam(required = false, defaultValue = "1") int page, //
@@ -273,7 +255,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
 
         res.setData(map);
         return res;
-    }
+    }*/
 
     /**
      * 根据字典类型以及上级数据字典值id查询数据字典中相应值的name以及value的值
@@ -282,7 +264,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
      */
     @ApiOperation (value = "根据字典类型以及上级数据字典值id查询数据字典中相应值的name以及value的值", notes = "根据字典类型以及上级数据字典值id查询数据字典中相应值的name以及value的值")
     @PostMapping(value = "/findDictValue")
-    public JsonResponse findDictValue(@RequestBody SysDictValue sysDictValue){
+    public JsonResponse findDictValue(@RequestBody(required = false) SysDictValue sysDictValue){
         return JsonResponse.success(sysDictValueService.findDictValue(sysDictValue));
     }
 
