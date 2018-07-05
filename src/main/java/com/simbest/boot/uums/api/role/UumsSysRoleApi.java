@@ -54,7 +54,7 @@ public class UumsSysRoleApi {
      * @param appcode
      * @return
      */
-    public IRole findById( Integer id, String appcode){
+    public SimpleRole findById( Integer id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -67,7 +67,7 @@ public class UumsSysRoleApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IRole auth = JacksonUtils.json2obj(json, SimpleRole.class);
+        SimpleRole auth = JacksonUtils.json2obj(json, SimpleRole.class);
         return auth;
     }
 
@@ -210,7 +210,7 @@ public class UumsSysRoleApi {
      * @param roleCode
      * @return
      */
-    public IRole findRoleByRoleCode (String appcode,String roleCode) {
+    public SimpleRole findRoleByRoleCode (String appcode,String roleCode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -223,7 +223,7 @@ public class UumsSysRoleApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IRole auth = JacksonUtils.json2obj(json, SimpleRole.class);
+        SimpleRole auth = JacksonUtils.json2obj(json, SimpleRole.class);
         return auth;
     }
 }

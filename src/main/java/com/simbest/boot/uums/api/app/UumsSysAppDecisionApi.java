@@ -52,7 +52,7 @@ public class UumsSysAppDecisionApi {
      * @param appcode
      * @return
      */
-    public ISysAppDecision findById( Long id, String appcode){
+    public SimpleSysAppDecision findById( Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -65,7 +65,7 @@ public class UumsSysAppDecisionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
+        SimpleSysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
         return auth;
     }
 

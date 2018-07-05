@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.IPermission;
 import com.simbest.boot.security.SimplePermission;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
@@ -50,7 +49,7 @@ public class UumsSysPermissionApi {
      * @param appcode
      * @return
      */
-    public IPermission findById(Integer id,String appcode){
+    public SimplePermission findById(Integer id,String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -63,7 +62,7 @@ public class UumsSysPermissionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IPermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
+        SimplePermission auth = JacksonUtils.json2obj(json, SimplePermission.class);
         return auth;
     }
 

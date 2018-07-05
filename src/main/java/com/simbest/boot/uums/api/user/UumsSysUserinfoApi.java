@@ -54,7 +54,7 @@ public class UumsSysUserinfoApi {
      * @return
      */
 
-    public IUser findById(Long id, String appcode){
+    public SimpleUser findById(Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -67,7 +67,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
+        SimpleUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
         return auth;
     }
 
@@ -101,7 +101,7 @@ public class UumsSysUserinfoApi {
      * @param appcode
      * @return
      */
-    public IUser findByUsername(String username,String appcode) {
+    public SimpleUser findByUsername(String username,String appcode) {
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findByUsername"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
@@ -112,7 +112,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
+        SimpleUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
         return auth;
     }
 

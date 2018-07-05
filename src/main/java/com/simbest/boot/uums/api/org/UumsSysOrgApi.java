@@ -6,7 +6,6 @@ package com.simbest.boot.uums.api.org;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.IOrg;
 import com.simbest.boot.security.SimpleOrg;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
@@ -48,7 +47,7 @@ public class UumsSysOrgApi {
      * @param appcode
      * @return
      */
-    public IOrg findById( Integer id, String appcode){
+    public SimpleOrg findById( Integer id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -61,7 +60,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
+        SimpleOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
         return auth;
     }
 
@@ -94,7 +93,7 @@ public class UumsSysOrgApi {
      * @param orgCode
      * @return
      */
-    public IOrg findListByOrgCode(String appcode,String orgCode) {
+    public SimpleOrg findListByOrgCode(String appcode,String orgCode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findListByOrgCode"+SSO)
@@ -107,7 +106,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
+        SimpleOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
         return auth;
     }
 
@@ -166,7 +165,7 @@ public class UumsSysOrgApi {
      * @param orgCode
      * @return
      */
-    public IOrg findParentBySon (String appcode,String orgCode ) {
+    public SimpleOrg findParentBySon (String appcode,String orgCode ) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findParentBySon"+SSO)
@@ -179,7 +178,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
+        SimpleOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
         return auth;
     }
 
@@ -188,7 +187,7 @@ public class UumsSysOrgApi {
      * @param appcode
      * @return
      */
-    public IOrg findRoot(String appcode) {
+    public SimpleOrg findRoot(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findRoot"+SSO)
@@ -200,7 +199,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
+        SimpleOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
         return auth;
     }
 
@@ -240,7 +239,7 @@ public class UumsSysOrgApi {
      * @param appcode
      * @return
      */
-    public IOrg findOrgByAppCode(String appcode) {
+    public SimpleOrg findOrgByAppCode(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findOrgByAppCode"+SSO)
@@ -253,7 +252,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
+        SimpleOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
         return auth;
     }
 }

@@ -50,7 +50,7 @@ public class UumsSysPositionApi {
      * @param id
      * @return
      */
-    public IPosition findById(Integer id,String appcode) {
+    public SimplePosition findById(Integer id,String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         username=encryptor.encrypt(username);
@@ -65,7 +65,7 @@ public class UumsSysPositionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        IPosition auth = JacksonUtils.json2obj(json, SimplePosition.class);
+        SimplePosition auth = JacksonUtils.json2obj(json, SimplePosition.class);
         return auth;
     }
 
