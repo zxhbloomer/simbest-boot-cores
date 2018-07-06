@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.uums.api.org;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -116,7 +119,7 @@ public class UumsSysOrgApi {
      * @param orgCode
      * @return
      */
-    public JsonResponse findSonByParentOrgId( String appcode, String orgCode) {
+    public  List<SimpleOrg> findSonByParentOrgId( String appcode, String orgCode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findSonByParentOrgId"+SSO)
@@ -124,22 +127,17 @@ public class UumsSysOrgApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("orgCode", orgCode)
                 .asBean(JsonResponse.class);
-        /*if(response==null){
+        if(response==null){
             log.error("--response对象为空!--");
             return null;
         }
-        if(!(response.getData() instanceof ArrayList)){
+        if(!(response.getData() instanceof ArrayList )){
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> orgs=(ArrayList<Object>)response.getData();
-        List<IOrg> orgList=new ArrayList<>();
-        for( Object org:orgs){
-            String json = JacksonUtils.obj2json(response.getData());
-            IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-            orgList.add(auth);
-        }*/
-        return response;
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleOrg> orgList=JacksonUtils.json2map(json, new TypeReference<List<SimpleOrg>>(){});
+        return orgList;
     }
 
     /**
@@ -148,7 +146,7 @@ public class UumsSysOrgApi {
      * @param orgCode
      * @return
      */
-    public JsonResponse findAllOrgByParentoCode (String appcode,String orgCode ) {
+    public List<SimpleOrg> findAllOrgByParentoCode (String appcode,String orgCode ) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAllOrgByParentoCode"+SSO)
@@ -156,7 +154,17 @@ public class UumsSysOrgApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("orgCode", orgCode)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleOrg> orgList = JacksonUtils.json2map(json, new TypeReference<List<SimpleOrg>>(){});
+        return orgList;
     }
 
     /**
@@ -208,30 +216,24 @@ public class UumsSysOrgApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findRootAndNext(String appcode) {
+    public List<SimpleOrg> findRootAndNext(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findRootAndNext"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .asBean(JsonResponse.class);
-        /*if(response==null){
+        if(response==null){
             log.error("--response对象为空!--");
             return null;
         }
-        if(!(response.getData() instanceof ArrayList)){
+        if(!(response.getData() instanceof ArrayList )){
             log.error("--uums接口返回的类型不为ArrayList--");
             return null;
         }
-        List<Object> orgs=(ArrayList<Object>)response.getData();
-        List<IOrg> orgList=new ArrayList<>();
-        for( Object org:orgs){
-            String json = JacksonUtils.obj2json(response.getData());
-            IOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
-            orgList.add(auth);
-        }*/
-        return response;
-
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleOrg> orgList = JacksonUtils.json2map(json, new TypeReference<List<SimpleOrg>>(){});
+        return orgList;
     }
 
     /**

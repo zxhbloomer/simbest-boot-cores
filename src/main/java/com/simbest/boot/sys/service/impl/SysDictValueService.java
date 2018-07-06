@@ -94,11 +94,11 @@ public class SysDictValueService extends LogicService<SysDictValue,Integer> impl
         }
         List<SysDictValue> sysDictValueList=new ArrayList<>(  );
         if(sysDictValue.getParentId()!=null){
-            sysDictValueList=dictValueRepository.findDictValue(sysDictValue.getDictId(),sysDictValue.getParentId());
+            sysDictValueList=dictValueRepository.findDictValue(sysDictValue.getDictType(),sysDictValue.getParentId());
             sysDictValueList.get(0).setIsDefault(true);
             return sysDictValueList;
         }
-        sysDictValueList=dictValueRepository.findDictValue(sysDictValue.getDictId());
+        sysDictValueList=dictValueRepository.findDictValue(sysDictValue.getDictType());
         sysDictValueList.get(0).setIsDefault(true);
         return sysDictValueList;
     }

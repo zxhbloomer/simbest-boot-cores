@@ -45,7 +45,7 @@ public class SysDictValue extends LogicModel {
     private Integer parentId;
 
     @Column(nullable = false)
-    private Integer dictId;
+    private String dictType;
 
     @Transient
     private Boolean isDefault;

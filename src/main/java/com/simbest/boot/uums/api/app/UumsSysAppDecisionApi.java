@@ -7,15 +7,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.ISysAppDecision;
-import com.simbest.boot.security.SimplePermission;
 import com.simbest.boot.security.SimpleSysAppDecision;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -40,9 +37,9 @@ import java.util.Map;
 public class UumsSysAppDecisionApi {
     private static final String USER_MAPPING = "/action/app/decision/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
-    //private String uumsAddress="http://localhost:8080/uums";
+    /*@Value ("${app.uums.address}")
+    private String uumsAddress;*/
+    private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 

@@ -30,6 +30,9 @@ public class SysDict extends LogicModel {
     @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_dict_seq")
     private Integer id;
 
+    @Column(nullable = false, length = 255)
+    private String dictType;
+
     @Column(nullable = false, length = 50)
     private String name;
 
