@@ -20,7 +20,7 @@ public interface SysDictValueRepository extends LogicRepository<SysDictValue, In
     /**
      * 根据字典类型查询数据字典中的相应值name以及value的值
      */
-    String sql1 = " SELECT dv.* from sys_dict d,sys_dict_value dv where d.dict_type=dv.dict_type and d.enabled=1 and dv.enabled=1 and d.dictType=:dictType"+
+    String sql1 = " SELECT dv.* from sys_dict d,sys_dict_value dv where d.dict_type=dv.dict_type and d.enabled=1 and dv.enabled=1 and d.dict_type=:dictType"+
             " order by dv.display_order asc ";
     @Query (value = sql1,nativeQuery = true)
     List<SysDictValue> findDictValue(@Param ("dictType") String dictType);
