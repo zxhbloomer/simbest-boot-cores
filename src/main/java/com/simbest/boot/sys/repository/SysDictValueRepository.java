@@ -51,4 +51,11 @@ public interface SysDictValueRepository extends LogicRepository<SysDictValue, In
     @Query (value = sql3,nativeQuery = true)
     List<Map<String,String>> findAllDictValue();
 
+    /**
+     * 根据dictType还有父id来查看字典的信息,单表查询
+     */
+    String sql5 = " SELECT dv.* from sys_dict_value dv where dv.enabled=1 and dv.dict_type=:dictType and dv.parent_id=:parentId "+
+            " order by dv.display_order asc Nulls last ";
+    @Query (value = sql5,nativeQuery = true)
+    List<SysDictValue> findDictVlueByTypeAndParent(@Param( "dictType" ) String dictType,@Param( "parentId" ) Integer parentId);
 }
