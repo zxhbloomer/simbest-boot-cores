@@ -280,10 +280,9 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    public List<SimpleUser> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
+    public List<List<Map<String,String>>> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        //sysAppDecisionmap.put("spare2",username);
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
@@ -300,7 +299,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleUser> userList=JacksonUtils.json2map(json, new TypeReference<List<SimpleUser>>(){});
+        List<List<Map<String,String>>> userList=JacksonUtils.json2list(json, new TypeReference<List<List<Map<String,String>>>>(){});
         return userList;
     }
 
