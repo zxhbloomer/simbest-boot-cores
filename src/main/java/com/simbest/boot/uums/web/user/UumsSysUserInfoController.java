@@ -133,6 +133,22 @@ public class UumsSysUserInfoController {
         return JsonResponse.success(uumsSysUserinfoApi.findUserByDecisionNoPage(appcode,sysAppDecisionMap));
     }
 
+    /**
+     * 根据用户返回用户以及用户的的组织树
+     * @param appcode
+     * @param username
+     * @return
+     */
+    @ApiOperation(value = "根据用户返回用户以及用户的的组织树", notes = "根据用户返回用户以及用户的的组织树")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "username", value = "要查询的人的username", dataType = "String" ,paramType = "query")
+    })
+    @PostMapping(value ="/findUserByUsernameNoPage")
+    public JsonResponse findUserByUsernameNoPage(@RequestParam String appcode,@RequestParam String username){
+        return JsonResponse.success(uumsSysUserinfoApi.findUserByUsernameNoPage(appcode,username));
+    }
+
     /*    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
     @ApiImplicitParams ({ //
             @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //

@@ -9,6 +9,7 @@ import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.SimpleUser;
+import com.simbest.boot.security.UserOrgTree;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
@@ -280,7 +281,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    public List<List<Map<String,String>>> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
+    public List<UserOrgTree> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
@@ -299,7 +300,34 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<List<Map<String,String>>> userList=JacksonUtils.json2list(json, new TypeReference<List<List<Map<String,String>>>>(){});
+        List<UserOrgTree> userList=JacksonUtils.json2list(json, new TypeReference<List<UserOrgTree>>(){});
+        return userList;
+    }
+
+    /**
+     * 根据用户返回用户以及用户的的组织树
+     * @param appcode
+     * @param username
+     * @return
+     */
+    public List<UserOrgTree> findUserByUsernameNoPage(String appcode,String username){
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByUsernameNoPage"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("username",username)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<UserOrgTree> userList=JacksonUtils.json2list(json, new TypeReference<List<UserOrgTree>>(){});
         return userList;
     }
 
