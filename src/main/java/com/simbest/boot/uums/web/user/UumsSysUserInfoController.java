@@ -149,6 +149,22 @@ public class UumsSysUserInfoController {
         return JsonResponse.success(uumsSysUserinfoApi.findUserByUsernameNoPage(appcode,username));
     }
 
+    /**
+     * 一层层去查询全部组织和人
+     * @param appcode
+     * @param orgCode
+     * @return
+     */
+    @ApiOperation(value = "一层层去查询全部组织和人", notes = "一层层去查询全部组织和人")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "orgCode", value = "组织编码", dataType = "String" ,paramType = "query")
+    })
+    @PostMapping(value ="/findOneStep")
+    public JsonResponse findOneStep(@RequestParam String appcode,@RequestParam(required = false) String orgCode){
+        return JsonResponse.success(uumsSysUserinfoApi.findUserByUsernameNoPage(appcode,orgCode));
+    }
+
     /*    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
     @ApiImplicitParams ({ //
             @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //

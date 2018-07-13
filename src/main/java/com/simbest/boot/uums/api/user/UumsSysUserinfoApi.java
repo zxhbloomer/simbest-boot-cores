@@ -18,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -331,6 +329,32 @@ public class UumsSysUserinfoApi {
         return userList;
     }
 
+    /**
+     * 一层层去查询全部组织和人
+     * @param appcode
+     * @param orgCode
+     * @return
+     */
+    public List<UserOrgTree> findOneStep(String appcode,String orgCode){
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "findOneStep"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("orgCode",orgCode)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<UserOrgTree> userList=JacksonUtils.json2list(json, new TypeReference<List<UserOrgTree>>(){});
+        return userList;
+    }
 
     /*
     public JsonResponse findUserByApp(@RequestParam int page,@RequestParam int size, @RequestParam String direction,@RequestParam String properties,@RequestParam String appcode, Map sysAppDecisionMap){
