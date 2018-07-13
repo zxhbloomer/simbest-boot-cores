@@ -162,7 +162,7 @@ public class UumsSysUserInfoController {
     })
     @PostMapping(value ="/findOneStep")
     public JsonResponse findOneStep(@RequestParam String appcode,@RequestParam(required = false) String orgCode){
-        return JsonResponse.success(uumsSysUserinfoApi.findUserByUsernameNoPage(appcode,orgCode));
+        return JsonResponse.success(uumsSysUserinfoApi.findOneStep(appcode,orgCode));
     }
 
     /*    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
