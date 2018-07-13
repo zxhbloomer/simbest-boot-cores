@@ -5,6 +5,7 @@ package com.simbest.boot.util.distribution.id;
 
 import com.google.common.base.Strings;
 import com.simbest.boot.base.exception.Exceptions;
+import com.simbest.boot.util.DateUtil;
 import com.simbest.boot.util.redis.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +25,17 @@ import java.util.Date;
 @Slf4j
 public class RedisIdGenerator {
 
+    public static int DEFAULT_FORMAT_ADD_LENGTH = 3;
+
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
     /**
+     * 返回当前年（2位）+当前天在当前年的第几天（3位）+当前小时（2位）
      * @param date
      * @return 1836517
      */
-    private String getDateHourPrefix(Date date) {
+    public String getDateHourPrefix(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int year = c.get(Calendar.YEAR);
@@ -45,18 +49,27 @@ public class RedisIdGenerator {
     }
 
     /**
-     * @Description 支持一个小时100w个订单号的生成
-     *
-     * @author butterfly
+     * 返回当前年（2位）+当前日期（4位）
+     * @param date
+     * @return 181231
+     */
+    public String getDatePrefix(Date date) {
+        return DateUtil.getDate(date, DateUtil.datePattern4);
+    }
+
+    /**
+     * 增加Id值
+     * @param cacheName
      * @param prefix
      * @return
      */
-    private Long incrOrderId(String cacheName, String dateHour) {
+    private Long incrId(String cacheName, String prefix, int length) {
         String orderId = null;
-        String rediskey = "runtime::"+contextPath+"::#{cacheName}::id::".replace("#{cacheName}", cacheName).concat(dateHour); // 1836517
+        String rediskey = "runtime::"+contextPath+"::#{cacheName}::id::".replace("#{cacheName}", cacheName).concat(prefix);
         try {
             Long index = RedisUtil.incrBy(rediskey);
-            orderId = dateHour.concat(String.format("%1$06d", index)); // 补位操作 保证满足6位
+            String formatter = "%1$0xd".replace("x", String.valueOf(length));
+            orderId = prefix.concat(String.format(formatter, index)); // 补位操作
         } catch(Exception ex) {
             log.error("Generate distributited id by redis catch an exception.");
             Exceptions.printException(ex);
@@ -65,13 +78,41 @@ public class RedisIdGenerator {
         return Long.parseLong(orderId);
     }
 
-    public Long generatorId(String cacheName) {
+    /**
+     *
+     * @param cacheName
+     * @return 1836517001
+     */
+    public Long getDateHourId(String cacheName) {
         // 转成数字类型，可排序
-        return incrOrderId(cacheName, getDateHourPrefix(new Date()));
+        return incrId(cacheName, getDateHourPrefix(new Date()), DEFAULT_FORMAT_ADD_LENGTH);
     }
 
-    public Long generatorId() {
+    /**
+     *
+     * @return 1836517001
+     */
+    public Long getDateHourId() {
         // 转成数字类型，可排序
-        return incrOrderId("default", getDateHourPrefix(new Date()));
+        return incrId("default", getDateHourPrefix(new Date()), DEFAULT_FORMAT_ADD_LENGTH);
+    }
+
+    /**
+     *
+     * @param cacheName
+     * @return 181231001
+     */
+    public Long getDateId(String cacheName) {
+        // 转成数字类型，可排序
+        return incrId(cacheName, getDatePrefix(new Date()), DEFAULT_FORMAT_ADD_LENGTH);
+    }
+
+    /**
+     *
+     * @return 181231001
+     */
+    public Long getDateId() {
+        // 转成数字类型，可排序
+        return incrId("default", getDatePrefix(new Date()), DEFAULT_FORMAT_ADD_LENGTH);
     }
 }

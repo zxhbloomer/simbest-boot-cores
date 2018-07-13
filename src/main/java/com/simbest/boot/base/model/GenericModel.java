@@ -5,6 +5,11 @@ package com.simbest.boot.base.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.poi.ss.formula.functions.T;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
@@ -19,7 +24,7 @@ import java.util.Date;
 @Setter
 @Getter
 @MappedSuperclass
-public abstract class GenericModel implements Serializable {
+public abstract class GenericModel implements Serializable, Comparable {
 
     @Transient
     //动态排序
@@ -40,4 +45,24 @@ public abstract class GenericModel implements Serializable {
     @Transient
     //分页每页记录数
     private Integer pagesize;
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public int compareTo(Object obj) {
+        return CompareToBuilder.reflectionCompare(this, obj);
+    }
 }

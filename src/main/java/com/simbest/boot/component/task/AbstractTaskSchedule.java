@@ -21,12 +21,12 @@ public abstract class AbstractTaskSchedule {
 
     public final static String CHECK_FAILED = "FAILED";
 
-    private AppRuntimeMaster master;
+    private AppRuntimeMaster appRuntime;
 
     private SysTaskExecutedLogRepository repository;
 
-    public AbstractTaskSchedule(AppRuntimeMaster master, SysTaskExecutedLogRepository repository){
-        this.master = master;
+    public AbstractTaskSchedule(AppRuntimeMaster appRuntime, SysTaskExecutedLogRepository repository){
+        this.appRuntime = appRuntime;
         this.repository = repository;
     }
 
@@ -34,8 +34,9 @@ public abstract class AbstractTaskSchedule {
      * 需要子类主键调度器执行Scheduled
      */
     public void checkAndExecute() {
-        if(master.getMasterHost().equals(master.getMyHost()) && master.getMasterPort().equals(master.getMyPort())) {
-            log.debug("I'm master running {} on {}, i could execute the job", master.getMyHost(), master.getMyPort());
+        if(appRuntime.getMyHost().equals(appRuntime.getMasterHost())
+                && appRuntime.getMyPort().equals(appRuntime.getMasterPort())) {
+            log.debug("I'm master running {} on {}, i could execute the job", appRuntime.getMyHost(), appRuntime.getMyPort());
             Long beginTime = System.currentTimeMillis();
             String content = CHECK_FAILED;
             try {
@@ -45,10 +46,17 @@ public abstract class AbstractTaskSchedule {
                 Exceptions.printException(e);
             }
             Long endTime = System.currentTimeMillis();
-            SysTaskExecutedLog log = SysTaskExecutedLog.builder().taskName(this.getClass().getSimpleName()).hostname(master.getMyHost()).port(master.getMyPort()).durationTime(endTime - beginTime).content(StringUtils.substring(content, 0, 2000)).build();
+            SysTaskExecutedLog log = SysTaskExecutedLog.builder()
+                    .taskName(this.getClass().getSimpleName())
+                    .hostname(appRuntime.getMyHost())
+                    .port(appRuntime.getMyPort())
+                    .durationTime(endTime - beginTime)
+                    .content(StringUtils.substring(content, 0, 2000))
+                    .build();
             repository.save(log);
         } else {
-            log.debug("Master running {} on {}, I'm running {} on {}, I couldn't execute the job", master.getMasterHost(), master.getMasterPort(), master.getMyHost(), master.getMyPort());
+            log.debug("Master running {} on {}, I'm running {} on {}, I couldn't execute the job",
+                    appRuntime.getMasterHost(), appRuntime.getMasterPort(), appRuntime.getMyHost(), appRuntime.getMyPort());
         }
     }
 

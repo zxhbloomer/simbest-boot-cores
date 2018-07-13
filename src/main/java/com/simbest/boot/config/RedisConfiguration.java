@@ -3,7 +3,6 @@
  */
 package com.simbest.boot.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.simbest.boot.component.distributed.lock.DistributedLockFactoryBean;
 import com.simbest.boot.constants.ApplicationConstants;
@@ -81,16 +80,6 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 
     @Autowired
     private RedisOperationsSessionRepository sessionRepository;
-
-
-    //    public static final RedisSerializationContext.SerializationPair<String> STRING_PAIR = RedisSerializationContext
-//            .SerializationPair.fromSerializer(new StringRedisSerializer());
-//    /**
-//     * value serializer pair
-//     */
-//    public static final RedisSerializationContext.SerializationPair<Object> JACKSON_PAIR = RedisSerializationContext
-//            .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
-
 
     @PostConstruct
     private void afterPropertiesSet() {
@@ -198,7 +187,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new JdkSerializationRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new JdkSerializationRedisSerializer());
         template.setHashValueSerializer(new JdkSerializationRedisSerializer());
         template.setDefaultSerializer(new JdkSerializationRedisSerializer());
         template.afterPropertiesSet();

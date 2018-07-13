@@ -31,6 +31,7 @@ public final class DateUtil {
 	public static final String datePattern1 = "yyyy-MM-dd";
 	public static final String datePattern2 = "yyyyMMdd";
     public static final String datePattern3 = "yyyy/MM/dd";
+    public static final String datePattern4 = "yyMMdd";
 	public static final String timestampPattern1 = "yyyy-MM-dd HH:mm:ss";
     public static final String timestampPattern2 = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String timestampPattern3 = "yyyy-MM-dd HH:mm:ss.SSS Z";

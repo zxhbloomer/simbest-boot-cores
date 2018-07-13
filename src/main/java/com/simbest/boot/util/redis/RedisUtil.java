@@ -6,6 +6,7 @@ import com.simbest.boot.util.json.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
+@DependsOn(value = {"redisTemplate"})
 public class RedisUtil {
 
     @Autowired
@@ -42,6 +44,9 @@ public class RedisUtil {
 
     private static String prefix;
 
+    /**
+     * @see RedisConfiguration#redisTemplate
+     */
     @PostConstruct
     public void init() {
         cacheUtils = this;
@@ -458,7 +463,7 @@ public class RedisUtil {
 	 * @param field
 	 * @return
 	 */
-	public static Object hGet(String key, String hkey) {
+	public static Object hGet(String key, Object hkey) {
 		return cacheUtils.redisTemplate.opsForHash().get(prefix+key, hkey);
 	}
 
@@ -479,15 +484,15 @@ public class RedisUtil {
 	 * @param fields
 	 * @return
 	 */
-	public static List<Object> hMultiGet(String key, Collection<Object> fields) {
-		return cacheUtils.redisTemplate.opsForHash().multiGet(prefix+key, fields);
+	public static List<Object> hMultiGet(String key, Collection<Object> hkeys) {
+		return cacheUtils.redisTemplate.opsForHash().multiGet(prefix+key, hkeys);
 	}
 
-	public static void hPut(String key, String hashKey, String value) {
-		cacheUtils.redisTemplate.opsForHash().put(prefix+key, hashKey, value);
+	public static void hPut(String key, Object hkey, Object value) {
+		cacheUtils.redisTemplate.opsForHash().put(prefix+key, hkey, value);
 	}
 
-	public static void hPutAll(String key, Map<String, String> maps) {
+	public static void hPutAll(String key, Map<Object, Object> maps) {
 		cacheUtils.redisTemplate.opsForHash().putAll(prefix+key, maps);
 	}
 
@@ -499,8 +504,8 @@ public class RedisUtil {
 	 * @param value
 	 * @return
 	 */
-	public static Boolean hPutIfAbsent(String key, String hashKey, String value) {
-		return cacheUtils.redisTemplate.opsForHash().putIfAbsent(prefix+key, hashKey, value);
+	public static Boolean hPutIfAbsent(String key, Object hkey, Object value) {
+		return cacheUtils.redisTemplate.opsForHash().putIfAbsent(prefix+key, hkey, value);
 	}
 
 	/**
@@ -510,8 +515,8 @@ public class RedisUtil {
 	 * @param fields
 	 * @return
 	 */
-	public static Long hDelete(String key, Object... fields) {
-		return cacheUtils.redisTemplate.opsForHash().delete(prefix+key, fields);
+	public static Long hDelete(String key, Object... hkeys) {
+		return cacheUtils.redisTemplate.opsForHash().delete(prefix+key, hkeys);
 	}
 
 	/**
@@ -521,8 +526,8 @@ public class RedisUtil {
 	 * @param field
 	 * @return
 	 */
-	public static boolean hExists(String key, String field) {
-		return cacheUtils.redisTemplate.opsForHash().hasKey(prefix+key, field);
+	public static boolean hExists(String key, Object hkey) {
+		return cacheUtils.redisTemplate.opsForHash().hasKey(prefix+key, hkey);
 	}
 
 	/**
@@ -533,8 +538,8 @@ public class RedisUtil {
 	 * @param increment
 	 * @return
 	 */
-	public static Long hIncrBy(String key, Object field, long increment) {
-		return cacheUtils.redisTemplate.opsForHash().increment(prefix+key, field, increment);
+	public static Long hIncrBy(String key, Object hkey, long increment) {
+		return cacheUtils.redisTemplate.opsForHash().increment(prefix+key, hkey, increment);
 	}
 
 	/**
