@@ -257,4 +257,5 @@ public class UumsSysOrgApi {
         SimpleOrg auth = JacksonUtils.json2obj(json, SimpleOrg.class);
         return auth;
     }
+
 }
