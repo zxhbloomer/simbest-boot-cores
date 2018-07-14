@@ -131,10 +131,10 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
     @Bean
     public RsaAuthenticationFilter rsaAuthenticationFilter() throws Exception {
         RsaAuthenticationFilter filter = new RsaAuthenticationFilter();
-        filter.setAuthenticationSuccessHandler(successLoginHandler);
-        filter.setAuthenticationFailureHandler(failedLoginHandler);
         filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(ApplicationConstants.LOGIN_PAGE, RequestMethod.POST.name()));
         filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationSuccessHandler(successLoginHandler);
+        filter.setAuthenticationFailureHandler(failedLoginHandler);
         filter.setEncryptor(rsaEncryptor);
        return filter;
     }
@@ -142,9 +142,9 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
     @Bean
     public UumsAuthenticationFilter uumsAuthenticationFilter() throws Exception {
         UumsAuthenticationFilter filter = new UumsAuthenticationFilter(new AntPathRequestMatcher(ApplicationConstants.UUMS_LOGIN_PAGE, RequestMethod.POST.name()));
+        filter.setAuthenticationManager(authenticationManagerBean());
         filter.setAuthenticationSuccessHandler(successLoginHandler);
         filter.setAuthenticationFailureHandler(failedLoginHandler);
-        filter.setAuthenticationManager(authenticationManagerBean());
         return filter;
     }
 
@@ -161,8 +161,9 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Bean
     public CaptchaAuthenticationFilter captchaUsernamePasswordAuthenticationFilter() throws Exception {
-        CaptchaAuthenticationFilter filter = new CaptchaAuthenticationFilter();
+        CaptchaAuthenticationFilter filter = new CaptchaAuthenticationFilter(new AntPathRequestMatcher("/*login", RequestMethod.POST.name()));
         filter.setAuthenticationManager(authenticationManagerBean());
+        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(ApplicationConstants.LOGIN_PAGE));
         return filter;
     }
 

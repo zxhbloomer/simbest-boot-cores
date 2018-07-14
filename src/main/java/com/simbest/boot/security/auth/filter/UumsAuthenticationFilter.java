@@ -36,10 +36,6 @@ public class UumsAuthenticationFilter extends AbstractAuthenticationProcessingFi
         super(requiresAuthenticationRequestMatcher);
     }
 
-    protected UumsAuthenticationFilter(String defaultFilterProcessesUrl) {
-        super(defaultFilterProcessesUrl);
-    }
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {

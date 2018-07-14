@@ -6,6 +6,7 @@ package com.simbest.boot.security.auth.filter;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.util.AppSessionUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
@@ -32,12 +34,11 @@ import java.io.IOException;
 public class CaptchaAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     // 是否开启验证码功能
+    @Value("${app.captcha.enable}")
     private boolean isOpenValidateCode = true;
 
-    public CaptchaAuthenticationFilter() {
-        super(new AntPathRequestMatcher(ApplicationConstants.LOGIN_PAGE, HttpMethod.POST.name()));
-        SimpleUrlAuthenticationFailureHandler failedHandler = (SimpleUrlAuthenticationFailureHandler) getFailureHandler();
-        failedHandler.setDefaultFailureUrl(ApplicationConstants.LOGIN_ERROR_PAGE);
+    public CaptchaAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
+        super(requiresAuthenticationRequestMatcher);
     }
 
     @Override
