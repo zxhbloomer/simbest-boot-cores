@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.security.acl;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -25,7 +26,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
  * https://github.com/BerryCloud/spring-data-jpa-acl
  */
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
     @Override
@@ -35,5 +36,6 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
         expressionHandler.setPermissionEvaluator(new AclPermissionEvaluator());
         return expressionHandler;
     }
+
 
 }

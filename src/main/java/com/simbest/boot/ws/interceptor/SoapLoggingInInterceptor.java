@@ -19,10 +19,10 @@ import java.io.InputStream;
  * 时间: 2018/6/26  16:05
  */
 @Slf4j
-public class CustomLoggingInInterceptor extends LoggingInInterceptor {
+public class SoapLoggingInInterceptor extends LoggingInInterceptor {
 
 
-    public CustomLoggingInInterceptor() {
+    public SoapLoggingInInterceptor() {
         super(Phase.PRE_STREAM);
         this.setPrettyLogging(true);
     }

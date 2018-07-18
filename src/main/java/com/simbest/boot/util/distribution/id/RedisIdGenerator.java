@@ -5,6 +5,7 @@ package com.simbest.boot.util.distribution.id;
 
 import com.google.common.base.Strings;
 import com.simbest.boot.base.exception.Exceptions;
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.util.DateUtil;
 import com.simbest.boot.util.redis.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +66,7 @@ public class RedisIdGenerator {
      */
     private Long incrId(String cacheName, String prefix, int length) {
         String orderId = null;
-        String rediskey = "runtime::"+contextPath+"::#{cacheName}::id::".replace("#{cacheName}", cacheName).concat(prefix);
+        String rediskey = cacheName.concat(ApplicationConstants.COLON).concat(prefix);
         try {
             Long index = RedisUtil.incrBy(rediskey);
             String formatter = "%1$0xd".replace("x", String.valueOf(length));

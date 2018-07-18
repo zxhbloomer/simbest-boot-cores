@@ -3,8 +3,6 @@
  */
 package com.simbest.boot.component.distributed.lock;
 
-import com.google.common.collect.Maps;
-import com.simbest.boot.base.enums.SysCustomFieldType;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysCustomField;
 import com.simbest.boot.sys.service.ISysCustomFieldService;
@@ -13,14 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * 用途：

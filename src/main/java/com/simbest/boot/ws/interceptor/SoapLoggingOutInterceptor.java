@@ -20,9 +20,9 @@ import java.io.OutputStream;
  * 时间: 2018/6/26  16:06
  */
 @Slf4j
-public class CustomLoggingOutInterceptor extends LoggingOutInterceptor {
+public class SoapLoggingOutInterceptor extends LoggingOutInterceptor {
 
-    public CustomLoggingOutInterceptor() {
+    public SoapLoggingOutInterceptor() {
         super(Phase.PRE_STREAM);
         this.setPrettyLogging(true);
     }

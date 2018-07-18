@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,9 +106,9 @@ public class GenericController<T extends GenericModel, PK extends Serializable> 
     }
 
     @PostMapping(value = "/deleteAllByIds")
-    public JsonResponse deleteAllByIds(@RequestBody Set<PK> pks) {
+    public JsonResponse deleteAllByIds(@RequestBody PK[] ids) {
         try {
-
+            service.deleteAllByIds(Arrays.asList(ids));
             return JsonResponse.defaultSuccessResponse();
         } catch (Exception e) {
             return GlobalExceptionRegister.returnErrorResponse(e);
