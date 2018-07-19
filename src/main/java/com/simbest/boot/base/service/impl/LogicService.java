@@ -1,6 +1,5 @@
 package com.simbest.boot.base.service.impl;
 
-import com.google.common.collect.Sets;
 import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.ILogicService;
@@ -17,7 +16,6 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <strong>Title : 业务实体通用服务层</strong><br>
