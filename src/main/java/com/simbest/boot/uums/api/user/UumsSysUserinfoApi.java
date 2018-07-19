@@ -358,6 +358,33 @@ public class UumsSysUserinfoApi {
         return userList;
     }
 
+    /**
+     * 根据用户中文姓名以及主数据首先移动号码模糊查询并分页
+     * @param appcode
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param truename
+     * @param preferredMobile
+     * @return
+     */
+    public JsonResponse findRoleNameIsARoleDim(int page,int size,String direction,String properties,String appcode,String truename, String preferredMobile ) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "findRoleNameIsARoleDim"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size))
+                .param("direction", direction)
+                .param("properties", properties)
+                .param("truename", truename)
+                .param("preferredMobile", preferredMobile)
+                .asBean(JsonResponse.class);
+        return response;
+    }
+
     /*
     public JsonResponse findUserByApp(@RequestParam int page,@RequestParam int size, @RequestParam String direction,@RequestParam String properties,@RequestParam String appcode, Map sysAppDecisionMap){
         String username = SecurityUtils.getCurrentUserName();

@@ -165,6 +165,45 @@ public class UumsSysUserInfoController {
         return JsonResponse.success(uumsSysUserinfoApi.findOneStep(appcode,orgCode));
     }
 
+    /**
+     * 根据用户中文姓名以及主数据首先移动号码模糊查询并分页
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param appcode
+     * @param truename
+     * @param preferredMobile
+     * @return
+     */
+    @ApiOperation(value = "根据用户中文姓名以及主数据首先移动号码模糊查询并分页", notes = "根据用户中文姓名以及主数据首先移动号码模糊查询并分页")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //
+                    required = true, example = "1"), //
+            @ApiImplicitParam(name = "size", value = "每页数量", dataType = "int", paramType = "query", //
+                    required = true, example = "10"), //
+            @ApiImplicitParam(name = "direction", value = "排序规则（asc/desc）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "properties", value = "排序规则（属性名称）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "truename", value = "用户真实姓名", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "preferredMobile", value = "用户移动电话", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/findRoleNameIsARoleDim")
+    public JsonResponse findRoleNameIsARoleDim( @RequestParam(required = false, defaultValue = "1") int page, //
+                                       @RequestParam(required = false, defaultValue = "10") int size, //
+                                       @RequestParam(required = false) String direction, //
+                                       @RequestParam(required = false) String properties,
+                                       @RequestParam(required = false) String appcode,
+                                       @RequestParam(required = false) String truename,
+                                                @RequestParam(required = false) String preferredMobile ) {
+        return JsonResponse.success(uumsSysUserinfoApi.findRoleNameIsARoleDim(page,size,direction,properties,appcode,truename,preferredMobile));
+    }
+
     /*    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
     @ApiImplicitParams ({ //
             @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //
