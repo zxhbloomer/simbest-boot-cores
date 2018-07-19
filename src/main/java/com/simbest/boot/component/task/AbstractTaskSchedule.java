@@ -38,10 +38,12 @@ public abstract class AbstractTaskSchedule {
                 && appRuntime.getMyPort().equals(appRuntime.getMasterPort())) {
             log.debug("I'm master running {} on {}, i could execute the job", appRuntime.getMyHost(), appRuntime.getMyPort());
             Long beginTime = System.currentTimeMillis();
+            Boolean executeFlag = true;
             String content = CHECK_FAILED;
             try {
                 content = this.execute();
             } catch (Exception e) {
+                executeFlag = false;
                 log.error("Execute taskName with {} failed.", this.getClass().getSimpleName());
                 Exceptions.printException(e);
             }
@@ -52,6 +54,7 @@ public abstract class AbstractTaskSchedule {
                     .port(appRuntime.getMyPort())
                     .durationTime(endTime - beginTime)
                     .content(StringUtils.substring(content, 0, 2000))
+                    .executeFlag(executeFlag)
                     .build();
             repository.save(log);
         } else {

@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,7 +56,11 @@ public class SysTaskExecutedLog extends SystemModel {
     private Long durationTime;
 
     //文件大小
-    @Column(nullable = false, length = 4000)
-    @NonNull
+    @Column(length = 4000)
     private String content;
+
+    @NonNull
+    @Column(nullable = false)
+    //是否可用
+    private Boolean executeFlag = true;
 }

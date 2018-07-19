@@ -89,7 +89,6 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
      */
     //@PreAuthorize("hasAuthority('ROLE_SUPER')")  // 指定角色权限才能操作方法
     @ApiOperation(value = "批量逻辑删除字典值", notes = "批量逻辑删除字典值")
-    @ApiImplicitParam(name = "ids", value = "字典类型ID", dataType = "Set<Integer>", paramType = "query")
     public JsonResponse deleteAllByIds(@RequestBody(required = false) Integer[] ids) {
         return  super.deleteAllByIds(ids);
     }
