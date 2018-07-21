@@ -186,13 +186,18 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     @Bean
     @Qualifier("redisTemplate")
     public <T> RedisTemplate<String, T> redisTemplate() {
+        /**
+         * 解决分离项目报空指针问题
+         * 参考：https://www.jianshu.com/p/32d38a7fd20a
+         */
+        ClassLoader classLoader = this.getClass().getClassLoader();
         RedisTemplate<String, T> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new JdkSerializationRedisSerializer());
-        template.setHashKeySerializer(new JdkSerializationRedisSerializer());
-        template.setHashValueSerializer(new JdkSerializationRedisSerializer());
-        template.setDefaultSerializer(new JdkSerializationRedisSerializer());
+        template.setValueSerializer(new JdkSerializationRedisSerializer(classLoader));
+        template.setHashKeySerializer(new JdkSerializationRedisSerializer(classLoader));
+        template.setHashValueSerializer(new JdkSerializationRedisSerializer(classLoader));
+        template.setDefaultSerializer(new JdkSerializationRedisSerializer(classLoader));
         template.afterPropertiesSet();
         return template;
     }
