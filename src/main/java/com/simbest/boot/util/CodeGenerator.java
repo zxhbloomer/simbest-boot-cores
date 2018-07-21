@@ -3,7 +3,6 @@ package com.simbest.boot.util;
 import com.google.common.collect.Maps;
 import com.simbest.boot.constants.ApplicationConstants;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -13,32 +12,20 @@ import java.util.UUID;
  */
 public class CodeGenerator {
     public static final String ALLCHAR = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static String recordDay = DateUtil.getCurrentStr();
-    private static int seqDate = 0;
-    private static int seqTime = 0;
-    private static int maxCode = 99999999;
+
     private static Map<String, Integer> prefixs = Maps.newHashMap();
     private static char[] chars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 
     public static void main(String[] args) {
-        System.out.println(nextSystemUUID());
+        System.out.println(systemUUID());
         System.out.println(addLeftZeroForNum(4, 9));
         System.out.println(addRightZeroForNum(4, 9));
-        Date date = new Date();                                                                    // 创建日期对象
-        System.out.printf("全部日期和时间信息：%tc%n", date);
+        System.out.println(timestampRandomLast());
+        System.out.println(timestampRandomLast());
         for (int i = 0; i < 10; i++) {
-            System.out.println(nextDateCode("B"));
-        }
-        System.out.println(nextDateCode());
-        System.out.println(nextDateCode());
-        System.out.println(nextDateTimeCode());
-        System.out.println(nextDateTimeCode());
-        System.out.println(nextUnLimitCode());
-        System.out.println(nextUnLimitCode());
-        for (int i = 0; i < 10000; i++) {
-            System.out.println(nextUnLimitCode("OA"));
+            System.out.println(timestampRandomLast("OA"));
         }
         String s = "B-20150604-00000008";
         System.out.println(s.substring(s.lastIndexOf("-") + 1));
@@ -50,16 +37,16 @@ public class CodeGenerator {
      *
      * @return
      */
-    public static String nextSystemUUID() {
+    public static String systemUUID() {
         return UUID.randomUUID().toString()
                 .replace(ApplicationConstants.LINE, ApplicationConstants.EMPTY);
     }
 
     /**
-     * @param num 返回随机数的位数, 如3则可能返回012
+     * @param num 返回随机数的位数, 如3则可能返回029
      * @return
      */
-    public static String nextRandomInt(int num) {
+    public static String randomInt(int num) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < num; i++) {
             sb.append((int) (Math.random() * (10)));
@@ -78,65 +65,12 @@ public class CodeGenerator {
      *
      * @return
      */
-    public static synchronized String nextUnLimitCode() {
-        return String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$03d", DateUtil.getCurrent(), (int) (Math.random() * (899)) + 100);
+    public static synchronized String timestampRandomLast() {
+        return String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%2$03d", DateUtil.getCurrent(), (int) (Math.random() * (899)) + 100);
     }
 
-    public static synchronized String nextUnLimitCode(String prefix) {
-        return prefix + String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$03d", DateUtil.getCurrent(), (int) (Math.random() * (899)) + 100);
-    }
-
-    /**
-     * 获取全局日期序列， 每日上限99999999个，格式2016071500000002
-     *
-     * @return
-     */
-    public static synchronized String nextDateCode() {
-        String today = DateUtil.getCurrentStr();
-        if (!today.equals(recordDay)) {
-            seqDate = 0; //隔日起始编号清零
-            recordDay = today;
-        }
-        if (seqDate > maxCode)
-            throw new RuntimeException("Not enough next date code");
-        return String.format("%tY%<tm%<td%08d", DateUtil.parseDate(recordDay), ++seqDate);
-    }
-
-    /**
-     * 获取全局时间序列，每日上限99999999个， 格式2016071500000000000000002
-     *
-     * @return
-     */
-    public static synchronized String nextDateTimeCode() {
-        String today = DateUtil.getCurrentStr();
-        if (!today.equals(recordDay)) {
-            seqTime = 0; //隔日起始编号清零
-            recordDay = today;
-        }
-        if (seqTime > maxCode)
-            throw new RuntimeException("Not enough next timestamp code");
-        return String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS%1$tL%2$08d", DateUtil.parseDate(recordDay), ++seqTime);
-    }
-
-    /**
-     * 根据前缀获取日期序列， 每日上限999个，格式B-20150604-0008
-     *
-     * @param prefix
-     * @return
-     */
-    public static synchronized String nextDateCode(String prefix) {
-        if (prefixs.get(prefix) == null)
-            prefixs.put(prefix, 0); //是否存在编码
-        String today = DateUtil.getCurrentStr();
-        if (!today.equals(recordDay)) {
-            prefixs.put(prefix, 0); //隔日起始编号清零
-            recordDay = today;
-        }
-        int next = prefixs.get(prefix) + 1;
-        if (next > maxCode)
-            throw new RuntimeException("Not enough next date code");
-        prefixs.put(prefix, next);
-        return prefix + ApplicationConstants.LINE + DateUtil.getDateStr(DateUtil.datePattern2) + ApplicationConstants.LINE + addLeftZeroForNum(4, next);
+    public static synchronized String timestampRandomLast(String prefix) {
+        return prefix + timestampRandomLast();
     }
 
     /**
@@ -179,7 +113,7 @@ public class CodeGenerator {
      * @param length 随机字符串长度
      * @return 随机字符串
      */
-    public static String generateString(int length) {
+    public static String randomChar(int length) {
         StringBuffer sb = new StringBuffer();
         Random random = new Random();
         for (int i = 0; i < length; i++) {

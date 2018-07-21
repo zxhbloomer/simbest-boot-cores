@@ -1,6 +1,7 @@
 package com.simbest.boot.security.auth.controller;
 
 import com.simbest.boot.security.IUser;
+import com.simbest.boot.util.AppSessionUtil;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -10,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用途：首页控制器
@@ -25,7 +28,11 @@ public class IndexController {
      * @return /
      */
     @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.GET})
-    public String root() {
+    public String root(HttpServletRequest request) {
+        Object hello = AppSessionUtil.getSession(request).getAttribute("hello");
+        if(hello != null)
+            log.debug(hello.toString());
+        AppSessionUtil.getSession(request).setAttribute("hello", "你好");
         return "redirect:/index";
     }
 

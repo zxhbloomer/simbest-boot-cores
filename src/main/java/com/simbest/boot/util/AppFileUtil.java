@@ -5,12 +5,13 @@ package com.simbest.boot.util;
 
 
 import com.google.common.collect.Lists;
+import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.constants.ApplicationConstants;
-import com.simbest.boot.sys.model.UploadFileModel;
+import com.simbest.boot.sys.model.SysFile;
+import com.simbest.boot.sys.web.SysFileController;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,21 +32,28 @@ import java.util.regex.Pattern;
  * 作者: lishuyi
  * 时间: 2018/3/12  20:45
  */
-@Component
 @Slf4j
+@Component
 public class AppFileUtil {
 
     private static final String UPLOAD_FILE_PATTERN =
-            "(jpg|jpeg|png|gif|bmp|doc|docx|xls|xlsx|pdf|txt)$";
+            "(jpg|jpeg|png|gif|bmp|doc|docx|xls|xlsx|pdf|txt|rar|zip|7z)$";
     private static Pattern pattern = Pattern.compile(UPLOAD_FILE_PATTERN);
 
     @Value("${app.file.upload.path}")
-    private String path;
+    private String uploadPath;
 
     @Value("${app.file.upload.location}")
-    private String location;
+    private String uploadLocation;
 
     private StoreLocation storeLocation = null;
+
+    public enum StoreLocation {disk, fastdsft, baidubos}
+
+    @PostConstruct
+    public void init() {
+        storeLocation = Enum.valueOf(StoreLocation.class, uploadLocation);
+    }
 
     /**
      * 判断是否允许上传
@@ -92,21 +99,16 @@ public class AppFileUtil {
         return FilenameUtils.getName(pathToName);
     }
 
-    @PostConstruct
-    public void init() {
-        storeLocation = Enum.valueOf(StoreLocation.class, location);
-    }
-
     /**
      * 上传单个文件
      *
      * @param file file
-     * @return UploadFileModel
+     * @return SysFile
      * @throws IOException
      */
-    public UploadFileModel uploadFile(String prePath, MultipartFile file) throws IOException {
+    public SysFile uploadFile(String directory, MultipartFile file) throws IOException {
         Assert.notNull(file, "Upload file can not empty!");
-        return uploadFiles(prePath, Arrays.asList(file)).get(0);
+        return uploadFiles(directory, new MultipartFile[]{file}).get(0);
     }
 
     /**
@@ -116,9 +118,9 @@ public class AppFileUtil {
      * @return UploadFileModel
      * @throws IOException
      */
-    public List<UploadFileModel> uploadFiles(String prePath, List<MultipartFile> files) throws IOException {
+    public List<SysFile> uploadFiles(String directory, MultipartFile[] files) throws IOException {
         Assert.notEmpty(files, "Upload file can not empty!");
-        List<UploadFileModel> fileModels = Lists.newArrayList();
+        List<SysFile> fileModels = Lists.newArrayList();
         for (MultipartFile file : files) {
             if (file.isEmpty()) {
                 continue;
@@ -127,11 +129,11 @@ public class AppFileUtil {
             switch (storeLocation) {
                 case disk:
                     byte[] bytes = file.getBytes();
-                    String storePath = path + ApplicationConstants.SLASH + prePath + ApplicationConstants.SLASH
+                    String storePath = uploadPath + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH
                             + DateUtil.getCurrYear() + ApplicationConstants.SLASH
                             + DateUtil.getCurrSimpleMonth() + ApplicationConstants.SLASH
                             + DateUtil.getCurrSimpleDay() + ApplicationConstants.SLASH
-                            + CodeGenerator.nextSystemUUID();
+                            + CodeGenerator.randomChar(2);
                     File targetFileDirectory = new File(storePath);
                     if (!targetFileDirectory.exists()) {
                         FileUtils.forceMkdir(targetFileDirectory);
@@ -142,12 +144,21 @@ public class AppFileUtil {
                     filePath = path.toString();
                     break;
             }
-
-            fileModels.add(UploadFileModel.builder().filePath(filePath).fileSize(file.getSize()).
-                    fileType(getFileSuffix(file.getOriginalFilename())).fileName(file.getOriginalFilename()).build());
+            SysFile sysFile = SysFile.builder().fileName(file.getOriginalFilename()).fileType(getFileSuffix(file.getOriginalFilename()))
+                    .filePath(filePath).fileSize(file.getSize()).downLoadUrl(SysFileController.DOWNLOAD_URL).
+                            build();
+            fileModels.add(sysFile);
         }
         return fileModels;
     }
 
-    public enum StoreLocation {disk, fastdsft, baidubos}
+    public static File createTempFile(){
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile(CodeGenerator.randomChar(4), CodeGenerator.randomChar(4));
+        } catch (IOException e) {
+            Exceptions.printException(e);
+        }
+        return tempFile;
+    }
 }

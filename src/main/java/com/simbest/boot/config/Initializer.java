@@ -13,9 +13,9 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
  * 时间: 2018/3/7  14:39
  *
  */
-public class RedisSessionInitializer extends AbstractHttpSessionApplicationInitializer { // <1>
+public class Initializer extends AbstractHttpSessionApplicationInitializer { // <1>
 
-    public RedisSessionInitializer() {
+    public Initializer() {
         super(RedisConfiguration.class); // <2>
     }
 

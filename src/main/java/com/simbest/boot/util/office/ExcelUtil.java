@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,6 +29,8 @@ import org.apache.poi.hssf.util.CellRangeAddressList;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -198,26 +201,14 @@ public class ExcelUtil<T> {
                         if (cell == null) {
                             continue;
                         }
-                        int cellType = cell.getCellType();
-                        String c = "";
-                        if (cellType == HSSFCell.CELL_TYPE_NUMERIC) {
-                            c = String.valueOf(cell.getNumericCellValue());
-                        } else if (cellType == HSSFCell.CELL_TYPE_BOOLEAN) {
-                            c = String.valueOf(cell.getBooleanCellValue());
-                        } else {
-                            c = cell.getStringCellValue();
-                        }
-                        if (c == null || c.equals("")) {
-                            continue;
-                        }
+                        String c = getExcelCellValue(cell);
                         entity = (entity == null ? clazz.newInstance() : entity);// 如果不存在实例则新建.
-                        // System.out.println(cells[j].getContents());
                         Field field = fieldsMap.get(j);// 从map中得到对应列的field.
                         if (field == null) {
                             continue;
                         }
                         // 取得类型,并根据对象类型设置值.
-                        Class<?> fieldType = field.getType();
+                        Class fieldType = field.getType();
                         if (String.class == fieldType) {
                             field.set(entity, String.valueOf(c));
                         } else if ((Integer.TYPE == fieldType)
@@ -261,6 +252,30 @@ public class ExcelUtil<T> {
         return list;
     }
 
+    public static String getExcelCellValue(Cell cell) {
+        DataFormatter df = new DataFormatter();
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_STRING:
+                return cell.getRichStringCellValue().getString();
+            case Cell.CELL_TYPE_NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return new SimpleDateFormat("yyyy-MM-dd").format(cell.getDateCellValue());
+                } else {
+                    String num = df.formatCellValue(cell);
+                    return !num.contains(".") ? num : num.replaceAll("0*$", "").replaceAll("\\.$", "");
+                }
+            case Cell.CELL_TYPE_BOOLEAN:
+                return "" + cell.getBooleanCellValue();
+            case Cell.CELL_TYPE_FORMULA:
+                return cell.getCellFormula();
+            case Cell.CELL_TYPE_BLANK:
+                return "";
+            case Cell.CELL_TYPE_ERROR:
+                return Byte.valueOf(cell.getErrorCellValue()).toString();
+            default:
+                return "";
+        }
+    }
 
     /**
      * 将集合数组长度小于65535的数据导出到excel中

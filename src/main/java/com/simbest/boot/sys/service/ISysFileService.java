@@ -1,22 +1,44 @@
 package com.simbest.boot.sys.service;
 
+import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.sys.model.SysFile;
+import com.simbest.boot.sys.model.UploadFileResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public interface ISysFileService {
+public interface ISysFileService extends ILogicService<SysFile, Long> {
 
     /**
-     * 保存文件信息至数据库
-     * @param sysFiles sysFiles
-     * @return List<SysFile>
-     */
-    List<SysFile> saveAll(Iterable<SysFile> sysFiles);
-
-    /**
-     * 读取文件信息
-     * @param id
+     * 上传并保存单个文件
+     * @param multipartFile 上传文件
+     * @param pmInsType 流程类型
+     * @param pmInsId 流程ID
+     * @param pmInsTypePart 流程区块
      * @return
      */
-    SysFile findById(Long id);
+    SysFile uploadProcessFile(MultipartFile multipartFile, String pmInsType, Long pmInsId, String pmInsTypePart);
+
+    /**
+     * 上传并保存多个文件
+     * @param multipartFile 上传文件
+     * @param pmInsType 流程类型
+     * @param pmInsId 流程ID
+     * @param pmInsTypePart 流程区块
+     * @return
+     */
+    List<SysFile> uploadProcessFiles(MultipartFile[] multipartFiles, String pmInsType, Long pmInsId, String pmInsTypePart);
+
+    /**
+     * 导入Excel文件
+     * @param multipartFile 上传文件
+     * @param pmInsType 流程类型
+     * @param pmInsId 流程ID
+     * @param pmInsTypePart 流程区块
+     * @param clazz 导入对象类
+     * @param sheetName 导入sheet页
+     * @param <T>
+     * @return
+     */
+    <T> UploadFileResponse importExcel(MultipartFile multipartFile, String pmInsType, Long pmInsId, String pmInsTypePart, Class<T> clazz, String sheetName);
 }

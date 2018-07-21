@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.sys.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.simbest.boot.base.model.LogicModel;
 import lombok.*;
 
@@ -36,9 +37,10 @@ public class SysFile extends LogicModel {
     @NonNull
     private String fileType;
 
-    //存储路径
+    //文件实际存储路径
     @Column(nullable = false, length = 500)
     @NonNull
+    @JsonIgnore //隐藏不对外暴露内部路径
     private String filePath;
 
     //文件大小
@@ -46,13 +48,17 @@ public class SysFile extends LogicModel {
     @NonNull
     private Long fileSize;
 
-    //归属应用
-    @Column(nullable = false, length = 20)
-    @NonNull
-    private String application;
+    //归属流程
+    private String pmInsType;
 
-    //归属模块
-    @Column(nullable = false, length = 20)
+    //归属流程ID
+    private Long pmInsId;
+
+    //归属流程区块
+    private String pmInsTypePart;
+
+    //文件下载URL
+    @Column(nullable = false, length = 500)
     @NonNull
-    private String moudule;
+    private String downLoadUrl;
 }
