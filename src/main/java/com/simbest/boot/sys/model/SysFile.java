@@ -52,7 +52,7 @@ public class SysFile extends LogicModel {
     private String pmInsType;
 
     //归属流程ID
-    private Long pmInsId;
+    private String pmInsId;
 
     //归属流程区块
     private String pmInsTypePart;

@@ -46,12 +46,12 @@ public final class GlobalExceptionRegister {
                 JsonResponse.builder().errcode(HttpStatus.METHOD_NOT_ALLOWED.value()).status(HttpStatus.METHOD_NOT_ALLOWED.value()).error(HttpStatus.METHOD_NOT_ALLOWED.name())
                         .build());
 
-//        errorMap.put(MultipartException.class,
-//                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value()).error(HttpStatus.BAD_REQUEST.name()).message("Upload attachment failed-上传文件失败")
-//                        .build());
-//        errorMap.put(MaxUploadSizeExceededException.class,
-//                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value()).error(HttpStatus.BAD_REQUEST.name()).message("Attachment size exceeds-文件过大")
-//                        .build());
+        errorMap.put(MultipartException.class,
+                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.BAD_REQUEST.value()).error(HttpStatus.BAD_REQUEST.name()).message("Upload attachment failed-上传文件失败")
+                        .build());
+        errorMap.put(MaxUploadSizeExceededException.class,
+                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value()).error(HttpStatus.REQUEST_ENTITY_TOO_LARGE.name()).message("Attachment size exceeds-文件过大")
+                        .build());
 
         errorMap.put(InsertExistObjectException.class,
                 JsonResponse.builder().errcode(HttpStatus.INTERNAL_SERVER_ERROR.value()).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).error(HttpStatus.INTERNAL_SERVER_ERROR.name()).message("不能写入有ID的对象")

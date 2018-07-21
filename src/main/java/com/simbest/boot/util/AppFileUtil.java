@@ -9,6 +9,7 @@ import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.web.SysFileController;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -46,13 +47,13 @@ public class AppFileUtil {
     @Value("${app.file.upload.location}")
     private String uploadLocation;
 
-    private StoreLocation storeLocation = null;
+    public static StoreLocation serverUploadLocation = null;
 
     public enum StoreLocation {disk, fastdsft, baidubos}
 
     @PostConstruct
     public void init() {
-        storeLocation = Enum.valueOf(StoreLocation.class, uploadLocation);
+        serverUploadLocation = Enum.valueOf(StoreLocation.class, uploadLocation);
     }
 
     /**
@@ -126,7 +127,7 @@ public class AppFileUtil {
                 continue;
             }
             String filePath = null;
-            switch (storeLocation) {
+            switch (serverUploadLocation) {
                 case disk:
                     byte[] bytes = file.getBytes();
                     String storePath = uploadPath + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH

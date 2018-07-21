@@ -13,6 +13,7 @@ import com.simbest.boot.util.AppFileUtil;
 import com.simbest.boot.util.office.ExcelUtil;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +25,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 用途：统一系统文件管理逻辑层
+ * 作者: lishuyi
+ * 时间: 2018/2/23  10:14
+ */
 @Service
+@DependsOn(value = {"appFileUtil"})
 public class SysFileService extends LogicService<SysFile, Long> implements ISysFileService {
 
     @Autowired
@@ -40,14 +47,14 @@ public class SysFileService extends LogicService<SysFile, Long> implements ISysF
     }
 
     @Override
-    public SysFile uploadProcessFile(MultipartFile multipartFile, String pmInsType, Long pmInsId, String pmInsTypePart) {
+    public SysFile uploadProcessFile(MultipartFile multipartFile, String pmInsType, String pmInsId, String pmInsTypePart) {
         List<SysFile> fileList = uploadProcessFiles(new MultipartFile[]{multipartFile}, pmInsType, pmInsId, pmInsTypePart);
         return fileList.isEmpty() ? null : fileList.get(0);
     }
 
     @Override
     @Transactional
-    public List<SysFile> uploadProcessFiles(MultipartFile[] multipartFiles, String pmInsType, Long pmInsId,String pmInsTypePart) {
+    public List<SysFile> uploadProcessFiles(MultipartFile[] multipartFiles, String pmInsType, String pmInsId,String pmInsTypePart) {
         List<SysFile> sysFileList = Lists.newArrayList();
         try {
             sysFileList = appFileUtil.uploadFiles(pmInsType + ApplicationConstants.SLASH + pmInsTypePart, multipartFiles);
@@ -66,7 +73,7 @@ public class SysFileService extends LogicService<SysFile, Long> implements ISysF
 
     @Override
     @Transactional
-    public <T> UploadFileResponse importExcel(MultipartFile multipartFile, String pmInsType, Long pmInsId, String pmInsTypePart, Class<T> clazz, String sheetName) {
+    public <T> UploadFileResponse importExcel(MultipartFile multipartFile, String pmInsType, String pmInsId, String pmInsTypePart, Class<T> clazz, String sheetName) {
         SysFile sysFile = uploadProcessFile(multipartFile, pmInsType, pmInsId, pmInsTypePart);
         if (sysFile != null) {
             ExcelUtil<T> importUtil = new ExcelUtil<>(clazz);
@@ -83,5 +90,11 @@ public class SysFileService extends LogicService<SysFile, Long> implements ISysF
             }
         }
         return null;
+    }
+
+    @Override
+    public File getFileById(Long id) {
+        SysFile sysFile = this.findById(id);
+        return new File(sysFile.getFilePath());
     }
 }

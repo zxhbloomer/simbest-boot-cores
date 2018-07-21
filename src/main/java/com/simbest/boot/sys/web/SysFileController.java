@@ -9,10 +9,8 @@ import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.model.UploadFileResponse;
 import com.simbest.boot.sys.service.ISysFileService;
 import com.simbest.boot.util.AppFileUtil;
-import com.simbest.boot.util.office.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -58,7 +56,6 @@ public class SysFileController extends LogicController<SysFile, Long> {
     }
 
     /**
-     *
      * @param uploadfile
      * @return
      */
@@ -66,13 +63,12 @@ public class SysFileController extends LogicController<SysFile, Long> {
     @PostMapping(UPLOAD_PROCESS_FILE_URL)
     public JsonResponse uploadProcessFile(@RequestParam("file") MultipartFile uploadfile,
                                           @RequestParam("pmInsType") String pmInsType,
-                                          @RequestParam(value = "pmInsId", required = false) Long pmInsId, //起草阶段上传文件，可不填写业务单据ID
+                                          @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
                                           @RequestParam("pmInsTypePart") String pmInsTypePart) {
         return this.uploadProcessFiles(new MultipartFile[]{uploadfile}, pmInsType, pmInsId, pmInsTypePart);
     }
 
     /**
-     *
      * @param uploadfiles
      * @return
      */
@@ -80,10 +76,10 @@ public class SysFileController extends LogicController<SysFile, Long> {
     @PostMapping(UPLOAD_PROCESS_FILES_URL)
     public JsonResponse uploadProcessFiles(@RequestParam("files") MultipartFile[] uploadfiles,
                                            @RequestParam("pmInsType") String pmInsType,
-                                           @RequestParam(value = "pmInsId", required = false) Long pmInsId, //起草阶段上传文件，可不填写业务单据ID
+                                           @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
                                            @RequestParam("pmInsTypePart") String pmInsTypePart) {
-        for(MultipartFile uploadFile : uploadfiles){
-            if(!AppFileUtil.validateUploadFileType(uploadFile.getOriginalFilename())){
+        for (MultipartFile uploadFile : uploadfiles) {
+            if (!AppFileUtil.validateUploadFileType(uploadFile.getOriginalFilename())) {
                 return JsonResponse.fail("不允许上传的文件类型");
             }
         }
@@ -115,6 +111,7 @@ public class SysFileController extends LogicController<SysFile, Long> {
 
     /**
      * 不直接暴露接口
+     *
      * @param uploadfile
      * @param pmInsType
      * @param pmInsId
@@ -122,19 +119,19 @@ public class SysFileController extends LogicController<SysFile, Long> {
      * @param clazz
      * @param sheetName
      * @param <T>
-     * @rn
      * @throws IOException
+     * @rn
      */
     private <T> JsonResponse importExcel(MultipartFile uploadfile,
-                                        String pmInsType,
-                                        Long pmInsId, //起草阶段上传文件，可不填写业务单据ID
-                                        String pmInsTypePart,
-                                        Class<T> clazz,  String sheetName) throws IOException {
+                                         String pmInsType,
+                                         String pmInsId, //起草阶段上传文件，可不填写业务单据ID
+                                         String pmInsTypePart,
+                                         Class<T> clazz, String sheetName) throws IOException {
         UploadFileResponse uploadFileResponse = fileService.importExcel(uploadfile, pmInsType, pmInsId, pmInsTypePart, clazz, sheetName);
-        if(null != uploadFileResponse){
+        if (null != uploadFileResponse) {
             return JsonResponse.success(uploadFileResponse);
         } else {
-            return  JsonResponse.defaultErrorResponse();
+            return JsonResponse.defaultErrorResponse();
         }
     }
 }
