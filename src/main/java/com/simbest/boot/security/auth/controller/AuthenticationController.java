@@ -3,12 +3,10 @@ package com.simbest.boot.security.auth.controller;
 
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.IPermission;
 import com.simbest.boot.security.IUser;
-import com.simbest.boot.security.auth.authentication.token.UumsAuthentication;
-import com.simbest.boot.security.auth.authentication.token.UumsAuthenticationCredentials;
-import com.simbest.boot.util.encrypt.Des3Encryptor;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,7 +19,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,6 +55,10 @@ public class AuthenticationController {
     public JsonResponse validate(@RequestParam String username, @RequestParam String password, @RequestParam String appcode) {
         try {
             if(StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password) && StringUtils.isNotEmpty(appcode)) {
+                if(!authService.checkUserAccessApp(username,appcode )){
+                    return JsonResponse.fail(username +" login "+appcode+"failed",
+                            ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP,ErrorCodeConstants.ERRORCODE_LOGIN_APP_UNREGISTER_GROUP);
+                }
                 UsernamePasswordAuthenticationToken passwordToken = new UsernamePasswordAuthenticationToken(username, rsaEncryptor.decrypt(password));
                 Authentication authentication = authenticationManager.authenticate(passwordToken);
                 if(authentication.isAuthenticated()) {
