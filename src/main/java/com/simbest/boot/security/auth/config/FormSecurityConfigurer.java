@@ -18,17 +18,18 @@ import com.simbest.boot.util.encrypt.RsaEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
@@ -36,9 +37,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
  */
-@EnableWebSecurity
-@Order(30)
-public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
+@Configuration
+@Order(10)
+public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private SuccessLoginHandler successLoginHandler;
@@ -50,9 +51,6 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
     private SuccessLogoutHandler successLogoutHandler;
 
     @Autowired
-    private SessionRegistry sessionRegistry;
-
-    @Autowired
     private Swagger2CsrfProtection swagger2CsrfProtection;
 
     @Autowired
@@ -60,6 +58,14 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
 
     @Autowired
     private SsoAuthenticationRegister ssoAuthenticationRegister;
+
+    @Autowired
+    private FindByIndexNameSessionRepository sessionRepository;
+
+    @Bean
+    public SpringSessionBackedSessionRegistry sessionRegistry() {
+        return new SpringSessionBackedSessionRegistry(sessionRepository);
+    }
 
     /**
      * 配置匹配路径
@@ -122,8 +128,13 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
                 .and().csrf().disable()
 //                .and().csrf().requireCsrfProtectionMatcher(swagger2CsrfProtection)
 //                .and()
-                .sessionManagement().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
-                .sessionRegistry(sessionRegistry).expiredUrl(ApplicationConstants.LOGIN_PAGE);
+//                .sessionManagement().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
+//                .sessionRegistry(sessionRegistry).expiredUrl(ApplicationConstants.LOGIN_PAGE);
+                .sessionManagement().maximumSessions(1)
+                .maxSessionsPreventsLogin(true)
+                .sessionRegistry(sessionRegistry());
+                //.expiredUrl(ApplicationConstants.LOGIN_PAGE);
+
         //.sessionFixation().newSession()  Session Fixation protection
         //Your servlet container did not change the session ID when a new session was created. You will not be adequately protected against session-fixation attacks
     }
@@ -172,10 +183,10 @@ public class FormSecurityConfigurer extends AbstractSecurityConfigurer {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-    @Bean
-    public SessionRegistry getSessionRegistry() {
-        return new SessionRegistryImpl();
-    }
+//
+//    @Bean
+//    public SessionRegistry getSessionRegistry() {
+//        return new SessionRegistryImpl();
+//    }
 
 }

@@ -1,11 +1,10 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.security.acl;
+package com.simbest.boot.security.acl.config;
 
-import org.springframework.context.annotation.Bean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
@@ -25,17 +24,28 @@ import org.springframework.security.config.annotation.method.configuration.Globa
  * 3.完全自定义
  * https://github.com/BerryCloud/spring-data-jpa-acl
  */
+@Slf4j
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
-    @Override
-    protected MethodSecurityExpressionHandler createExpressionHandler() {
-        DefaultMethodSecurityExpressionHandler expressionHandler =
-                new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(new AclPermissionEvaluator());
-        return expressionHandler;
+//    @Override
+//    protected MethodSecurityExpressionHandler createExpressionHandler() {
+//        DefaultMethodSecurityExpressionHandler expressionHandler =
+//                new DefaultMethodSecurityExpressionHandler();
+//        expressionHandler.setPermissionEvaluator(new AclPermissionEvaluator());
+//        return expressionHandler;
+//    }
+
+    private final MethodSecurityExpressionHandler methodSecurityExpressionHandler;
+
+    public MethodSecurityConfig(MethodSecurityExpressionHandler methodSecurityExpressionHandler) {
+        this.methodSecurityExpressionHandler = methodSecurityExpressionHandler;
     }
 
+    @Override
+    protected MethodSecurityExpressionHandler createExpressionHandler() {
+        return methodSecurityExpressionHandler;
+    }
 
 }

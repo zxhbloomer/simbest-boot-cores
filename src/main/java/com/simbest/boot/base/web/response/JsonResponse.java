@@ -45,10 +45,10 @@ public class JsonResponse {
     //Http请求状态码
     private int status;
 
-    //Http请求路径
+    //Http请求内部错误
     private String error;
 
-    //Http请求错误
+    //Http请求提示信息
     private String message;
 
     //Http请求路径
@@ -92,6 +92,30 @@ public class JsonResponse {
     public static JsonResponse fail(Object obj) {
         JsonResponse response = defaultErrorResponse();
         response.setData(obj);
+        return response;
+    }
+
+    /**
+     *
+     * @param obj 成功数据
+     * @param message 提示信息
+     * @return 输出成功数据
+     */
+    public static JsonResponse success(Object obj, String message) {
+        JsonResponse response = success(obj);
+        response.setMessage(message);
+        return response;
+    }
+
+    /**
+     *
+     * @param obj 失败数据
+     * @param message 提示信息
+     * @return 输出失败数据
+     */
+    public static JsonResponse fail(Object obj, String message) {
+        JsonResponse response = fail(obj);
+        response.setMessage(message);
         return response;
     }
 }

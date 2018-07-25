@@ -3,9 +3,11 @@
  */
 package com.simbest.boot.security.auth.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * 用途：Actuator监控安全配置
@@ -13,9 +15,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
  */
-@EnableWebSecurity
-@Order(10)
-public class MonitorSecurityConfigurer extends AbstractSecurityConfigurer {
+@Configuration
+@Order(30)
+public class MonitorSecurityConfigurer extends WebSecurityConfigurerAdapter {
     /**
      * Actuator监控安全验证器
      *

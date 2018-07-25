@@ -9,21 +9,25 @@ import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider
 import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * 用途： Spring Security 认证与鉴权
+ * 用途：配置多套 HttpSecurity
+ * 作者: lishuyi
+ * 时间: 2018/7/22  23:28
+ * 参考：https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#multiple-httpsecurity
  * 认证原理 https://blog.csdn.net/dandandeshangni/article/details/78959131
  * 鉴权原理 https://blog.csdn.net/honghailiang888/article/details/53925514
- * 作者: lishuyi
- * 时间: 2018/1/20  11:24
  */
-public abstract class AbstractSecurityConfigurer extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+@DependsOn(value = {"redisConfiguration"})
+public class MultiHttpSecurityConfig {
 
     @Autowired
     private IAuthService authService;

@@ -57,7 +57,7 @@ public class SsoUsernameAuthenticationProvider implements AuthenticationProvider
             return successToken;
         } else {
             throw new
-                    BadCredentialsException("UUMS SSO authentication failed");
+                    BadCredentialsException("SSO authentication failed");
         }
     }
 

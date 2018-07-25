@@ -23,7 +23,7 @@ public class RedisSessionConfiguration {
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SECURITYID"); // <1>
-        serializer.setCookiePath("/"); // <2>
+        //serializer.setCookiePath("/"); // <2>
         serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // <3>
         return serializer;
     }

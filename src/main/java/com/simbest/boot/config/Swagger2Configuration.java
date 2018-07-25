@@ -5,6 +5,7 @@ package com.simbest.boot.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -24,6 +25,7 @@ import springfox.documentation.service.Contact;
  */
 @Configuration
 @EnableSwagger2
+@Profile(value = {"dev", "test", "uat"})
 public class Swagger2Configuration extends WebMvcConfigurerAdapter {
 
     @Override

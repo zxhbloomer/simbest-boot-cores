@@ -1,13 +1,12 @@
 package com.simbest.boot.security.auth.controller;
 
 import com.simbest.boot.security.IUser;
-import com.simbest.boot.util.AppSessionUtil;
-import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,12 +26,8 @@ public class IndexController {
     /**
      * @return /
      */
-    @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = {"/", "/sso"}, method = {RequestMethod.POST, RequestMethod.GET})
     public String root(HttpServletRequest request) {
-        Object hello = AppSessionUtil.getSession(request).getAttribute("hello");
-        if(hello != null)
-            log.debug(hello.toString());
-        AppSessionUtil.getSession(request).setAttribute("hello", "你好");
         return "redirect:/index";
     }
 
@@ -52,8 +47,11 @@ public class IndexController {
         return "403";
     }
 
-    @RequestMapping(value = "/b", method = {RequestMethod.POST, RequestMethod.GET})
-    public String b() {
-        return "b";
+    /**
+     * @return error
+     */
+    @RequestMapping(value = "/error", method = {RequestMethod.POST, RequestMethod.GET})
+    public String error() {
+        return "error";
     }
 }

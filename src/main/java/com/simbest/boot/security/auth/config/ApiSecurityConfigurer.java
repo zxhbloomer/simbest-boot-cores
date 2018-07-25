@@ -3,18 +3,20 @@
  */
 package com.simbest.boot.security.auth.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * 用途：RESTFul 接口安全配置
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
  */
-@EnableWebSecurity
+@Configuration
 @Order(20)
-public class ApiSecurityConfigurer extends AbstractSecurityConfigurer {
+public class ApiSecurityConfigurer extends WebSecurityConfigurerAdapter {
     /**
      * REST安全验证器
      *

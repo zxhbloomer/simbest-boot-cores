@@ -87,9 +87,9 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     private void afterPropertiesSet() {
         log.info("setting spring session with redis timeout {} seconds", maxInactiveIntervalInSeconds);
         sessionRepository.setDefaultMaxInactiveInterval(maxInactiveIntervalInSeconds);
-        // 注释以下代码，配合RedisSessionConfiguration的CookiePath=/可以实现应用直接Cookie共享Session
-//        log.info("setting spring session with redis namespace {} ", redisNamespace);
-//        sessionRepository.setRedisKeyNamespace(redisNamespace);
+        // 注释以下代码，配合RedisSessionConfiguration的CookiePath=/可以实现同域名应用间Cookie共享Session
+        log.info("setting spring session with redis namespace {} ", redisNamespace);
+        sessionRepository.setRedisKeyNamespace(redisNamespace);
     }
 
 //    @Bean
