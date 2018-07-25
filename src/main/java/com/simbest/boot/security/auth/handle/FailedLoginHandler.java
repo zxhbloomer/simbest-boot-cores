@@ -5,6 +5,7 @@ package com.simbest.boot.security.auth.handle;
 
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.constants.ErrorCodeConstants;
+import com.simbest.boot.exceptions.AccesssAppDeniedException;
 import com.simbest.boot.exceptions.AttempMaxLoginFaildException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,9 @@ public class FailedLoginHandler implements AuthenticationFailureHandler {
             } else if (exception instanceof AttempMaxLoginFaildException) {
                 request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
                         new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_EXCEED_MAX_TIMES));
+            } else if (exception instanceof AccesssAppDeniedException) {
+                request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
+                        new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP));
             } else {
                 request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
                         new InsufficientAuthenticationException(ErrorCodeConstants.LOGIN_ERROR_BAD_CREDENTIALS));

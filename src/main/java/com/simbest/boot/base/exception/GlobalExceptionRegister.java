@@ -47,10 +47,10 @@ public final class GlobalExceptionRegister {
                         .build());
 
         errorMap.put(MultipartException.class,
-                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.BAD_REQUEST.value()).error(HttpStatus.BAD_REQUEST.name()).message("Upload attachment failed-上传文件失败")
+                JsonResponse.builder().errcode(ErrorCodeConstants.ERRORCODE_ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.BAD_REQUEST.value()).error(HttpStatus.BAD_REQUEST.name()).message("Upload attachment failed-上传文件失败")
                         .build());
         errorMap.put(MaxUploadSizeExceededException.class,
-                JsonResponse.builder().errcode(ErrorCodeConstants.ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value()).error(HttpStatus.REQUEST_ENTITY_TOO_LARGE.name()).message("Attachment size exceeds-文件过大")
+                JsonResponse.builder().errcode(ErrorCodeConstants.ERRORCODE_ATTACHMENT_SIZE_EXCEEDS).status(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value()).error(HttpStatus.REQUEST_ENTITY_TOO_LARGE.name()).message("Attachment size exceeds-文件过大")
                         .build());
 
         errorMap.put(InsertExistObjectException.class,

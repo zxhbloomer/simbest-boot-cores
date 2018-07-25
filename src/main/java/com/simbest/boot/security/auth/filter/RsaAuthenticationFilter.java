@@ -4,6 +4,7 @@
 package com.simbest.boot.security.auth.filter;
 
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.exceptions.AttempMaxLoginFaildException;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.redis.RedisUtil;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,11 +26,6 @@ import java.util.concurrent.TimeUnit;
  * 时间: 2018/3/7  0:10
  */
 public class RsaAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
-    public static final String LOGIN_FAILED_KEY = "LOGIN_FAILED:";
-
-    public static final Integer ATTEMPT_LOGIN_INIT_TIMES = 1;
-
 
     @Setter
     private RsaEncryptor encryptor;
@@ -53,17 +50,17 @@ public class RsaAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
-        String key = LOGIN_FAILED_KEY + obtainUsername(request);
+        String key = AuthoritiesConstants.LOGIN_FAILED_KEY + obtainUsername(request);
         Integer failedTimes = RedisUtil.getBean(key, Integer.class);
         if(null != failedTimes && failedTimes >= AuthoritiesConstants.ATTEMPT_LOGIN_MAX_TIMES){
-            throw new AttempMaxLoginFaildException("Login faild exceed max times");
+            throw new AttempMaxLoginFaildException(ErrorCodeConstants.LOGIN_ERROR_EXCEED_MAX_TIMES);
         } else {
             return super.attemptAuthentication(request, response);
         }
     }
 
     /**
-     * 登录发生错误计数，每错误一次，延时等待5分钟
+     * 登录发生错误计数，每错误一次，即向后再延时等待5分钟
      * @param request
      * @param response
      * @param failed
@@ -75,26 +72,34 @@ public class RsaAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                               HttpServletResponse response, AuthenticationException failed)
             throws IOException, ServletException {
 
-        String key = LOGIN_FAILED_KEY + obtainUsername(request);
+        String key = AuthoritiesConstants.LOGIN_FAILED_KEY + obtainUsername(request);
         Integer failedTimes = RedisUtil.getBean(key, Integer.class);
-        failedTimes = null == failedTimes ? ATTEMPT_LOGIN_INIT_TIMES : failedTimes + ATTEMPT_LOGIN_INIT_TIMES;
+        failedTimes = null == failedTimes ? AuthoritiesConstants.ATTEMPT_LOGIN_INIT_TIMES : failedTimes + AuthoritiesConstants.ATTEMPT_LOGIN_INIT_TIMES;
         RedisUtil.setBean(key, failedTimes);
         RedisUtil.expire(key, AuthoritiesConstants.ATTEMPT_LOGIN_FAILED_WAIT_SECONDS, TimeUnit.SECONDS);
 
         super.unsuccessfulAuthentication(request, response, failed);
     }
 
-//    @Override
-//    protected void successfulAuthentication(HttpServletRequest request,
-//                                            HttpServletResponse response, FilterChain chain, Authentication authResult)
-//            throws IOException, ServletException {
-//
-//        String key = LOGIN_FAILED_KEY + obtainUsername(request);
-//        Long value = RedisCacheUtils.delKey(key);
-//        System.out.println(value);
-//
-//        super.successfulAuthentication(request, response, chain, authResult);
-//    }
+    /**
+     * 登录成功后，立即清除失败缓存，不再等待上述到期时间
+     * @param request
+     * @param response
+     * @param chain
+     * @param authResult
+     * @throws IOException
+     * @throws ServletException
+     */
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response, FilterChain chain, Authentication authResult)
+            throws IOException, ServletException {
+
+        String key = AuthoritiesConstants.LOGIN_FAILED_KEY + obtainUsername(request);
+        Boolean value = RedisUtil.delete(key);
+
+        super.successfulAuthentication(request, response, chain, authResult);
+    }
 
 
 }

@@ -61,8 +61,8 @@ public class RedisUtil {
 	 * 
 	 * @param key
 	 */
-	public static void delete(String key) {
-        cacheUtils.redisTemplate.delete(prefix+key);
+	public static Boolean delete(String key) {
+        return cacheUtils.redisTemplate.delete(prefix+key);
 	}
 
 	/**
@@ -70,12 +70,12 @@ public class RedisUtil {
 	 * 
 	 * @param keys
 	 */
-	public static void delete(Collection<String> keys) {
+	public static Long delete(Collection<String> keys) {
         Collection<String> realKeys = Sets.newHashSet();
         for(String k : keys){
             realKeys.add(prefix+k);
         }
-		cacheUtils.redisTemplate.delete(realKeys);
+        return cacheUtils.redisTemplate.delete(realKeys);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class RedisUtil {
 		return cacheUtils.redisTemplate.opsForValue().get(prefix+key);
 	}
 
-    public static <T> void setBean(String  key, T obj) {
+    public static <T> void setBean(String key, T obj) {
         cacheUtils.redisTemplate.opsForValue().set(prefix + key, JacksonUtils.obj2json(obj));
     }
 
@@ -255,7 +255,7 @@ public class RedisUtil {
      * @param seconds
      * @return
      */
-    public static <T> void setBean(String  key, T obj, int seconds) {
+    public static <T> void setBean(String key, T obj, int seconds) {
         cacheUtils.redisTemplate.opsForValue().set(prefix + key, JacksonUtils.obj2json(obj), seconds, TimeUnit.SECONDS);
     }
 
@@ -267,7 +267,7 @@ public class RedisUtil {
      * @param clazz
      * @return
      */
-    public static <T> T getBean(String  key, Class<T> clazz) {
+    public static <T> T getBean(String key, Class<T> clazz) {
         String value = cacheUtils.redisTemplate.opsForValue().get(prefix + key);
         if (null == value) {
             return null;

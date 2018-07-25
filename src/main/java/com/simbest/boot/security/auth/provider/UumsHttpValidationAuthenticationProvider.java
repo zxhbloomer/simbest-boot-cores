@@ -7,6 +7,8 @@ import com.mzlion.easyokhttp.HttpClient;
 import com.mzlion.easyokhttp.exception.HttpClientException;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.constants.ErrorCodeConstants;
+import com.simbest.boot.exceptions.AccesssAppDeniedException;
 import com.simbest.boot.security.IUser;
 import com.simbest.boot.security.SimpleUser;
 import com.simbest.boot.security.auth.authentication.token.UumsAuthentication;
@@ -57,19 +59,28 @@ public class UumsHttpValidationAuthenticationProvider implements AuthenticationP
                         .param(AuthoritiesConstants.SSO_UUMS_PASSWORD, uumsCredentials.getPassword())
                         .param(AuthoritiesConstants.SSO_API_APP_CODE, uumsCredentials.getAppcode())
                         .asBean(JsonResponse.class);
-                String userJson = JacksonUtils.obj2json(response.getData());
-                authUser = JacksonUtils.json2obj(userJson, SimpleUser.class);
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authUser,
-                        authUser.getPassword(), authUser.getAuthorities());
-                return token;
+                if(response.getErrcode().equals(ErrorCodeConstants.ERRORCODE_LOGIN_APP_UNREGISTER_GROUP)){
+                    log.error("User %s try to login %s failed, because uums return error with: %s", principal, uumsCredentials.getAppcode(), ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP);
+                    throw new
+                            AccesssAppDeniedException(ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP);
+                }else {
+                    String userJson = JacksonUtils.obj2json(response.getData());
+                    authUser = JacksonUtils.json2obj(userJson, SimpleUser.class);
+                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authUser,
+                            authUser.getPassword(), authUser.getAuthorities());
+                    return token;
+                }
             }catch (HttpClientException e){
+                log.error("User %s try to login failed, because catch a http exception!", principal);
                 throw new
                         BadCredentialsException(principal + " authenticate failed.");
             }catch (Exception e){
+                log.error("User %s try to login failed, because catch an unknow exception!", principal);
                 throw new
                         BadCredentialsException(principal + " authenticate failed.");
             }
         } else {
+            log.error("User %s login with %s failed, because principal or credentials is null!", principal, credentials);
             throw new
                     BadCredentialsException(principal + " authenticate failed.");
         }

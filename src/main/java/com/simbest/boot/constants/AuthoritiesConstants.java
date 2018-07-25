@@ -31,6 +31,9 @@ public class AuthoritiesConstants {
 
     public static final int PASSWORD_SALT_LENGTH = 12;
 
+    public static final int ATTEMPT_LOGIN_INIT_TIMES = 1;
     public static final int ATTEMPT_LOGIN_MAX_TIMES = 5;
     public static final int ATTEMPT_LOGIN_FAILED_WAIT_SECONDS = 60 * 5;
+    public static final String LOGIN_FAILED_KEY = "LOGIN_FAILED:";
+
 }
