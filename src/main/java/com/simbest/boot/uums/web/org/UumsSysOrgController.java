@@ -43,7 +43,7 @@ public class UumsSysOrgController {
      * @param orgCode
      * @return
      */
-    @ApiOperation (value = "页面初始化时获取根组织以及根组织下一级组织", notes = "页面初始化时获取根组织以及根组织下一级组织")
+    @ApiOperation (value = "查看某个父组织的子组织", notes = "查看某个父组织的子组织")
     @ApiImplicitParams( {
             @ApiImplicitParam(name = "appcode", value = "应用code", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "orgCode", value = "组织code", dataType = "String", paramType = "query")

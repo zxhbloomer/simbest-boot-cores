@@ -201,7 +201,7 @@ public class UumsSysUserInfoController {
                                        @RequestParam(required = false) String appcode,
                                        @RequestParam(required = false) String truename,
                                                 @RequestParam(required = false) String preferredMobile ) {
-        return JsonResponse.success(uumsSysUserinfoApi.findRoleNameIsARoleDim(page,size,direction,properties,appcode,truename,preferredMobile));
+        return uumsSysUserinfoApi.findRoleNameIsARoleDim(page,size,direction,properties,appcode,truename,preferredMobile);
     }
 
     /*    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
