@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.security.SimplePermission;
 import com.simbest.boot.security.SimpleUser;
 import com.simbest.boot.security.UserOrgTree;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -249,30 +251,31 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 查询某个人以及当前应用下的全部权限
+     * 查询某个人以及任何应用下的全部权限
      * @param appcode
      * @param username
      * @return
      */
-    public List<SimpleUser> findUserAppPermission( String username, String appcode) {
+    public Set<SimplePermission> findPermissionByAppUser( String username, String appcode) {
         String username1 = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username1);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionByUsername"+SSO)
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPermissionByAppUser"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username1))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
+                .param( "appCode",appcode )
                 .asBean(JsonResponse.class);
         if(response==null){
             log.error("--response对象为空!--");
             return null;
         }
-        if(!(response.getData() instanceof ArrayList)){
-            log.error("--uums接口返回的类型不为ArrayList--");
+        if(!(response.getData() instanceof Set)){
+            log.error("--uums接口返回的类型不为Set--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleUser> userList=JacksonUtils.json2map(json, new TypeReference<List<SimpleUser>>(){});
-        return userList;
+        Set<SimplePermission> permissions=JacksonUtils.json2map(json, new TypeReference<Set<SimplePermission>>(){});
+        return permissions;
     }
 
     /**

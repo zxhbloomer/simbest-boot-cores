@@ -53,22 +53,6 @@ public class UumsSysPermissionController {
     }
 
     /**
-     * 查询某个人在某个应用下的全部权限
-     * @param username
-     * @param appcode
-     * @return
-     */
-    @ApiOperation(value = "查询某个人在某个应用下的全部权限", notes = "查询某个人在某个应用下的全部权限")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username", value = "用户oa账号", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "appcode", value = "应用code", dataType = "String", paramType = "query")
-    })
-    @PostMapping("/findUserPermissionByAppcode")
-    public JsonResponse findUserPermissionByAppcode(@RequestParam String username,@RequestParam  String appcode) {
-        return JsonResponse.success(uumsSysPermissionApi.findUserPermissionByAppcode( username,appcode ));
-    }
-
-    /**
      *获取权限信息列表并分页
      * @param page
      * @param size

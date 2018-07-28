@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -141,33 +140,6 @@ public class UumsSysPermissionApi {
         }
         String json = JacksonUtils.obj2json(response.getData());
         List<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePermission>>(){});
-        return permissionList;
-    }
-
-    /**
-     * 查询某个人在某个应用下的全部权限
-     * @param username
-     * @param appcode
-     * @return
-     */
-    public Set<SimplePermission> findUserPermissionByAppcode( String username,String appcode) {
-        String loginUser = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserPermissionByAppcode"+SSO)
-                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
-                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
-                .param( "username",username)
-                .asBean(JsonResponse.class);
-        if(response==null){
-            log.error("--response对象为空!--");
-            return null;
-        }
-        if(!(response.getData() instanceof Set)){
-            log.error("--uums接口返回的类型不为set集合--");
-            return null;
-        }
-        String json = JacksonUtils.obj2json(response.getData());
-        Set<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<Set<SimplePermission>>(){});
         return permissionList;
     }
 
