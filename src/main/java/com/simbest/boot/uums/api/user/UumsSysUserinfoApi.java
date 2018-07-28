@@ -251,16 +251,29 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 查询某个人以及任何应用下的全部权限
+     * 查询某个人在某一应用下的全部权限。普通应用使用
      * @param appcode
      * @param username
      * @return
      */
     public Set<SimplePermission> findPermissionByAppUser( String username, String appcode) {
-        String username1 = SecurityUtils.getCurrentUserName();
-        log.debug("Http remote request user by username: {}", username1);
+        return findPermissionByAppUserNormal(SecurityUtils.getCurrentUserName(), username, appcode);
+    }
+
+    /**
+     * 查询某个人在某一应用下的全部权限。当前应用无session时使用，如portal
+     * @param username
+     * @param appcode
+     * @return
+     */
+    public Set<SimplePermission> findPermissionByAppUserNoSession( String username, String appcode) {
+        return findPermissionByAppUserNormal(username, username, appcode);
+    }
+
+    private Set<SimplePermission> findPermissionByAppUserNormal(String loginUser, String username, String appcode){
+        log.debug("Http remote request user by username: {}", loginUser);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPermissionByAppUser"+SSO)
-                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username1))
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
                 .param( "appCode",appcode )
@@ -277,6 +290,8 @@ public class UumsSysUserinfoApi {
         Set<SimplePermission> permissions=JacksonUtils.json2map(json, new TypeReference<Set<SimplePermission>>(){});
         return permissions;
     }
+
+
 
     /**
      * 根据过滤条件获取决策下的用户
@@ -389,13 +404,26 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 检测用户是否有app的权限
+     * 检测用户是否有app的权限。普通应用使用
      * @param username
      * @param appcode
      * @return
      */
     public Boolean checkUserAccessApp(String username,String appcode) {
-        String loginUser = SecurityUtils.getCurrentUserName();
+       return checkUserAccessAppNoramal(SecurityUtils.getCurrentUserName(),username,appcode);
+    }
+
+    /**
+     * 检测用户是否有app的权限。当前应用无session时使用，如portal。
+     * @param username
+     * @param appcode
+     * @return
+     */
+    public Boolean checkUserAccessAppNoSession(String username,String appcode) {
+        return checkUserAccessAppNoramal(username,username,appcode);
+    }
+
+    private Boolean checkUserAccessAppNoramal(String loginUser, String username, String appcode){
         log.debug("Http remote request user by username: {}", loginUser);
         JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "checkUserAccessApp"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
