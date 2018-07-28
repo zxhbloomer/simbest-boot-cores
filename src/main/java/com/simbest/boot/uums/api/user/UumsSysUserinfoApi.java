@@ -252,6 +252,7 @@ public class UumsSysUserinfoApi {
 
     /**
      * 查询某个人在某一应用下的全部权限。普通应用使用
+     * 应用向UUMS发送单点请求时使用
      * @param appcode
      * @param username
      * @return
@@ -262,6 +263,7 @@ public class UumsSysUserinfoApi {
 
     /**
      * 查询某个人在某一应用下的全部权限。当前应用无session时使用，如portal
+     * 门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用
      * @param username
      * @param appcode
      * @return
@@ -404,7 +406,8 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 检测用户是否有app的权限。普通应用使用
+     * 检测用户是否有app的权限
+     * 应用向UUMS发送单点请求时使用
      * @param username
      * @param appcode
      * @return
@@ -415,6 +418,7 @@ public class UumsSysUserinfoApi {
 
     /**
      * 检测用户是否有app的权限。当前应用无session时使用，如portal。
+     * 门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用
      * @param username
      * @param appcode
      * @return
