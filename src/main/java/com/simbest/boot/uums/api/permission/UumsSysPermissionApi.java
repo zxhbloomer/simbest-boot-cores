@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -149,7 +150,7 @@ public class UumsSysPermissionApi {
      * @param appcode
      * @return
      */
-    public List<SimplePermission> findUserPermissionByAppcode( String username,String appcode) {
+    public Set<SimplePermission> findUserPermissionByAppcode( String username,String appcode) {
         String loginUser = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserPermissionByAppcode"+SSO)
@@ -161,12 +162,12 @@ public class UumsSysPermissionApi {
             log.error("--response对象为空!--");
             return null;
         }
-        if(!(response.getData() instanceof ArrayList)){
-            log.error("--uums接口返回的类型不为ArrayList--");
+        if(!(response.getData() instanceof Set)){
+            log.error("--uums接口返回的类型不为set集合--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePermission>>(){});
+        Set<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<Set<SimplePermission>>(){});
         return permissionList;
     }
 
