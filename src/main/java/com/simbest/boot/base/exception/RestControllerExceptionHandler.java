@@ -52,7 +52,6 @@ public class RestControllerExceptionHandler {
         log.warn(req.getRequestURL().toString());
         Exceptions.printException(e);
         JsonResponse response = GlobalExceptionRegister.returnErrorResponse(e);
-        response.setTimestamp(DateUtil.getCurrent());
         response.setPath(req.getRequestURL().toString());
         return response;
     }

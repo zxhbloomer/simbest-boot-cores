@@ -59,7 +59,7 @@ public class JsonResponse {
      */
     public static JsonResponse defaultSuccessResponse() {
         return JsonResponse.builder().errcode(SUCCESS_CODE).timestamp(DateUtil.getCurrent())
-                .status(SUCCESS_STATUS).message(ErrorCodeConstants.SUCCESS_MSG).build();
+                .status(SUCCESS_STATUS).build();
     }
 
     /**
@@ -68,7 +68,7 @@ public class JsonResponse {
      */
     public static JsonResponse defaultErrorResponse() {
         return JsonResponse.builder().errcode(ERROR_CODE).timestamp(DateUtil.getCurrent())
-                .status(ERROR_STATUS).message(ErrorCodeConstants.UNKNOW_ERROR).build();
+                .status(ERROR_STATUS).build();
     }
 
     /**

@@ -4,6 +4,9 @@ import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.exceptions.UpdateNotExistObjectException;
+import com.simbest.boot.util.CustomBeanUtil;
+import com.simbest.boot.util.ObjectUtil;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -108,6 +111,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     @Override
     @Transactional
     public T insert ( T o) {
+        log.debug("@Logic Repository Service insert object: " + o);
         wrapCreateInfo( o );
         return logicRepository.save(o);
     }
@@ -115,13 +119,23 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     @Override
     @Transactional
     public T update ( T o) {
-        wrapUpdateInfo( o );
-        return logicRepository.save(o);
+        PK pk = (PK) ObjectUtil.getEntityIdVaue(o);
+        if(null != pk) {
+            log.debug("@Logic Repository Service update a already object: " + o);
+            T target = findById(pk);
+            CustomBeanUtil.copyPropertiesIgnoreNull(o, target);
+            wrapUpdateInfo( o );
+            return logicRepository.save(o);
+        } else {
+            throw new UpdateNotExistObjectException();
+        }
     }
 
     @Override
     @Transactional
     public void deleteById ( PK id ) {
+        T o = findById(id);
+        update(o);
         log.debug("@Logic Repository Service deleteById object by id: " + id);
         logicRepository.logicDelete( id );
     }
@@ -130,6 +144,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     @Transactional
     public void delete ( T o ) {
         log.debug("@Logic Repository Service delete object: " + o);
+        wrapUpdateInfo( o );
         logicRepository.logicDelete( o );
     }
 

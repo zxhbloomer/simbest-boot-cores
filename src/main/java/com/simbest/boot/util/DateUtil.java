@@ -562,11 +562,35 @@ public final class DateUtil {
     }
 
     /**
+     * 将Date转换为LocalDateTime
+     * @param date
+     * @return
+     */
+    public static LocalDateTime date2LocalDateTime(Date date) {
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+        return localDateTime;
+    }
+
+    /**
+     * 将LocalDateTime转换为Date
+     * @param localDateTime
+     * @return
+     */
+    public static Date localDateTime2Date(LocalDateTime localDateTime) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime zdt = localDateTime.atZone(zoneId);
+        Date date = Date.from(zdt.toInstant());
+        return date;
+    }
+
+    /**
      * 将LocalDateTime类转换为XMLGregorianCalendar
      * @param localDateTime
      * @return
      */
-    public static XMLGregorianCalendar LocalDateTimeToXmlDate(LocalDateTime localDateTime){
+    public static XMLGregorianCalendar localDateTimeToXmlDate(LocalDateTime localDateTime){
         ZoneId zoneId = ZoneId.systemDefault();
         ZonedDateTime zdt = localDateTime.atZone(zoneId);
         Date date = Date.from(zdt.toInstant());

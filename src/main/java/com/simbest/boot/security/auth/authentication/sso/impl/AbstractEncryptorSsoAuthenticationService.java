@@ -3,8 +3,9 @@
  */
 package com.simbest.boot.security.auth.authentication.sso.impl;
 
-import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.util.encrypt.AbstractEncryptor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,31 +15,25 @@ import org.apache.commons.lang3.StringUtils;
  * 时间: 2018/1/20  15:06 
  */
 @Slf4j
+@Data
+@NoArgsConstructor
 public class AbstractEncryptorSsoAuthenticationService extends AbstractSsoAuthenticationService {
 
     private AbstractEncryptor encryptor;
 
-    private IAuthService authService;
-
-    public AbstractEncryptorSsoAuthenticationService(IAuthService authService, AbstractEncryptor encryptor) {
-        super(authService);
-        this.authService = authService;
-        this.encryptor = encryptor;
-    }
-
     @Override
     public String decryptUsername(String username) {
+        String decryptUsername = null;
         if(StringUtils.isNotEmpty(username)){
             try {
-                username = encryptor.decrypt(username);
-                log.debug("Actually get username from request with: {}", username);
-                return username;
+                decryptUsername = this.getEncryptor().decrypt(username);
             } catch (Exception e) {
-                return null;
+//                Exceptions.printException(e);
+                log.debug("Use {} decrypt username {} to {} faied......", this.getClass().toString(), username, decryptUsername);
             }
-        }else{
-            return null;
         }
+
+        return decryptUsername;
     }
 
 }

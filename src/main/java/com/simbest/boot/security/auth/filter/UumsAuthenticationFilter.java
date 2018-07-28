@@ -4,6 +4,8 @@
 package com.simbest.boot.security.auth.filter;
 
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.constants.ErrorCodeConstants;
+import com.simbest.boot.exceptions.AttempMaxLoginFaildException;
 import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
 import com.simbest.boot.security.auth.authentication.token.UumsAuthentication;
 import com.simbest.boot.security.auth.authentication.token.UumsAuthenticationCredentials;
@@ -46,18 +48,25 @@ public class UumsAuthenticationFilter extends AbstractAuthenticationProcessingFi
         String password = request.getParameter(AuthoritiesConstants.SSO_UUMS_PASSWORD);
         String appcode = request.getParameter(AuthoritiesConstants.SSO_API_APP_CODE);
 
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(appcode)) {
-            throw new BadCredentialsException(
-                    "Authentication principal can not be null: " + username);
+        String key = AuthoritiesConstants.LOGIN_FAILED_KEY + username;
+        Integer failedTimes = RedisUtil.getBean(key, Integer.class);
+        if(null != failedTimes && failedTimes >= AuthoritiesConstants.ATTEMPT_LOGIN_MAX_TIMES){
+            throw new AttempMaxLoginFaildException(ErrorCodeConstants.LOGIN_ERROR_EXCEED_MAX_TIMES);
+        } else {
+            if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(appcode)) {
+                throw new BadCredentialsException(
+                        "Authentication principal can not be null: " + username);
+            }
+
+            Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
+            if (authenticationIsRequired(existingAuth, username)) {
+                UumsAuthentication uumsAuthentication = new UumsAuthentication(username, UumsAuthenticationCredentials.builder()
+                        .password(password).appcode(appcode).build());
+                return this.getAuthenticationManager().authenticate(uumsAuthentication);
+            }
+            return existingAuth;
         }
 
-        Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (authenticationIsRequired(existingAuth, username)) {
-            UumsAuthentication uumsAuthentication = new UumsAuthentication(username, UumsAuthenticationCredentials.builder()
-                    .password(password).appcode(appcode).build());
-            return this.getAuthenticationManager().authenticate(uumsAuthentication);
-        }
-        return existingAuth;
     }
 
     /**

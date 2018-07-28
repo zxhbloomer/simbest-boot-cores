@@ -23,12 +23,12 @@ import java.util.Base64;
 @Component
 @Slf4j
 public class Des3Encryptor extends AbstractEncryptor {
-//
-//    public static void main(String[] args)throws Exception {
-//        Des3Encryptor encryptor = new Des3Encryptor();
-//        log.debug(encryptor.encrypt("1"));
-//        log.debug(encryptor.decrypt(encryptor.encrypt("1")));
-//    }
+
+    public static void main(String[] args)throws Exception {
+        Des3Encryptor encryptor = new Des3Encryptor();
+        log.debug(encryptor.encrypt("hanhailing"));
+        log.debug(encryptor.decrypt(encryptor.encrypt("1")));
+    }
 
     // 密钥
     private static final String SECRETKEY = "2018#@SimBest$#soft0803#$@";

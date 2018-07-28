@@ -4,10 +4,9 @@
 package com.simbest.boot.security.auth.authentication.sso.impl;
 
 import com.mochasoft.portal.encrypt.EncryptorUtil;
-import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.base.exception.Exceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +15,8 @@ import org.springframework.stereotype.Component;
  * 作者: lishuyi 
  * 时间: 2018/1/20  15:06 
  */
-@Component
 @Slf4j
+@Component
 public class MochaSsoAuthenticationServiceImpl extends AbstractSsoAuthenticationService {
 
     private final static Integer TIMEOUT = 1800;
@@ -25,28 +24,19 @@ public class MochaSsoAuthenticationServiceImpl extends AbstractSsoAuthentication
     @Value("${app.oa.portal.token}")
     private String portalToken;
 
-    @Autowired
-    private IAuthService authService;
-
-    @Autowired
-    public MochaSsoAuthenticationServiceImpl(IAuthService authService) {
-        super(authService);
-        this.authService = authService;
-    }
-
     @Override
     public String decryptUsername(String username) {
+        String decryptUsername = null;
         if(StringUtils.isNotEmpty(username)){
             try {
-                username = EncryptorUtil.decode(portalToken, username, TIMEOUT);
-                log.debug("Actually get username from request with: {}", username);
-                return username;
+                decryptUsername = EncryptorUtil.decode(portalToken, username, TIMEOUT);
             } catch (Exception e) {
-                return null;
+//                Exceptions.printException(e);
+                log.debug("Use {} decrypt username {} to {} faied......", this.getClass().toString(), username, decryptUsername);
             }
-        }else{
-            return null;
         }
+        log.debug("Decrypt username {} to {}", username, decryptUsername);
+        return decryptUsername;
     }
 
 

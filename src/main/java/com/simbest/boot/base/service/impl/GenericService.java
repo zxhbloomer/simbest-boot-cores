@@ -8,6 +8,7 @@ import com.simbest.boot.base.service.IGenericService;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.exceptions.InsertExistObjectException;
 import com.simbest.boot.exceptions.UpdateNotExistObjectException;
+import com.simbest.boot.util.CustomBeanUtil;
 import com.simbest.boot.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -138,8 +139,14 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
      */
     @Override
     public Page<T> findAll ( ) {
-        log.debug("@Generic Repository Service getAll");
+        log.debug("@Generic Repository Service findAll");
         return genericRepository.findAll(genericRepository.getPageable());
+    }
+
+    @Override
+    public Iterable<T> findAllNoPage(){
+        log.debug("@Generic Repository Service findAllNoPage");
+        return genericRepository.findAll();
     }
 
     /**
@@ -163,7 +170,7 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
     }
 
     @Override
-    public List<T> findAllByIDs(Iterable<PK> ids) {
+    public Iterable<T> findAllByIDs(Iterable<PK> ids) {
         log.debug("@Generic Repository Service object by findAllByIDs");
         return genericRepository.findAllById(ids);
     }
@@ -175,6 +182,12 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
     public Page<T> findAll ( Specification<T> conditions, Pageable pageable ) {
         log.debug("@Generic Repository Service findAll Specification object PageSize:" + pageable.getPageSize() + ":PageNumber:" + pageable.getPageNumber());
         return genericRepository.findAll(conditions, pageable);
+    }
+
+    @Override
+    public Iterable<T> findAllNoPage(Specification<T> conditions){
+        log.debug("@Generic Repository Service object by findAllNoPage");
+        return genericRepository.findAll(conditions);
     }
 
     /**
@@ -194,9 +207,12 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
     @Override
     @Transactional
     public T update ( T o ) {
-        if(null != ObjectUtil.getEntityIdVaue(o)) {
+        PK pk = (PK)ObjectUtil.getEntityIdVaue(o);
+        if(null != pk) {
             log.debug("@Generic Repository Service update a already object: " + o);
-            return genericRepository.save(o);
+            T target = findById(pk);
+            CustomBeanUtil.copyPropertiesIgnoreNull(o, target);
+            return genericRepository.save(target);
         } else {
             throw new UpdateNotExistObjectException();
         }

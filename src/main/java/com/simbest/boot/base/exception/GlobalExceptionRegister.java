@@ -9,6 +9,7 @@ import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.exceptions.InsertExistObjectException;
 import com.simbest.boot.exceptions.UpdateNotExistObjectException;
+import com.simbest.boot.util.DateUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -74,10 +75,10 @@ public final class GlobalExceptionRegister {
         JsonResponse response = errorMap.get(e.getClass());
         if (response == null) {
             response = JsonResponse.defaultErrorResponse();
-            response.setData(ErrorCodeConstants.UNKNOW_ERROR);
-        } else {
-            response.setData(e.getMessage());
         }
+        response.setError(e.getMessage());
+        response.setMessage(ErrorCodeConstants.UNKNOW_ERROR);
+        response.setTimestamp(DateUtil.getCurrent());
         return response;
     }
 }

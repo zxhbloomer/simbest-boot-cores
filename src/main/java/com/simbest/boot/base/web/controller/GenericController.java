@@ -63,6 +63,19 @@ public class GenericController<T extends GenericModel, PK extends Serializable> 
         return JsonResponse.success(pages);
     }
 
+    @PostMapping(value = "/findAllNoPage")
+    public JsonResponse findAllNoPage(@RequestBody T o) {
+        // 获取查询条件
+        Condition condition = new Condition();
+        Map<String, Object> params = ObjectUtil.getEntityPersistentFieldValueExceptId(o);
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            condition.eq(entry.getKey(), entry.getValue());
+        }
+        Specification<T> specification = service.getSpecification(condition);
+        Iterable<T> datas = service.findAllNoPage(specification);
+        return JsonResponse.success(datas);
+    }
+
     @PostMapping(value = "/create")
     public JsonResponse create(@RequestBody T o) {
         try {

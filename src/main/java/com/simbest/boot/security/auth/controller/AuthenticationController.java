@@ -59,31 +59,35 @@ public class AuthenticationController {
                     return JsonResponse.fail(username +" login "+appcode+"failed",
                             ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP,ErrorCodeConstants.ERRORCODE_LOGIN_APP_UNREGISTER_GROUP);
                 }
+                log.debug("Check user {} access app {} sucessfully....", username, appcode);
                 UsernamePasswordAuthenticationToken passwordToken = new UsernamePasswordAuthenticationToken(username, rsaEncryptor.decrypt(password));
                 Authentication authentication = authenticationManager.authenticate(passwordToken);
                 if(authentication.isAuthenticated()) {
                     IUser authUser = (IUser) authentication.getPrincipal();
-                    Set<? extends IPermission> userAppPermission = authService.findUserPermissionByAppcode(username, appcode);
-                    if(null != userAppPermission) {
-                        authUser = authService.addAppAuthorities(authUser, userAppPermission);
+                    //追加权限
+                    Set<? extends IPermission> appPermission = authService.findUserPermissionByAppcode(username, appcode);
+                    if(null != appPermission && !appPermission.isEmpty()) {
+                        log.debug("Will add {} permissions to user {} for app {}", appPermission.size(), username, appcode);
+                        authUser.addAppPermissions(appPermission);
+                        authUser.addAppAuthorities(appPermission);
                     }
                     return JsonResponse.success(authUser);
                 }
                 else {
-                    log.debug("UUMS authentication failed from request with: {}", username);
+                    log.debug("SSO authentication failed from request with user {} for app {}", username, appcode);
                     return JsonResponse.fail("UUMS authentication failed");
                 }
             } else {
-                log.debug("UUMS authentication failed from request with: {}", username);
+                log.debug("SSO authentication failed from request with user {} for app {}", username, appcode);
                 return JsonResponse.fail("UUMS authentication failed");
             }
         } catch (AuthenticationException e){
+            log.debug("SSO authentication failed from request with user {} for app {}", username, appcode);
             Exceptions.printException(e);
-            log.debug("UUMS authentication failed from request with: {}", username);
             return JsonResponse.fail("UUMS authentication failed");
         } catch (Exception e){
+            log.debug("SSO authentication failed from request with user {} for app {}", username, appcode);
             Exceptions.printException(e);
-            log.debug("UUMS authentication failed from request with: {}", username);
             return JsonResponse.fail("UUMS authentication failed");
         }
     }

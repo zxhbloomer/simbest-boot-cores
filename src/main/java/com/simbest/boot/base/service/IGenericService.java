@@ -61,6 +61,12 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
     Page<T> findAll();
 
     /**
+     * 查询全部记录
+     * @return
+     */
+    Iterable<T> findAllNoPage();
+
+    /**
      * 分页查询（含排序功能）
      *
      * @param pageable
@@ -82,10 +88,10 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
      * @param ids
      * @return
      */
-    List<T> findAllByIDs(Iterable<PK> ids);
+    Iterable<T> findAllByIDs(Iterable<PK> ids);
 
     /**
-     * 分页查询（含排序功能）
+     * 按条件分页查询（含排序功能）
      *
      * @param conditions
      * @param pageable
@@ -93,8 +99,25 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
      */
     Page<T> findAll(Specification<T> conditions, Pageable pageable);
 
+    /**
+     * 按条件查询全部记录
+     * @param conditions
+     * @return
+     */
+    Iterable<T> findAllNoPage(Specification<T> conditions);
+
+    /**
+     * 新增-不允许实体主键字段有值
+     * @param o
+     * @return
+     */
     T insert(T o);
 
+    /**
+     * 修改-不允许实体主键字段无值
+     * @param o
+     * @return
+     */
     T update(T o);
 
     /**

@@ -3,8 +3,8 @@
  */
 package com.simbest.boot.security.auth.authentication.sso.impl;
 
-import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,19 +14,15 @@ import org.springframework.stereotype.Component;
  * 作者: lishuyi 
  * 时间: 2018/1/20  15:06 
  */
-@Component
 @Slf4j
+@Data
+@Component
 public class Des3SsoAuthenticationServiceImpl extends AbstractEncryptorSsoAuthenticationService {
 
-    @Autowired
     private Des3Encryptor encryptor;
 
     @Autowired
-    private IAuthService authService;
-
-    public Des3SsoAuthenticationServiceImpl(IAuthService authService, Des3Encryptor encryptor) {
-        super(authService, encryptor);
-        this.authService = authService;
+    public Des3SsoAuthenticationServiceImpl(Des3Encryptor encryptor) {
         this.encryptor = encryptor;
     }
 

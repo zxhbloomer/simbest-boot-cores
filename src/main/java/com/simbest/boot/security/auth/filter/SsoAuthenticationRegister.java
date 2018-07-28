@@ -24,31 +24,6 @@ public class SsoAuthenticationRegister {
     @Autowired
     private ApplicationContext appContext;
 
-//    /**
-//     * 尝试从HttpServletRequest获取认证用户名
-//     * @param request
-//     * @return
-//     */
-//    public String retriveFindUsername(HttpServletRequest request){
-//        Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);
-//        for(SsoAuthenticationService auth : auths.values()){
-//            String username = auth.getUsername(request);
-//            if(StringUtils.isNotEmpty(username)) {
-//               return username;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * 尝试从HttpServletRequest获取认证Token
-//     * @param request
-//     * @return
-//     */
-//    public SsoUsernameAuthentication retriveMakeToken(HttpServletRequest request){
-//        return new SsoUsernameAuthentication(request.getParameter(AuthoritiesConstants.SSO_USERNAME),
-//                request.getParameter(AuthoritiesConstants.SSO_APP_CODE));
-//    }
 
     public Collection<SsoAuthenticationService> getSsoAuthenticationService(){
         Map<String, SsoAuthenticationService> auths = appContext.getBeansOfType(SsoAuthenticationService.class);

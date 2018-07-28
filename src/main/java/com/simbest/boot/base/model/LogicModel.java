@@ -45,7 +45,7 @@ public abstract class LogicModel extends SystemModel {
     @Setter
     @Getter
     @NonNull
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     //更新人 MODIFIER
     private String modifier;
 

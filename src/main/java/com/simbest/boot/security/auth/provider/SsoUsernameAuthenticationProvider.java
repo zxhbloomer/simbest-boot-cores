@@ -3,7 +3,6 @@
  */
 package com.simbest.boot.security.auth.provider;
 
-import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
 import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
@@ -13,16 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 
@@ -41,17 +33,19 @@ public class SsoUsernameAuthenticationProvider implements AuthenticationProvider
     @Autowired
     private SsoAuthenticationRegister ssoAuthenticationRegister;
 
-    @Autowired
-    private IAuthService authService;
-
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Collection<SsoAuthenticationService> ssoAuthenticationServices = ssoAuthenticationRegister.getSsoAuthenticationService();
         Authentication successToken = null;
         for(SsoAuthenticationService authService : ssoAuthenticationServices) {
+            log.debug("SsoAuthenticationService {} attempt authentication with authentication {}",authService.getClass().getName(), authentication.toString());
             successToken = authService.attemptAuthentication(authentication);
-            if(null != successToken)
+            if(null != successToken) {
+                log.debug("SsoAuthenticationService {} attempt authentication with authentication {} successfully......, get successToken {}",
+                        authService.getClass().getName(), authentication.toString(), successToken.toString());
                 break;
+            }
+            log.debug("SsoAuthenticationService {} attempt authentication with authentication {} failed......",authService.getClass().getName(), authentication.toString());
         }
         if (null != successToken) {
             return successToken;
