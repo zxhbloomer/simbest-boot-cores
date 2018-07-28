@@ -385,6 +385,54 @@ public class UumsSysUserinfoApi {
         return response;
     }
 
+    /**
+     * 检测用户是否有app的权限
+     * @param username
+     * @param appcode
+     * @return
+     */
+    public Boolean checkUserAccessApp(String username,String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "checkUserAccessApp"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("username", username)
+                .param("appCode", appcode)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Boolean auth = JacksonUtils.json2obj(json, Boolean.class);
+        return auth;
+    }
+
+    //增加用户的权限
+   /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(sysAppDecisionmap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "addAppAuthorities"+SSO+"?loginuser="+username2+"&appcode="+appcode
+                +"&username="+username)
+                .json( json0 )
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<UserOrgTree> userList=JacksonUtils.json2list(json, new TypeReference<List<UserOrgTree>>(){});
+        return userList;
+    }*/
+
     /*
     public JsonResponse findUserByApp(@RequestParam int page,@RequestParam int size, @RequestParam String direction,@RequestParam String properties,@RequestParam String appcode, Map sysAppDecisionMap){
         String username = SecurityUtils.getCurrentUserName();

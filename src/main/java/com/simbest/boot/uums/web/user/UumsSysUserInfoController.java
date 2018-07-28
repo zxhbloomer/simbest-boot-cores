@@ -204,6 +204,38 @@ public class UumsSysUserInfoController {
         return uumsSysUserinfoApi.findRoleNameIsARoleDim(page,size,direction,properties,appcode,truename,preferredMobile);
     }
 
+   /**
+     * 检测用户是否有app的权限
+     * @param username
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "检测用户是否有app的权限", notes = "检测用户是否有app的权限")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/checkUserAccessApp")
+    public JsonResponse checkUserAccessApp(@RequestParam(required = false) String username
+                                           ,@RequestParam(required = false) String appcode ){
+        return JsonResponse.success( uumsSysUserinfoApi.checkUserAccessApp(username,appcode));
+    }
+
+    /**
+     * 增加用户的权限
+     * @return
+     */
+   /* @ApiOperation(value = "增加用户的权限", notes = "增加用户的权限")
+    @PostMapping("/addAppAuthorities")
+    public JsonResponse addAppAuthorities(@RequestBody Map authoritiesMap ){
+        IUser authUser = new SimpleUser();
+        Set<? extends IPermission > permissions = new LinkedHashSet<>(  );
+        //TODO 从map中取出，放入其中。
+        return JsonResponse.success( uumsSysUserinfoApi.addAppAuthorities(authUser,permissions));
+    }*/
+
     /*    @ApiOperation(value = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页", notes = "查询一个应用下参与的全部用户，包含用户所在的组织以及用户的职位信息分页")
     @ApiImplicitParams ({ //
             @ApiImplicitParam (name = "page", value = "当前页码", dataType = "int", paramType = "query", //
