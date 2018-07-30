@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,9 +41,9 @@ import java.util.List;
 @RestController
 public class SysFileController extends LogicController<SysFile, Long> {
 
-    public final static String UPLOAD_PROCESS_FILE_URL = "/sys/file/uploadProcessFile";
+    public final static String UPLOAD_PROCESS_FILE_URL = "/sys/file/uploadProcessFile/{pmInsType}/{pmInsTypePart}";
 
-    public final static String UPLOAD_PROCESS_FILES_URL = "/sys/file/uploadProcessFiles";
+    public final static String UPLOAD_PROCESS_FILES_URL = "/sys/file/uploadProcessFiles/{pmInsType}/{pmInsTypePart}";
 
     public final static String DOWNLOAD_URL = "/sys/file/download";
 
@@ -62,9 +63,9 @@ public class SysFileController extends LogicController<SysFile, Long> {
     @ApiOperation(value = "上传单个流程附件", notes = "会保存到数据库SYS_FILE")
     @PostMapping(UPLOAD_PROCESS_FILE_URL)
     public JsonResponse uploadProcessFile(@RequestParam("file") MultipartFile uploadfile,
-                                          @RequestParam("pmInsType") String pmInsType,
+                                          @PathVariable("pmInsType") String pmInsType,
                                           @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
-                                          @RequestParam("pmInsTypePart") String pmInsTypePart) {
+                                          @PathVariable("pmInsTypePart") String pmInsTypePart) {
         return this.uploadProcessFiles(new MultipartFile[]{uploadfile}, pmInsType, pmInsId, pmInsTypePart);
     }
 
@@ -75,9 +76,9 @@ public class SysFileController extends LogicController<SysFile, Long> {
     @ApiOperation(value = "上传多个流程附件", notes = "会保存到数据库SYS_FILE")
     @PostMapping(UPLOAD_PROCESS_FILES_URL)
     public JsonResponse uploadProcessFiles(@RequestParam("files") MultipartFile[] uploadfiles,
-                                           @RequestParam("pmInsType") String pmInsType,
+                                           @PathVariable("pmInsType") String pmInsType,
                                            @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
-                                           @RequestParam("pmInsTypePart") String pmInsTypePart) {
+                                           @PathVariable("pmInsTypePart") String pmInsTypePart) {
         for (MultipartFile uploadFile : uploadfiles) {
             if (!AppFileUtil.validateUploadFileType(uploadFile.getOriginalFilename())) {
                 return JsonResponse.fail("不允许上传的文件类型");
