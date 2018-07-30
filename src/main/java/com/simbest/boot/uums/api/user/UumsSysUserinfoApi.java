@@ -251,51 +251,6 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 查询某个人在某一应用下的全部权限。普通应用使用
-     * 应用向UUMS发送单点请求时使用
-     * @param appcode
-     * @param username
-     * @return
-     */
-    public Set<SimplePermission> findPermissionByAppUser( String username, String appcode) {
-        return findPermissionByAppUserNormal(SecurityUtils.getCurrentUserName(), username, appcode);
-    }
-
-    /**
-     * 查询某个人在某一应用下的全部权限。当前应用无session时使用，如portal
-     * 门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用
-     * @param username
-     * @param appcode
-     * @return
-     */
-    public Set<SimplePermission> findPermissionByAppUserNoSession( String username, String appcode) {
-        return findPermissionByAppUserNormal(username, username, appcode);
-    }
-
-    private Set<SimplePermission> findPermissionByAppUserNormal(String loginUser, String username, String appcode){
-        log.debug("Http remote request user by username: {}", loginUser);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPermissionByAppUser"+SSO)
-                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
-                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
-                .param("username",username)
-                .param( "appCode",appcode )
-                .asBean(JsonResponse.class);
-        if(response==null){
-            log.error("--response对象为空!--");
-            return null;
-        }
-        if(!(response.getData() instanceof Set)){
-            log.error("--uums接口返回的类型不为Set--");
-            return null;
-        }
-        String json = JacksonUtils.obj2json(response.getData());
-        Set<SimplePermission> permissions=JacksonUtils.json2map(json, new TypeReference<Set<SimplePermission>>(){});
-        return permissions;
-    }
-
-
-
-    /**
      * 根据过滤条件获取决策下的用户
      * @param appcode
      * @param sysAppDecisionmap
@@ -443,6 +398,50 @@ public class UumsSysUserinfoApi {
         Boolean auth = JacksonUtils.json2obj(json, Boolean.class);
         return auth;
     }
+
+    /**
+     * 查询某个人在某一应用下的全部权限。普通应用使用
+     * 应用向UUMS发送单点请求时使用
+     * @param appcode
+     * @param username
+     * @return
+     */
+    public Set<SimplePermission> findPermissionByAppUser( String username, String appcode) {
+        return findPermissionByAppUserNormal(SecurityUtils.getCurrentUserName(), username, appcode);
+    }
+
+    /**
+     * 查询某个人在某一应用下的全部权限。当前应用无session时使用，如portal
+     * 门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用
+     * @param username
+     * @param appcode
+     * @return
+     */
+    public Set<SimplePermission> findPermissionByAppUserNoSession( String username, String appcode) {
+        return findPermissionByAppUserNormal(username, username, appcode);
+    }
+
+    private Set<SimplePermission> findPermissionByAppUserNormal(String loginUser, String username, String appcode){
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPermissionByAppUser"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("username",username)
+                .param( "appCode",appcode )
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof Set)){
+            log.error("--uums接口返回的类型不为Set--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Set<SimplePermission> permissions=JacksonUtils.json2map(json, new TypeReference<Set<SimplePermission>>(){});
+        return permissions;
+    }
+
 
     //增加用户的权限
    /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {

@@ -206,11 +206,12 @@ public class UumsSysUserInfoController {
 
    /**
      * 检测用户是否有app的权限
+    * 应用向UUMS发送单点请求时使用
      * @param username
      * @param appcode
      * @return
      */
-    @ApiOperation(value = "检测用户是否有app的权限", notes = "检测用户是否有app的权限")
+    @ApiOperation(value = "检测用户是否有app的权限,应用向UUMS发送单点请求时使用", notes = "检测用户是否有app的权限,应用向UUMS发送单点请求时使用")
     @ApiImplicitParams ({ //
             @ApiImplicitParam(name = "username", value = "用户名", dataType = "String", //
                     paramType = "query"),
@@ -221,6 +222,65 @@ public class UumsSysUserInfoController {
     public JsonResponse checkUserAccessApp(@RequestParam(required = false) String username
                                            ,@RequestParam(required = false) String appcode ){
         return JsonResponse.success( uumsSysUserinfoApi.checkUserAccessApp(username,appcode));
+    }
+
+    /**
+     * 检测用户是否有app的权限。当前应用无session时使用，如portal。门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用
+     * @param username
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "检测用户是否有app的权限。当前应用无session时使用，如portal。门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用", notes = "检测用户是否有app的权限。当前应用无session时使用，如portal。门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/checkUserAccessAppNoSession")
+    public JsonResponse checkUserAccessAppNoSession(@RequestParam(required = false) String username
+            ,@RequestParam(required = false) String appcode ){
+        return JsonResponse.success( uumsSysUserinfoApi.checkUserAccessAppNoSession(username,appcode));
+    }
+
+    /**
+     * 查询某个人在某一应用下的全部权限。普通应用使用
+     * 应用向UUMS发送单点请求时使用
+     * @param username
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "查询某个人在某一应用下的全部权限。普通应用使用。应用向UUMS发送单点请求时使用。", notes = "查询某个人在某一应用下的全部权限。普通应用使用。应用向UUMS发送单点请求时使用。")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/findPermissionByAppUser")
+    public JsonResponse findPermissionByAppUser(@RequestParam(required = false) String username
+            ,@RequestParam(required = false) String appcode ){
+        return JsonResponse.success( uumsSysUserinfoApi.findPermissionByAppUser(username,appcode));
+    }
+
+    /**
+     * 查询某个人在某一应用下的全部权限。当前应用无session时使用，如portal
+     * 门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用
+     * @param username
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "查询某个人在某一应用下的全部权限。当前应用无session时使用，如portal。门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用。", notes = "查询某个人在某一应用下的全部权限。当前应用无session时使用，如portal。门户Portal向应用发送单点请求，应用再向UUMS发送单点请求时使用。")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/findPermissionByAppUserNoSession")
+    public JsonResponse findPermissionByAppUserNoSession(@RequestParam(required = false) String username
+            ,@RequestParam(required = false) String appcode ){
+        return JsonResponse.success( uumsSysUserinfoApi.findPermissionByAppUserNoSession(username,appcode));
     }
 
     /**
