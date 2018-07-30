@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 public enum SysPermissionType implements GenericEnum {
 
-    ROOT("根"),  MENU("访问路径"), BUTTON("按钮"), METHOD("执行方法");
+    ROOT("根"),  MENU("访问路径"), BUTTON("按钮"), METHOD("执行方法"),MODULE("功能模块");
 
     @Setter @Getter
     private String value;
