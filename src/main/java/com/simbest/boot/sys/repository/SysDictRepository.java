@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+public interface SysDictRepository extends com.simbest.boot.base.repository.LogicRepository<SysDict, Integer>, com.simbest.boot.base.repository.SystemRepository<SysDict, Integer> {
 
     //    String SQL = "SELECT * FROM sys_dict WHERE parent_id=:id";
 //    @Query(value = SQL, nativeQuery = true)

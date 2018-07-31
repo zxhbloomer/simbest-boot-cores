@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
+public interface SysDictValueRepository extends com.simbest.boot.base.repository.LogicRepository<SysDictValue, Integer>, com.simbest.boot.base.repository.SystemRepository<SysDictValue, Integer> {
 
     List<SysDictValue> findByParentId(Integer parentId);
 
