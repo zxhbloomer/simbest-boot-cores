@@ -2,7 +2,9 @@ package com.simbest.boot.util.redis;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.util.json.JacksonUtils;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +56,11 @@ public class RedisUtil {
         cacheUtils.prefix = this.keyPrefix;
     }
 
-	/** -------------------key相关操作--------------------- */
+    public static RedisTemplate<String, String> getRedisTemplate() {
+        return cacheUtils.redisTemplate;
+    }
+
+/** -------------------key相关操作--------------------- */
 
 	/**
 	 * 删除key
@@ -77,6 +83,15 @@ public class RedisUtil {
         }
         return cacheUtils.redisTemplate.delete(realKeys);
 	}
+
+    /**
+     * 模糊删除key
+     *
+     * @param key
+     */
+    public static Long mulDelete(String pattern) {
+        return cacheUtils.redisTemplate.delete(keys);
+    }
 
 	/**
 	 * 序列化key
@@ -130,6 +145,10 @@ public class RedisUtil {
 	public static Set<String> keys(String pattern) {
 		return cacheUtils.redisTemplate.keys(prefix+pattern);
 	}
+
+    public static Set<String> globalKeys(String pattern) {
+        return cacheUtils.redisTemplate.keys(pattern);
+    }
 
 	/**
 	 * 将当前数据库的 key 移动到给定的数据库 db 当中
@@ -212,6 +231,10 @@ public class RedisUtil {
 	public static DataType type(String key) {
 		return cacheUtils.redisTemplate.type(prefix+key);
 	}
+
+    public static DataType globalType(String key) {
+        return cacheUtils.redisTemplate.type(key);
+    }
 
 	/** -------------------string相关操作--------------------- */
 

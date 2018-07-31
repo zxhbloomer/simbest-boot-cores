@@ -61,6 +61,7 @@ public interface LogicRepository<T, PK extends Serializable> extends SystemRepos
     @Modifying
     void logicDeleteAll();
 
+    @Modifying
     void deleteAllByIds(Iterable<? extends PK> ids);
 
     @Modifying

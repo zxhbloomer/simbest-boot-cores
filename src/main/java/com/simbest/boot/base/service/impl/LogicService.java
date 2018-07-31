@@ -178,12 +178,14 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     }
 
     @Override
+    @Transactional
     public void scheduleLogicDelete(PK id, LocalDateTime localDateTime) {
         log.debug("@Logic Repository Service schedule logic delete object with id: %s at %s", id, localDateTime.now());
         logicRepository.scheduleLogicDelete(id, localDateTime);
     }
 
     @Override
+    @Transactional
     public void scheduleLogicDelete(T entity, LocalDateTime localDateTime) {
         log.debug("@Logic Repository Service schedule logic delete object : %s at %s", entity, localDateTime.now());
         logicRepository.scheduleLogicDelete(entity, localDateTime);
