@@ -1,6 +1,5 @@
 package com.simbest.boot.sys.repository;
 
-import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.sys.model.SysDictValue;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public interface SysDictValueRepository extends LogicRepository<SysDictValue, Integer> {
 
     List<SysDictValue> findByParentId(Integer parentId);
 

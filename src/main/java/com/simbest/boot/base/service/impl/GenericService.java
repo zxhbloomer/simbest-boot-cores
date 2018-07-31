@@ -119,7 +119,7 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
      * @see
      */
     @Override
-    public T getOne ( PK id ) {
+    public T findOne ( PK id ) {
         log.debug("@Generic Repository Service getOne object by id: " + id);
         return genericRepository.getOne(id);
     }

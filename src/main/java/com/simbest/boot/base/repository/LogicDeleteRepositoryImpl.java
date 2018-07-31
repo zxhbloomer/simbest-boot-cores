@@ -57,7 +57,7 @@ import java.util.stream.Stream;
  * 时间: 2018/6/8  18:07
  */
 public class LogicDeleteRepositoryImpl <T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
-        implements LogicDeleteRepository<T, ID> {
+        implements LogicRepository<T, ID> {
 
     private final JpaEntityInformation<T, ?> entityInformation;
     private final EntityManager em;
@@ -88,9 +88,14 @@ public class LogicDeleteRepositoryImpl <T, ID extends Serializable> extends Simp
     }
 
     @Override
+    public T findByIdActive(ID id) {
+        return findOneActive(id);
+    }
+
+    @Override
     public T findOneActive(ID id) {
         return super.findOne(
-                Specifications.where(new ByIdSpecification<T, ID>(entityInformation, id)).and(notDeleted())).get();
+                Specifications.where(new ByIdSpecification<T, ID>(entityInformation, id)).and(notDeleted())).orElse(null);
     }
 
     @Override

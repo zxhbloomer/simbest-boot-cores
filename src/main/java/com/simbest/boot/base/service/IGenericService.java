@@ -48,7 +48,7 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
      * @param id
      * @return a reference to the entity with the given identifier.
      */
-    T getOne(PK id);
+    T findOne(PK id);
 
     T findById(PK id);
 

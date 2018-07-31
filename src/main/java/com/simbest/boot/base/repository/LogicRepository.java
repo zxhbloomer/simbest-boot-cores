@@ -1,8 +1,16 @@
 package com.simbest.boot.base.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <strong>Title : 业务实体通用数据持久层</strong><br>
@@ -17,8 +25,48 @@ import java.io.Serializable;
  * 修改人 修改日期 修改描述<br>
  * -------------------------------------------<br>
  */
+@Transactional
 @NoRepositoryBean
-public interface LogicRepository<T, PK extends Serializable> extends LogicDeleteRepository<T, PK>, SystemRepository<T, PK>{
+public interface LogicRepository<T, PK extends Serializable> extends SystemRepository<T, PK> {
 
+    long countActive();
+
+    long countActive(Specification<T> conditions);
+
+    boolean existsActive(PK id);
+
+    Page<T> findAllActive();
+
+    Page<T> findAllActive(Sort sort);
+
+    Page<T> findAllActive(Pageable pageable);
+
+    List<T> findAllActive(Iterable<PK> ids);
+
+    Page<T> findAllActive(Specification<T> conditions, Pageable pageable);
+
+    T findByIdActive(PK id);
+
+    T findOneActive(PK id);
+
+    @Modifying
+    void logicDelete(PK id);
+
+    @Modifying
+    void logicDelete(T entity);
+
+    @Modifying
+    void logicDelete(Iterable<? extends T> entities);
+
+    @Modifying
+    void logicDeleteAll();
+
+    void deleteAllByIds(Iterable<? extends PK> ids);
+
+    @Modifying
+    void scheduleLogicDelete(PK id, LocalDateTime localDateTime);
+
+    @Modifying
+    void scheduleLogicDelete(T entity, LocalDateTime localDateTime);
 
 }

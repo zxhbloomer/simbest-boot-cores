@@ -1,6 +1,7 @@
 package com.simbest.boot.base.repository;
 
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 
@@ -17,6 +18,7 @@ import java.io.Serializable;
  * 修改人 修改日期 修改描述<br>
  * -------------------------------------------<br>
  */
+@Transactional
 @NoRepositoryBean
 public interface SystemRepository<T, PK extends Serializable> extends GenericRepository<T, PK>{
 

@@ -38,7 +38,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
 
     private LogicRepository<T,PK> logicRepository;
 
-    public LogicService ( LogicRepository<T, PK> logicRepository ) {
+    public LogicService ( LogicRepository<T, PK> logicRepository) {
         super(logicRepository);
         this.logicRepository = logicRepository;
     }
@@ -62,8 +62,14 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     }
 
     @Override
-    public T getOne ( PK id ){
+    public T findOne ( PK id ){
         log.debug("@Logic Repository Service getOne");
+        return logicRepository.findOneActive(id);
+    }
+
+    @Override
+    public T findById ( PK id ){
+        log.debug("@Logic Repository Service findById");
         return logicRepository.findOneActive(id);
     }
 
@@ -169,7 +175,6 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         for(PK pk: pks){
             deleteById(pk);
         }
-
     }
 
     @Override
