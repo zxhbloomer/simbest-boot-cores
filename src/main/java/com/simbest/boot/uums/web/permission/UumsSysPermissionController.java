@@ -107,7 +107,7 @@ public class UumsSysPermissionController {
      * @param appCode
      * @return
      */
-   /* @ApiOperation (value = "根据某个职位以及应用查询其下的权限", notes = "根据某个职位以及应用查询其下的权限")
+    /*@ApiOperation (value = "根据某个职位以及应用查询其下的权限", notes = "根据某个职位以及应用查询其下的权限")
     @ApiImplicitParams ({
             @ApiImplicitParam (name = "sosAppcode", value = "应用code", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "positionName", value = "职位名", required = true, dataType = "String", paramType = "query"),

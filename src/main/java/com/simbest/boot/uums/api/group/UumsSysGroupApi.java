@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.uums.api.group;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
@@ -10,10 +11,13 @@ import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.cxf.common.security.SimpleGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +50,7 @@ public class UumsSysGroupApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findById(Long id,String appcode){
+    public SimpleGroup findById( Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -54,7 +58,13 @@ public class UumsSysGroupApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleGroup auth = JacksonUtils.json2obj(json, SimpleGroup.class);
+        return auth;
     }
 
     /**
@@ -111,7 +121,7 @@ public class UumsSysGroupApi {
      * @param sid
      * @return
      */
-    public JsonResponse findParentGroup(String appcode,String sid) {
+    public SimpleGroup findParentGroup(String appcode,String sid) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findParentGroup"+SSO)
@@ -119,7 +129,13 @@ public class UumsSysGroupApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("sid", sid)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleGroup auth = JacksonUtils.json2obj(json, SimpleGroup.class);
+        return auth;
     }
 
     /**
@@ -128,7 +144,7 @@ public class UumsSysGroupApi {
      * @param sid
      * @return
      */
-    public JsonResponse findAllSonGroup(String appcode,String sid) {
+    public List<SimpleGroup> findAllSonGroup( String appcode, String sid) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAllSonGroup"+SSO)
@@ -136,7 +152,17 @@ public class UumsSysGroupApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("sid", sid)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        return groupList;
     }
 
     /**
@@ -145,7 +171,7 @@ public class UumsSysGroupApi {
      * @param sid
      * @return
      */
-    public JsonResponse findSonGroups(String appcode,String sid){
+    public List<SimpleGroup> findSonGroups(String appcode,String sid){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findSonGroups"+SSO)
@@ -153,7 +179,17 @@ public class UumsSysGroupApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("sid", sid)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        return groupList;
     }
 
     /**
@@ -166,17 +202,27 @@ public class UumsSysGroupApi {
      * @param sysAppDecisionMap
      * @return
      */
-    public JsonResponse findGroupByApp( String appcode,int page,int size,String direction,String properties, Map sysAppDecisionMap) {
+    public List<SimpleGroup> findGroupByAppNoPage( String appcode,int page,int size,String direction,String properties, Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findGroupByApp"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findGroupByAppNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( json0 )
                 .asBean(JsonResponse.class );
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        return groupList;
     }
 
     /**
@@ -185,7 +231,7 @@ public class UumsSysGroupApi {
      * @param sysAppDecisionMap
      * @return
      */
-    public JsonResponse findGroupByAppNoPage(String appcode,Map sysAppDecisionMap){
+    public List<SimpleGroup> findGroupByAppNoPage( String appcode, Map sysAppDecisionMap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
@@ -194,7 +240,17 @@ public class UumsSysGroupApi {
         JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findGroupByAppNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode )
                 .json( json0 )
                 .asBean(JsonResponse.class );
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        return groupList;
     }
 
     /**
@@ -226,7 +282,7 @@ public class UumsSysGroupApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findGroupByUsernameNoPage(String appcode) {
+    public List<SimpleGroup> findGroupByUsernameNoPage(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findGroupByUsernameNoPage"+SSO)
@@ -234,7 +290,17 @@ public class UumsSysGroupApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("username",username)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        return groupList;
     }
 
     /**
@@ -266,7 +332,7 @@ public class UumsSysGroupApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findGroupByPermissionNoPage(String appcode){
+    public List<SimpleGroup> findGroupByPermissionNoPage(String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findGroupByPermissionNoPage"+SSO)
@@ -274,6 +340,38 @@ public class UumsSysGroupApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("appCode", appcode)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        return groupList;
+    }
+
+    /**
+     * 查看某个用户拥有哪种数据权限
+     * @param appcode
+     * @return
+     */
+    public SimpleGroup findDataPermission(String appcode){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findDataPermission"+SSO)
+                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
+                .param("username", username)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleGroup auth = JacksonUtils.json2obj(json, SimpleGroup.class);
+        return auth;
     }
 }
