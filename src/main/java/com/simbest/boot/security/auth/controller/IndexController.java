@@ -6,7 +6,6 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,19 +38,22 @@ public class IndexController {
         return new ModelAndView("index", "indexModel", indexModel);
     }
 
-    /**
-     * @return 403
-     */
-    @RequestMapping(value = "/403", method = {RequestMethod.POST, RequestMethod.GET})
-    public String accesssDenied() {
-        return "403";
-    }
+//    /**
+//     * @return 403
+//     */
+//    @RequestMapping(value = "/403", method = {RequestMethod.POST, RequestMethod.GET})
+//    public String accesssDenied(HttpServletRequest request, HttpServletResponse response) {
+//        log.error(request.getRequestURL().toString());
+//        return "403";
+//    }
 
-    /**
-     * @return error
-     */
-    @RequestMapping(value = "/error", method = {RequestMethod.POST, RequestMethod.GET})
-    public String error() {
-        return "error";
-    }
+//    /**
+//     * @return error
+//     */
+//    @RequestMapping(value = "/error", method = {RequestMethod.POST, RequestMethod.GET})
+//    public String error(HttpServletRequest request, HttpServletResponse response) {
+//        log.error(request.getRequestURL().toString());
+//        return "err";
+//    }
+
 }

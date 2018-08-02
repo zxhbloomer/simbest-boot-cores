@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 
 /**
  * 用途：单点登录拦截器
@@ -42,6 +43,7 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
             throws AuthenticationException, IOException, ServletException {
         String loginuser = request.getParameter(AuthoritiesConstants.SSO_API_USERNAME);
         String appcode = request.getParameter(AuthoritiesConstants.SSO_API_APP_CODE);
+        log.debug("Client will sso access {} with user and {}", request.getRequestURI(), loginuser, appcode);
         if (StringUtils.isEmpty(loginuser) || StringUtils.isEmpty(appcode)) {
             throw new BadCredentialsException(
                     "Authentication principal can not be null: " + loginuser);

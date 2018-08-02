@@ -4,6 +4,7 @@
 package com.simbest.exclude.web;
 
 import com.simbest.boot.base.web.response.JsonResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.util.Map;
  * 作者: lishuyi
  * 时间: 2018/5/15  22:03
  */
+@Slf4j
 @Controller
 @RequestMapping("${server.error.path:${error.path:/error}}")
 public class GlobalErrorController extends AbstractErrorController {
@@ -81,6 +83,7 @@ public class GlobalErrorController extends AbstractErrorController {
     @RequestMapping(produces = "text/html")
     public ModelAndView errorHtml(HttpServletRequest request,
                                   HttpServletResponse response) {
+        log.error("{} 访问出错啦！！！！！！",request.getRequestURL().toString());
         HttpStatus status = getStatus(request);
         Map<String, Object> model = getErrorAttributes(
                 request, isIncludeStackTrace(request, MediaType.TEXT_HTML));
@@ -98,6 +101,7 @@ public class GlobalErrorController extends AbstractErrorController {
     @RequestMapping
     @ResponseBody
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+        log.error("{} 访问出错啦！！！！！！",request.getRequestURL().toString());
         Map<String, Object> body = getErrorAttributes(request,
                 isIncludeStackTrace(request, MediaType.ALL));
         body.put("errcode", JsonResponse.ERROR_CODE);
