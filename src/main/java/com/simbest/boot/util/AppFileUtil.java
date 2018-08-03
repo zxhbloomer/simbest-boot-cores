@@ -9,10 +9,10 @@ import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.web.SysFileController;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,7 +50,7 @@ public class AppFileUtil {
 
     public static StoreLocation serverUploadLocation = null;
 
-    public enum StoreLocation {disk, fastdsft, baidubos}
+    public enum StoreLocation {disk, fastdfs, baidubos}
 
     @PostConstruct
     public void init() {
@@ -107,7 +108,7 @@ public class AppFileUtil {
      * @return SysFile
      * @throws IOException
      */
-    public SysFile uploadFile(String directory, MultipartFile file) throws IOException {
+    public SysFile uploadFile(String directory, MultipartFile file) throws Exception {
         Assert.notNull(file, "Upload file can not empty!");
         return uploadFiles(directory, new MultipartFile[]{file}).get(0);
     }
@@ -119,7 +120,7 @@ public class AppFileUtil {
      * @return UploadFileModel
      * @throws IOException
      */
-    public List<SysFile> uploadFiles(String directory, MultipartFile[] files) throws IOException {
+    public List<SysFile> uploadFiles(String directory, MultipartFile[] files) throws Exception {
         Assert.notEmpty(files, "Upload file can not empty!");
         List<SysFile> fileModels = Lists.newArrayList();
         for (MultipartFile file : files) {
@@ -127,6 +128,7 @@ public class AppFileUtil {
                 continue;
             }
             String filePath = null;
+            log.debug("Will upload file {} to {}", file.getOriginalFilename(), serverUploadLocation);
             switch (serverUploadLocation) {
                 case disk:
                     byte[] bytes = file.getBytes();
@@ -144,10 +146,14 @@ public class AppFileUtil {
                     Files.write(path, bytes);
                     filePath = path.toString();
                     break;
+                case fastdfs:
+                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(file.getInputStream()));
+                    break;
             }
             SysFile sysFile = SysFile.builder().fileName(file.getOriginalFilename()).fileType(getFileSuffix(file.getOriginalFilename()))
                     .filePath(filePath).fileSize(file.getSize()).downLoadUrl(SysFileController.DOWNLOAD_URL).
                             build();
+            log.debug("Upload save file is {}", sysFile.toString());
             fileModels.add(sysFile);
         }
         return fileModels;
@@ -161,5 +167,25 @@ public class AppFileUtil {
             Exceptions.printException(e);
         }
         return tempFile;
+    }
+
+    public void getFileBUff(File file) {
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            byte[] file_buff = new byte[(int) file.length()];
+            inputStream.read(file_buff);
+            // 获取文件扩展名
+            String fileName = file.getName();
+            String extName = null;
+            if (fileName.contains(".")) {
+                extName = fileName.substring(fileName.lastIndexOf(".") + 1);
+            } else {
+                return;
+            }
+        } catch (Exception e) {
+            Exceptions.printException(e);
+        }
+
     }
 }

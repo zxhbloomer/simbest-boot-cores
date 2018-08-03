@@ -9,8 +9,12 @@ import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.model.UploadFileResponse;
 import com.simbest.boot.sys.service.ISysFileService;
 import com.simbest.boot.util.AppFileUtil;
+import com.simbest.boot.util.encrypt.Des3Encryptor;
+import com.simbest.boot.util.encrypt.UrlEncryptor;
+import com.simbest.boot.util.json.JacksonUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -42,13 +46,22 @@ import java.util.List;
 public class SysFileController extends LogicController<SysFile, Long> {
 
     public final static String UPLOAD_PROCESS_FILE_URL = "/sys/file/uploadProcessFile/{pmInsType}/{pmInsTypePart}";
-
+    public final static String UPLOAD_PROCESS_FILE_URL_SSO = "/sys/file/uploadProcessFile/sso/{pmInsType}/{pmInsTypePart}";
     public final static String UPLOAD_PROCESS_FILES_URL = "/sys/file/uploadProcessFiles/{pmInsType}/{pmInsTypePart}";
-
+    public final static String UPLOAD_PROCESS_FILES_URL_SSO = "/sys/file/uploadProcessFiles/sso/{pmInsType}/{pmInsTypePart}";
     public final static String DOWNLOAD_URL = "/sys/file/download";
+    public final static String DOWNLOAD_URL_SSO = "/sys/file/download";
+    public final static String OPEN_URL = "/sys/file/open";
+    public final static String OPEN_URL_SSO = "/sys/file/open";
 
     @Autowired
     private ISysFileService fileService;
+
+    @Autowired
+    private UrlEncryptor urlEncryptor;
+
+    @Autowired
+    private Des3Encryptor des3Encryptor;
 
     @Autowired
     public SysFileController(ISysFileService fileService) {
@@ -61,7 +74,7 @@ public class SysFileController extends LogicController<SysFile, Long> {
      * @return
      */
     @ApiOperation(value = "上传单个流程附件", notes = "会保存到数据库SYS_FILE")
-    @PostMapping(UPLOAD_PROCESS_FILE_URL)
+    @PostMapping(value = {UPLOAD_PROCESS_FILE_URL, UPLOAD_PROCESS_FILE_URL_SSO})
     public JsonResponse uploadProcessFile(@RequestParam("file") MultipartFile uploadfile,
                                           @PathVariable("pmInsType") String pmInsType,
                                           @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
@@ -74,7 +87,7 @@ public class SysFileController extends LogicController<SysFile, Long> {
      * @return
      */
     @ApiOperation(value = "上传多个流程附件", notes = "会保存到数据库SYS_FILE")
-    @PostMapping(UPLOAD_PROCESS_FILES_URL)
+    @PostMapping(value = {UPLOAD_PROCESS_FILES_URL, UPLOAD_PROCESS_FILES_URL_SSO})
     public JsonResponse uploadProcessFiles(@RequestParam("files") MultipartFile[] uploadfiles,
                                            @PathVariable("pmInsType") String pmInsType,
                                            @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
@@ -87,10 +100,10 @@ public class SysFileController extends LogicController<SysFile, Long> {
         List<SysFile> sysFiles = fileService.uploadProcessFiles(uploadfiles, pmInsType, pmInsId, pmInsTypePart);
         UploadFileResponse uploadFileResponse = new UploadFileResponse();
         uploadFileResponse.setSysFiles(sysFiles);
-        return JsonResponse.success(uploadFileResponse);
+        return JsonResponse.success(JacksonUtils.obj2json(uploadFileResponse));
     }
 
-    @GetMapping(DOWNLOAD_URL)
+    @GetMapping(value = {DOWNLOAD_URL, DOWNLOAD_URL_SSO})
     public ResponseEntity<?> download(@RequestParam("id") Long id) throws FileNotFoundException {
         SysFile sysFile = fileService.findById(id);
         HttpHeaders headers = new HttpHeaders();
@@ -110,8 +123,22 @@ public class SysFileController extends LogicController<SysFile, Long> {
         return ResponseEntity.ok().headers(headers).body(resource);
     }
 
+    @GetMapping(value = {OPEN_URL, OPEN_URL_SSO})
+    public String authenticate(@RequestParam("id") Long id)throws Exception{
+        SysFile sysFile = fileService.findById(id);
+        log.debug("File url is {}", sysFile.getFilePath());
+        String url = urlEncryptor.encryptSource(sysFile.getFilePath());
+        log.warn("File url decode url is :"+url);
+        String firstUrl = StringUtils.substringBefore(url, "furl=")+"furl=";
+        String secondUrl = StringUtils.substringAfter(url, "furl=");
+        secondUrl = urlEncryptor.encryptSource(secondUrl);
+        String webOfficeUrl = firstUrl+des3Encryptor.encrypt(secondUrl);
+        log.warn("webOfficeUrl is :"+webOfficeUrl);
+        return "redirect:"+webOfficeUrl;
+    }
+
     /**
-     * 不直接暴露接口
+     * 涉及到具体对象的操作，所以不直接暴露接口
      *
      * @param uploadfile
      * @param pmInsType

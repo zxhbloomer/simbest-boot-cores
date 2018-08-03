@@ -6,6 +6,7 @@ package com.simbest.boot.security.auth.config;
 import com.simbest.boot.config.Swagger2CsrfProtection;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.security.auth.filter.CaptchaAuthenticationFilter;
+import com.simbest.boot.security.auth.filter.CustomAbstractAuthenticationProcessingFilter;
 import com.simbest.boot.security.auth.filter.RsaAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
@@ -15,8 +16,10 @@ import com.simbest.boot.security.auth.handle.SsoSuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLogoutHandler;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -32,14 +35,20 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.Map;
+
 /**
  * 用途：通用Web请求安全配置
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
  */
+@Slf4j
 @Configuration
 @Order(10)
 public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private ApplicationContext appContext;
 
     @Autowired
     private SuccessLoginHandler successLoginHandler;
@@ -141,6 +150,12 @@ public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
         //.sessionFixation().newSession()  Session Fixation protection
         //Your servlet container did not change the session ID when a new session was created. You will not be adequately protected against session-fixation attacks
+
+        Map<String, CustomAbstractAuthenticationProcessingFilter> auths = appContext.getBeansOfType(CustomAbstractAuthenticationProcessingFilter.class);
+        for(CustomAbstractAuthenticationProcessingFilter filter : auths.values()){
+            log.debug("System will registe custom filter {}", filter.getClass());
+            http.addFilterAfter(filter, UumsAuthenticationFilter.class);
+        }
     }
 
     @Bean

@@ -4,6 +4,7 @@
 package com.simbest.boot.util.encrypt;
 
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.util.BootAppFileReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -55,21 +56,14 @@ public class RsaEncryptor extends AbstractEncryptor {
 
     @PostConstruct
     public void init() throws Exception {
-        String public_key = getKeyFromFile(ResourceUtils.CLASSPATH_URL_PREFIX + ApplicationConstants.RSA_PUBLIC_KEY_PATH);
-        String private_key = getKeyFromFile(ResourceUtils.CLASSPATH_URL_PREFIX + ApplicationConstants.RSA_PRIVATE_KEY_PATH);
+        String public_key = getKeyFromFile(ApplicationConstants.RSA_PUBLIC_KEY_PATH);
+        String private_key = getKeyFromFile(ApplicationConstants.RSA_PRIVATE_KEY_PATH);
         loadPublicKey(public_key);
         loadPrivateKey(private_key);
     }
 
     private String getKeyFromFile(String filePath) throws Exception {
-        BufferedReader bufferedReader = null;
-        try {
-            ClassPathResource resource = new ClassPathResource(filePath);
-            InputStream inputStream = resource.getInputStream();
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        } catch (FileNotFoundException e){
-            bufferedReader = new BufferedReader(new FileReader(ResourceUtils.getFile(filePath)));
-        }
+        BufferedReader bufferedReader = BootAppFileReader.getClasspathFile(filePath);
         String line = null;
         List<String> list = new ArrayList<String>();
         while ((line = bufferedReader.readLine()) != null) {

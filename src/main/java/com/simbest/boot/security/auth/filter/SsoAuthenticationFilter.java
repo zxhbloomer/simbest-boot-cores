@@ -38,12 +38,21 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
         super(requiresAuthenticationRequestMatcher);
     }
 
+    protected String obtainUsername(HttpServletRequest request) {
+        String loginuser = request.getParameter(AuthoritiesConstants.SSO_API_USERNAME);
+        if(StringUtils.isEmpty(loginuser)){
+            // for ha.cmcc portal
+            loginuser = request.getParameter("uid");
+        }
+        return loginuser;
+    }
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        String loginuser = request.getParameter(AuthoritiesConstants.SSO_API_USERNAME);
+        String loginuser = obtainUsername(request);
         String appcode = request.getParameter(AuthoritiesConstants.SSO_API_APP_CODE);
-        log.debug("Client will sso access {} with user and {}", request.getRequestURI(), loginuser, appcode);
+        log.debug("Client will sso access {} with user {} and {}", request.getRequestURI(), loginuser, appcode);
         if (StringUtils.isEmpty(loginuser) || StringUtils.isEmpty(appcode)) {
             throw new BadCredentialsException(
                     "Authentication principal can not be null: " + loginuser);

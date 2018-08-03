@@ -5,9 +5,12 @@ package com.simbest.boot.security.auth.config;
 
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.security.auth.provider.CustomAbstractAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,6 +20,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Map;
+
 /**
  * 用途：配置多套 HttpSecurity
  * 作者: lishuyi
@@ -25,9 +30,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * 认证原理 https://blog.csdn.net/dandandeshangni/article/details/78959131
  * 鉴权原理 https://blog.csdn.net/honghailiang888/article/details/53925514
  */
+@Slf4j
 @EnableWebSecurity
 @DependsOn(value = {"redisConfiguration"})
 public class MultiHttpSecurityConfig {
+
+    @Autowired
+    private ApplicationContext appContext;
 
     @Autowired
     private IAuthService authService;
@@ -68,5 +77,11 @@ public class MultiHttpSecurityConfig {
         auth.authenticationProvider(httpValidationAuthenticationProvider);
         //仅基于用户名验证
         auth.authenticationProvider(ssoUsernameAuthenticationProvider);
+
+        Map<String, CustomAbstractAuthenticationProvider> auths = appContext.getBeansOfType(CustomAbstractAuthenticationProvider.class);
+        for(CustomAbstractAuthenticationProvider provider : auths.values()){
+            log.debug("System will registe custom provider {}", provider.getClass());
+            auth.authenticationProvider(provider);
+        }
     }
 }
