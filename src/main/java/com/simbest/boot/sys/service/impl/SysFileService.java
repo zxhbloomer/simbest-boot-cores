@@ -67,6 +67,8 @@ public class SysFileService extends LogicService<SysFile, Long> implements ISysF
             }
         } catch (IOException e) {
             Exceptions.printException(e);
+        } catch (Exception e) {
+            Exceptions.printException(e);
         }
         return sysFileList;
     }
