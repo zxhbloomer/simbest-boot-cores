@@ -6,6 +6,7 @@ import com.simbest.boot.sys.model.UploadFileResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public interface ISysFileService extends ILogicService<SysFile, Long> {
      * @param pmInsTypePart 流程区块
      * @return
      */
-    List<SysFile> uploadProcessFiles(MultipartFile[] multipartFiles, String pmInsType, String pmInsId, String pmInsTypePart);
+    List<SysFile> uploadProcessFiles(Collection<MultipartFile> multipartFiles, String pmInsType, String pmInsId, String pmInsTypePart);
 
     /**
      * 导入Excel文件

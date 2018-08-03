@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -48,13 +49,13 @@ public class SysFileService extends LogicService<SysFile, Long> implements ISysF
 
     @Override
     public SysFile uploadProcessFile(MultipartFile multipartFile, String pmInsType, String pmInsId, String pmInsTypePart) {
-        List<SysFile> fileList = uploadProcessFiles(new MultipartFile[]{multipartFile}, pmInsType, pmInsId, pmInsTypePart);
+        List<SysFile> fileList = uploadProcessFiles(Arrays.asList(multipartFile), pmInsType, pmInsId, pmInsTypePart);
         return fileList.isEmpty() ? null : fileList.get(0);
     }
 
     @Override
     @Transactional
-    public List<SysFile> uploadProcessFiles(MultipartFile[] multipartFiles, String pmInsType, String pmInsId,String pmInsTypePart) {
+    public List<SysFile> uploadProcessFiles(Collection<MultipartFile> multipartFiles, String pmInsType, String pmInsId, String pmInsTypePart) {
         List<SysFile> sysFileList = Lists.newArrayList();
         try {
             sysFileList = appFileUtil.uploadFiles(pmInsType + ApplicationConstants.SLASH + pmInsTypePart, multipartFiles);

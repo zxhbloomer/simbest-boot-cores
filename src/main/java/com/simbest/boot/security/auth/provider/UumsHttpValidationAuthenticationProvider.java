@@ -60,7 +60,7 @@ public class UumsHttpValidationAuthenticationProvider implements AuthenticationP
                         .param(AuthoritiesConstants.SSO_API_APP_CODE, uumsCredentials.getAppcode())
                         .asBean(JsonResponse.class);
                 if(response.getErrcode().equals(ErrorCodeConstants.ERRORCODE_LOGIN_APP_UNREGISTER_GROUP)){
-                    log.error("User %s try to login %s failed, because uums return error with: %s", principal, uumsCredentials.getAppcode(), ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP);
+                    log.error("User {} try to login {} failed, because uums return error with: {}", principal, uumsCredentials.getAppcode(), ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP);
                     throw new
                             AccesssAppDeniedException(ErrorCodeConstants.LOGIN_APP_UNREGISTER_GROUP);
                 }else {
@@ -71,16 +71,16 @@ public class UumsHttpValidationAuthenticationProvider implements AuthenticationP
                     return token;
                 }
             }catch (HttpClientException e){
-                log.error("User %s try to login failed, because catch a http exception!", principal);
+                log.error("User {} try to login failed, because catch a http exception!", principal);
                 throw new
                         BadCredentialsException(principal + " authenticate failed.");
             }catch (Exception e){
-                log.error("User %s try to login failed, because catch an unknow exception!", principal);
+                log.error("User {} try to login failed, because catch an unknow exception!", principal);
                 throw new
                         BadCredentialsException(principal + " authenticate failed.");
             }
         } else {
-            log.error("User %s login with %s failed, because principal or credentials is null!", principal, credentials);
+            log.error("User {} login with {} failed, because principal or credentials is null!", principal, credentials);
             throw new
                     BadCredentialsException(principal + " authenticate failed.");
         }

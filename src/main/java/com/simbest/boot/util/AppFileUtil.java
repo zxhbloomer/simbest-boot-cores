@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -108,9 +110,9 @@ public class AppFileUtil {
      * @return SysFile
      * @throws IOException
      */
-    public SysFile uploadFile(String directory, MultipartFile file) throws Exception {
-        Assert.notNull(file, "Upload file can not empty!");
-        return uploadFiles(directory, new MultipartFile[]{file}).get(0);
+    public SysFile uploadFile(String directory, MultipartFile multipartFile) throws Exception {
+        Assert.notNull(multipartFile, "Upload file can not empty!");
+        return uploadFiles(directory, Arrays.asList(multipartFile)).get(0);
     }
 
     /**
@@ -120,18 +122,18 @@ public class AppFileUtil {
      * @return UploadFileModel
      * @throws IOException
      */
-    public List<SysFile> uploadFiles(String directory, MultipartFile[] files) throws Exception {
-        Assert.notEmpty(files, "Upload file can not empty!");
+    public List<SysFile> uploadFiles(String directory, Collection<MultipartFile> multipartFiles) throws Exception {
+        Assert.notEmpty(multipartFiles, "Upload file can not empty!");
         List<SysFile> fileModels = Lists.newArrayList();
-        for (MultipartFile file : files) {
-            if (file.isEmpty()) {
+        for (MultipartFile multipartFile : multipartFiles) {
+            if (multipartFile.isEmpty()) {
                 continue;
             }
             String filePath = null;
-            log.debug("Will upload file {} to {}", file.getOriginalFilename(), serverUploadLocation);
+            log.debug("Will upload file {} to {}", multipartFile.getOriginalFilename(), serverUploadLocation);
             switch (serverUploadLocation) {
                 case disk:
-                    byte[] bytes = file.getBytes();
+                    byte[] bytes = multipartFile.getBytes();
                     String storePath = uploadPath + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH
                             + DateUtil.getCurrYear() + ApplicationConstants.SLASH
                             + DateUtil.getCurrSimpleMonth() + ApplicationConstants.SLASH
@@ -142,16 +144,16 @@ public class AppFileUtil {
                         FileUtils.forceMkdir(targetFileDirectory);
                         log.debug("Directory {} is not exist, force create direcorty....", storePath);
                     }
-                    Path path = Paths.get(targetFileDirectory.getPath() + ApplicationConstants.SLASH + file.getOriginalFilename());
+                    Path path = Paths.get(targetFileDirectory.getPath() + ApplicationConstants.SLASH + multipartFile.getOriginalFilename());
                     Files.write(path, bytes);
                     filePath = path.toString();
                     break;
                 case fastdfs:
-                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(file.getInputStream()));
+                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()));
                     break;
             }
-            SysFile sysFile = SysFile.builder().fileName(file.getOriginalFilename()).fileType(getFileSuffix(file.getOriginalFilename()))
-                    .filePath(filePath).fileSize(file.getSize()).downLoadUrl(SysFileController.DOWNLOAD_URL).
+            SysFile sysFile = SysFile.builder().fileName(multipartFile.getOriginalFilename()).fileType(getFileSuffix(multipartFile.getOriginalFilename()))
+                    .filePath(filePath).fileSize(multipartFile.getSize()).downLoadUrl(SysFileController.DOWNLOAD_URL).
                             build();
             log.debug("Upload save file is {}", sysFile.toString());
             fileModels.add(sysFile);

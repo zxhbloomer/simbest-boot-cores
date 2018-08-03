@@ -5,6 +5,7 @@ package com.simbest.boot.sys.web;
 
 import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.model.UploadFileResponse;
 import com.simbest.boot.sys.service.ISysFileService;
@@ -20,21 +21,30 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用途：统一系统文件管理控制器
@@ -42,13 +52,11 @@ import java.util.List;
  * 时间: 2018/2/23  10:14
  */
 @Slf4j
-@RestController
+@Controller
 public class SysFileController extends LogicController<SysFile, Long> {
 
-    public final static String UPLOAD_PROCESS_FILE_URL = "/sys/file/uploadProcessFile/{pmInsType}/{pmInsTypePart}";
-    public final static String UPLOAD_PROCESS_FILE_URL_SSO = "/sys/file/uploadProcessFile/sso/{pmInsType}/{pmInsTypePart}";
-    public final static String UPLOAD_PROCESS_FILES_URL = "/sys/file/uploadProcessFiles/{pmInsType}/{pmInsTypePart}";
-    public final static String UPLOAD_PROCESS_FILES_URL_SSO = "/sys/file/uploadProcessFiles/sso/{pmInsType}/{pmInsTypePart}";
+    public final static String UPLOAD_PROCESS_FILES_URL = "/sys/file/uploadProcessFiles";
+    public final static String UPLOAD_PROCESS_FILES_URL_SSO = "/sys/file/uploadProcessFiles/sso";
     public final static String DOWNLOAD_URL = "/sys/file/download";
     public final static String DOWNLOAD_URL_SSO = "/sys/file/download";
     public final static String OPEN_URL = "/sys/file/open";
@@ -68,39 +76,68 @@ public class SysFileController extends LogicController<SysFile, Long> {
         super(fileService);
         this.fileService = fileService;
     }
+//
+//    /**
+//     * 注释掉的方法在IE8不支持
+//     * @param uploadfile
+//     * @return
+//     */
+//    @ApiOperation(value = "上传单个流程附件", notes = "会保存到数据库SYS_FILE")
+//    @PostMapping(value = {UPLOAD_PROCESS_FILE_URL, UPLOAD_PROCESS_FILE_URL_SSO})
+//    public void uploadProcessFile(@RequestParam("file") MultipartFile uploadfile,
+//                                                    @PathVariable("pmInsType") String pmInsType,
+//                                                    @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
+//                                                    @PathVariable("pmInsTypePart") String pmInsTypePart, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        this.uploadProcessFiles(new MultipartFile[]{uploadfile}, pmInsType, pmInsId, pmInsTypePart,request, response);
+//    }
+//
+//    /**
+//     * 注释掉的方法在IE8不支持
+//     * @param uploadfiles
+//     * @return
+//     */
+//    @ApiOperation(value = "上传多个流程附件", notes = "会保存到数据库SYS_FILE")
+//    @PostMapping(value = {UPLOAD_PROCESS_FILES_URL, UPLOAD_PROCESS_FILES_URL_SSO})
+//    public void uploadProcessFiles(@RequestParam("files") MultipartFile[] uploadfiles,
+//                                           @PathVariable("pmInsType") String pmInsType,
+//                                           @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
+//                                           @PathVariable("pmInsTypePart") String pmInsTypePart, HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        response.setContentType("text/html; charset=UTF-8");
+//        response.setCharacterEncoding("UTF-8");
+//        PrintWriter out = response.getWriter();
+//
+//        for (MultipartFile uploadFile : uploadfiles) {
+//            if (!AppFileUtil.validateUploadFileType(uploadFile.getOriginalFilename())) {
+//                JsonResponse jsonResponse = JsonResponse.fail("不允许上传的文件类型");
+//                String result = "<script type=\"text/javascript\">parent.result="+JacksonUtils.obj2json(jsonResponse)+"</script>";
+//                out.println(result);
+//            }
+//        }
+//        List<SysFile> sysFiles = fileService.uploadProcessFiles(uploadfiles, pmInsType, pmInsId, pmInsTypePart);
+//        UploadFileResponse uploadFileResponse = new UploadFileResponse();
+//        uploadFileResponse.setSysFiles(sysFiles);
+//        JsonResponse jsonResponse = JsonResponse.success(uploadFileResponse);
+//        String result = "<script type=\"text/javascript\">parent.result="+JacksonUtils.obj2json(jsonResponse)+"</script>";
+//        out.println(result);
+//        out.close();
+//    }
 
-    /**
-     * @param uploadfile
-     * @return
-     */
-    @ApiOperation(value = "上传单个流程附件", notes = "会保存到数据库SYS_FILE")
-    @PostMapping(value = {UPLOAD_PROCESS_FILE_URL, UPLOAD_PROCESS_FILE_URL_SSO})
-    public JsonResponse uploadProcessFile(@RequestParam("file") MultipartFile uploadfile,
-                                          @PathVariable("pmInsType") String pmInsType,
-                                          @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
-                                          @PathVariable("pmInsTypePart") String pmInsTypePart) {
-        return this.uploadProcessFiles(new MultipartFile[]{uploadfile}, pmInsType, pmInsId, pmInsTypePart);
-    }
-
-    /**
-     * @param uploadfiles
-     * @return
-     */
-    @ApiOperation(value = "上传多个流程附件", notes = "会保存到数据库SYS_FILE")
     @PostMapping(value = {UPLOAD_PROCESS_FILES_URL, UPLOAD_PROCESS_FILES_URL_SSO})
-    public JsonResponse uploadProcessFiles(@RequestParam("files") MultipartFile[] uploadfiles,
-                                           @PathVariable("pmInsType") String pmInsType,
-                                           @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
-                                           @PathVariable("pmInsTypePart") String pmInsTypePart) {
-        for (MultipartFile uploadFile : uploadfiles) {
-            if (!AppFileUtil.validateUploadFileType(uploadFile.getOriginalFilename())) {
-                return JsonResponse.fail("不允许上传的文件类型");
-            }
-        }
-        List<SysFile> sysFiles = fileService.uploadProcessFiles(uploadfiles, pmInsType, pmInsId, pmInsTypePart);
+    public void uploadFile(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+
+        MultipartHttpServletRequest mureq = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> multipartFiles = mureq.getFileMap();
+        List<SysFile> sysFiles = fileService.uploadProcessFiles(multipartFiles.values(), request.getParameter("pmInsType"), request.getParameter("pmInsId"),
+                request.getParameter("pmInsTypePart"));
         UploadFileResponse uploadFileResponse = new UploadFileResponse();
         uploadFileResponse.setSysFiles(sysFiles);
-        return JsonResponse.success(JacksonUtils.obj2json(uploadFileResponse));
+        JsonResponse jsonResponse = JsonResponse.success(uploadFileResponse);
+        String result = "<script type=\"text/javascript\">parent.result="+JacksonUtils.obj2json(jsonResponse)+"</script>";
+        out.println(result);
+        out.close();
     }
 
     @GetMapping(value = {DOWNLOAD_URL, DOWNLOAD_URL_SSO})
@@ -124,7 +161,7 @@ public class SysFileController extends LogicController<SysFile, Long> {
     }
 
     @GetMapping(value = {OPEN_URL, OPEN_URL_SSO})
-    public String authenticate(@RequestParam("id") Long id)throws Exception{
+    public String open(@RequestParam("id") Long id)throws Exception{
         SysFile sysFile = fileService.findById(id);
         log.debug("File url is {}", sysFile.getFilePath());
         String url = urlEncryptor.encryptSource(sysFile.getFilePath());
