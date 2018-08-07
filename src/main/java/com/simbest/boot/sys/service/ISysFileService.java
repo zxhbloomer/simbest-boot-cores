@@ -54,5 +54,5 @@ public interface ISysFileService extends ILogicService<SysFile, Long> {
      * @param id
      * @return
      */
-    File getFileById(Long id);
+    File getRealFileById(Long id);
 }

@@ -23,9 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +85,7 @@ public class GlobalErrorController extends AbstractErrorController {
     @RequestMapping(produces = "text/html")
     public ModelAndView errorHtml(HttpServletRequest request,
                                   HttpServletResponse response) {
-        log.error("{} 访问出错啦！！！！！！",request.getRequestURL().toString());
+        logErrorInformation(request);
         HttpStatus status = getStatus(request);
         Map<String, Object> model = getErrorAttributes(
                 request, isIncludeStackTrace(request, MediaType.TEXT_HTML));
@@ -101,7 +103,7 @@ public class GlobalErrorController extends AbstractErrorController {
     @RequestMapping
     @ResponseBody
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-        log.error("{} 访问出错啦！！！！！！",request.getRequestURL().toString());
+        logErrorInformation(request);
         Map<String, Object> body = getErrorAttributes(request,
                 isIncludeStackTrace(request, MediaType.ALL));
         body.put("errcode", JsonResponse.ERROR_CODE);
@@ -135,5 +137,30 @@ public class GlobalErrorController extends AbstractErrorController {
      */
     protected ErrorProperties getErrorProperties() {
         return this.errorProperties;
+    }
+
+    public void logErrorInformation(HttpServletRequest request){
+        HttpStatus status = getStatus(request);
+        log.error("Access Error Attention, httpstatus name {} code {}, AEA请注意,请求响应发生异常!!!", status.name(), status.value());
+        Map<String, Object> body = getErrorAttributes(request,
+                isIncludeStackTrace(request, MediaType.ALL));
+        for (Map.Entry<String, Object> entry : body.entrySet()) {
+            log.error("Error body key {} value {}", entry.getKey(), entry.getValue());
+        }
+        if(null != request.getCookies() && request.getCookies().length > 0 ) {
+            for (int i = 0; i < request.getCookies().length; i++) {
+                log.error("Cookie {} {}", i, request.getCookies()[i]);
+            }
+        }
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while(headerNames.hasMoreElements()){
+            String header = headerNames.nextElement();
+            log.error("Header {} value is {}", header, request.getHeader(header));
+        }
+        Enumeration<String> parameterNames = request.getHeaderNames();
+        while(parameterNames.hasMoreElements()){
+            String parameter = parameterNames.nextElement();
+            log.error("Parameter {} value is {}", parameter, request.getParameter(parameter));
+        }
     }
 }

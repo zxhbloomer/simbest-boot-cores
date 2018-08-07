@@ -11,6 +11,7 @@ import org.csource.fastdfs.ClientGlobal;
 import org.csource.fastdfs.StorageClient;
 import org.csource.fastdfs.TrackerClient;
 import org.csource.fastdfs.TrackerServer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,7 @@ import java.util.Properties;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "app.file.upload.location", havingValue = "fastdfs")
 public class FastDfsClient {
     private static TrackerClient tracker = null;
     private static TrackerServer trackerServer = null;

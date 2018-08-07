@@ -23,7 +23,8 @@ public class UrlEncryptor extends AbstractEncryptor {
      * @param source 原值
      * @return 编码
      */
-    public String encryptSource(String source) {
+    @Override
+    protected String encryptSource(String source) {
         try {
             return URLEncoder.encode(source, DEFAULT_URL_ENCODING);
         } catch (UnsupportedEncodingException e) {
@@ -50,7 +51,8 @@ public class UrlEncryptor extends AbstractEncryptor {
      * @param code 编码默认为UTF-8
      * @return 解密值
      */
-    public String decryptCode(String code) {
+    @Override
+    protected String decryptCode(String code) {
 
         try {
             return URLDecoder.decode(code, DEFAULT_URL_ENCODING);

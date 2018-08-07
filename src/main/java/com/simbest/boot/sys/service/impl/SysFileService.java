@@ -3,7 +3,6 @@ package com.simbest.boot.sys.service.impl;
 import com.google.common.collect.Lists;
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.base.service.impl.LogicService;
-import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.model.UploadFileResponse;
@@ -11,12 +10,10 @@ import com.simbest.boot.sys.repository.SysFileRepository;
 import com.simbest.boot.sys.service.ISysFileService;
 import com.simbest.boot.util.AppFileUtil;
 import com.simbest.boot.util.office.ExcelUtil;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -96,8 +93,8 @@ public class SysFileService extends LogicService<SysFile, Long> implements ISysF
     }
 
     @Override
-    public File getFileById(Long id) {
+    public File getRealFileById(Long id) {
         SysFile sysFile = this.findById(id);
-        return new File(sysFile.getFilePath());
+        return appFileUtil.getFileFromSystem(sysFile.getFilePath());
     }
 }

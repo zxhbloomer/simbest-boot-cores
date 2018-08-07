@@ -44,7 +44,7 @@ public class Md5Encryptor extends AbstractEncryptor {
 
     @Override
     protected String decryptCode(String code) {
-        return null;
+        throw new UnsupportedOperationException("MD5 not support decrypt");
     }
 
     /**

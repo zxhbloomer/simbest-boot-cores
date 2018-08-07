@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+
 /**
  * 用途：门户Portal单点登录验证服务
  * 作者: lishuyi 
@@ -39,5 +41,7 @@ public class MochaSsoAuthenticationServiceImpl extends AbstractSsoAuthentication
         return decryptUsername;
     }
 
-
+    public static void main(String[] args) {
+        System.out.println(EncryptorUtil.encode("SIMBEST_SSO", "xindanhua"));
+    }
 }

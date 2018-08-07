@@ -24,10 +24,10 @@ import java.util.Base64;
 @Slf4j
 public class Des3Encryptor extends AbstractEncryptor {
 
-    public static void main(String[] args)throws Exception {
+    public static void main(String[] args) throws Exception {
         Des3Encryptor encryptor = new Des3Encryptor();
-        log.debug(encryptor.encrypt("hanhailing"));
-        log.debug(encryptor.decrypt(encryptor.encrypt("1")));
+        log.debug(encryptor.encrypt("koushaoguo"));
+        log.debug(encryptor.decrypt(encryptor.encrypt("koushaoguo")));
     }
 
     // 密钥

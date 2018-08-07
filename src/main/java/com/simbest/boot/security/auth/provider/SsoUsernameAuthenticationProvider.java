@@ -38,14 +38,14 @@ public class SsoUsernameAuthenticationProvider implements AuthenticationProvider
         Collection<SsoAuthenticationService> ssoAuthenticationServices = ssoAuthenticationRegister.getSsoAuthenticationService();
         Authentication successToken = null;
         for(SsoAuthenticationService authService : ssoAuthenticationServices) {
-            log.debug("SsoAuthenticationService {} attempt authentication with authentication {}",authService.getClass().getName(), authentication.toString());
+            log.info("SsoAuthenticationService {} attempt authentication with authentication {}",authService.getClass().getName(), authentication.toString());
             successToken = authService.attemptAuthentication(authentication);
             if(null != successToken) {
-                log.debug("SsoAuthenticationService {} attempt authentication with authentication {} successfully......, get successToken {}",
+                log.warn("SsoAuthenticationService {} attempt authentication with authentication {} successfully......, get successToken {}",
                         authService.getClass().getName(), authentication.toString(), successToken.toString());
                 break;
             }
-            log.debug("SsoAuthenticationService {} attempt authentication with authentication {} failed......",authService.getClass().getName(), authentication.toString());
+            log.warn("SsoAuthenticationService {} attempt authentication with authentication {} failed......",authService.getClass().getName(), authentication.toString());
         }
         if (null != successToken) {
             return successToken;

@@ -49,10 +49,10 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+            throws AuthenticationException {
         String loginuser = obtainUsername(request);
         String appcode = request.getParameter(AuthoritiesConstants.SSO_API_APP_CODE);
-        log.debug("Client will sso access {} with user {} and {}", request.getRequestURI(), loginuser, appcode);
+        log.debug("Client will sso access {} with user {} and appcode {}", request.getRequestURI(), loginuser, appcode);
         if (StringUtils.isEmpty(loginuser) || StringUtils.isEmpty(appcode)) {
             throw new BadCredentialsException(
                     "Authentication principal can not be null: " + loginuser);

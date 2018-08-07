@@ -12,24 +12,21 @@ import com.simbest.boot.sys.service.ISysFileService;
 import com.simbest.boot.util.AppFileUtil;
 import com.simbest.boot.util.encrypt.Des3Encryptor;
 import com.simbest.boot.util.encrypt.UrlEncryptor;
+import com.simbest.boot.util.encrypt.WebOffice3Des;
 import com.simbest.boot.util.json.JacksonUtils;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -41,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +65,10 @@ public class SysFileController extends LogicController<SysFile, Long> {
     private UrlEncryptor urlEncryptor;
 
     @Autowired
-    private Des3Encryptor des3Encryptor;
+    private AppFileUtil appFileUtil;
+
+    @Value("${app.host.port}")
+    private String nginxServer;
 
     @Autowired
     public SysFileController(ISysFileService fileService) {
@@ -122,6 +121,12 @@ public class SysFileController extends LogicController<SysFile, Long> {
 //        out.close();
 //    }
 
+    /**
+     * 上传文件，支持IE8及以上版本浏览器，支持同时上传多个附件
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     @PostMapping(value = {UPLOAD_PROCESS_FILES_URL, UPLOAD_PROCESS_FILES_URL_SSO})
     public void uploadFile(HttpServletRequest request, HttpServletResponse response) throws Exception{
         response.setContentType("text/html; charset=UTF-8");
@@ -140,6 +145,12 @@ public class SysFileController extends LogicController<SysFile, Long> {
         out.close();
     }
 
+    /**
+     * 下载文件
+     * @param id
+     * @return
+     * @throws FileNotFoundException
+     */
     @GetMapping(value = {DOWNLOAD_URL, DOWNLOAD_URL_SSO})
     public ResponseEntity<?> download(@RequestParam("id") Long id) throws FileNotFoundException {
         SysFile sysFile = fileService.findById(id);
@@ -156,22 +167,30 @@ public class SysFileController extends LogicController<SysFile, Long> {
                 .size(sysFile.getFileSize())
                 .build();
         headers.setContentDisposition(cd);
-        Resource resource = new InputStreamResource(new FileInputStream(new File(sysFile.getFilePath())));
+        File realFile = fileService.getRealFileById(id);
+        Resource resource = new InputStreamResource(new FileInputStream(realFile));
         return ResponseEntity.ok().headers(headers).body(resource);
     }
 
+    /**
+     * 在线预览文件，仅适用于保存在FastDfs环境中的文件
+     * @param id
+     * @return
+     * @throws Exception
+     */
     @GetMapping(value = {OPEN_URL, OPEN_URL_SSO})
-    public String open(@RequestParam("id") Long id)throws Exception{
+    public String open(@RequestParam("id") Long id) throws Exception{
         SysFile sysFile = fileService.findById(id);
-        log.debug("File url is {}", sysFile.getFilePath());
-        String url = urlEncryptor.encryptSource(sysFile.getFilePath());
-        log.warn("File url decode url is :"+url);
-        String firstUrl = StringUtils.substringBefore(url, "furl=")+"furl=";
-        String secondUrl = StringUtils.substringAfter(url, "furl=");
-        secondUrl = urlEncryptor.encryptSource(secondUrl);
-        String webOfficeUrl = firstUrl+des3Encryptor.encrypt(secondUrl);
-        log.warn("webOfficeUrl is :"+webOfficeUrl);
-        return "redirect:"+webOfficeUrl;
+        log.debug("Want access file online url is {}", sysFile.getFilePath());
+        String redirectUrl = nginxServer+"/webOffice/?furl="+ WebOffice3Des.encode(appFileUtil.getFileUrlFromFastDfs(sysFile.getFilePath()));
+        log.warn("webOfficeUrl is :"+redirectUrl);
+        return "redirect:"+redirectUrl;
+    }
+
+    @PostMapping(value = "deleteById")
+    public JsonResponse deleteById(@RequestParam("id") Long id){
+        fileService.deleteById(id);
+        return JsonResponse.defaultSuccessResponse();
     }
 
     /**

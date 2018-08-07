@@ -9,10 +9,12 @@ import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.web.SysFileController;
+import com.simbest.boot.util.encrypt.UrlEncryptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -20,8 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,6 +46,12 @@ public class AppFileUtil {
     private static final String UPLOAD_FILE_PATTERN =
             "(jpg|jpeg|png|gif|bmp|doc|docx|xls|xlsx|pdf|txt|rar|zip|7z)$";
     private static Pattern pattern = Pattern.compile(UPLOAD_FILE_PATTERN);
+
+    @Autowired
+    private UrlEncryptor encryptor;
+
+    @Value("${app.host.port}")
+    private String nginxServer;
 
     @Value("${app.file.upload.path}")
     private String uploadPath;
@@ -134,11 +143,9 @@ public class AppFileUtil {
             switch (serverUploadLocation) {
                 case disk:
                     byte[] bytes = multipartFile.getBytes();
-                    String storePath = uploadPath + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH
-                            + DateUtil.getCurrYear() + ApplicationConstants.SLASH
-                            + DateUtil.getCurrSimpleMonth() + ApplicationConstants.SLASH
-                            + DateUtil.getCurrSimpleDay() + ApplicationConstants.SLASH
-                            + CodeGenerator.randomChar(2);
+                    String storePath = uploadPath  + ApplicationConstants.SLASH + DateUtil.getCurrentStr()
+                            + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH
+                            + CodeGenerator.randomInt(4);
                     File targetFileDirectory = new File(storePath);
                     if (!targetFileDirectory.exists()) {
                         FileUtils.forceMkdir(targetFileDirectory);
@@ -171,23 +178,87 @@ public class AppFileUtil {
         return tempFile;
     }
 
-    public void getFileBUff(File file) {
-        FileInputStream inputStream = null;
+//    public void getFileBUff(File file) {
+//        FileInputStream inputStream = null;
+//        try {
+//            inputStream = new FileInputStream(file);
+//            byte[] file_buff = new byte[(int) file.length()];
+//            inputStream.read(file_buff);
+//            // 获取文件扩展名
+//            String fileName = file.getName();
+//            String extName = null;
+//            if (fileName.contains(".")) {
+//                extName = fileName.substring(fileName.lastIndexOf(".") + 1);
+//            } else {
+//                return;
+//            }
+//        } catch (Exception e) {
+//            Exceptions.printException(e);
+//        }
+//
+//    }
+
+    /**
+     * 从系统中下载文件
+     * @param filePath
+     * @return
+     */
+    public File getFileFromSystem(String filePath){
+        File realFile = null;
+        log.debug("Want to get file {} from {}", filePath, serverUploadLocation);
+        switch (serverUploadLocation) {
+            case disk:
+                realFile = new File(filePath);
+                break;
+            case fastdfs:
+                realFile = downloadFromUrl(nginxServer + ApplicationConstants.SLASH + filePath);
+                break;
+        }
+        return realFile;
+    }
+
+    /**
+     * 获取保存在FastDfs中的文件访问路径
+     * @param filePath
+     * @return
+     */
+    public String getFileUrlFromFastDfs(String filePath){
+        return nginxServer + ApplicationConstants.SLASH + filePath;
+    }
+
+    /**
+     * 根据远程文件的url下载文件
+     * @param fileUrl
+     * @return
+     */
+    public File downloadFromUrl(String fileUrl) {
+        File targetFile = createTempFile();
+        HttpURLConnection conn = null;
         try {
-            inputStream = new FileInputStream(file);
-            byte[] file_buff = new byte[(int) file.length()];
-            inputStream.read(file_buff);
-            // 获取文件扩展名
-            String fileName = file.getName();
-            String extName = null;
-            if (fileName.contains(".")) {
-                extName = fileName.substring(fileName.lastIndexOf(".") + 1);
+            String urlStr = FilenameUtils.getFullPath(fileUrl) + encryptor.encrypt(getFileName(fileUrl));
+            URL url = new URL(urlStr);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoInput(true);
+            conn.setRequestMethod(ApplicationConstants.HTTPGET);
+            conn.connect();
+            if (conn.getContentLengthLong() != 0) {
+                FileUtils.copyURLToFile(url, targetFile);
+                conn.disconnect();
+                log.debug("Downloaded file from url: {}, and save at: {}", fileUrl, targetFile.getAbsolutePath());
             } else {
-                return;
+                log.error("Want to download file from {}, but get nothing......", fileUrl);
             }
         } catch (Exception e) {
+            if (conn != null) {
+                conn.disconnect();
+                conn = null;
+            }
             Exceptions.printException(e);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
-
+        return targetFile;
     }
 }

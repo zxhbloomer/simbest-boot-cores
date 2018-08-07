@@ -41,6 +41,8 @@ public class ApplicationConstants {
     public final static String HTTPPROTOCAL = "http://";
     public final static String HTTP = "http";
     public final static String HTTPS = "https";
+    public final static String HTTPGET = "GET";
+    public final static String HTTPPOST = "POST";
     public final static String COLON = ":";
     public final static String DOT = ".";
     public final static String COMMA = ",";
