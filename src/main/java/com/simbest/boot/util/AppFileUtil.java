@@ -48,7 +48,7 @@ public class AppFileUtil {
     private static Pattern pattern = Pattern.compile(UPLOAD_FILE_PATTERN);
 
     @Autowired
-    private UrlEncryptor encryptor;
+    private UrlEncryptor urlEncryptor;
 
     @Value("${app.host.port}")
     private String nginxServer;
@@ -137,6 +137,8 @@ public class AppFileUtil {
         for (MultipartFile multipartFile : multipartFiles) {
             if (multipartFile.isEmpty()) {
                 continue;
+            } else if (multipartFile.getSize() == 0L){
+                continue;
             }
             String filePath = null;
             log.debug("Will upload file {} to {}", multipartFile.getOriginalFilename(), serverUploadLocation);
@@ -156,7 +158,7 @@ public class AppFileUtil {
                     filePath = path.toString();
                     break;
                 case fastdfs:
-                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()));
+                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()), getFileSuffix(multipartFile.getOriginalFilename()));
                     break;
             }
             SysFile sysFile = SysFile.builder().fileName(multipartFile.getOriginalFilename()).fileType(getFileSuffix(multipartFile.getOriginalFilename()))
@@ -168,13 +170,27 @@ public class AppFileUtil {
         return fileModels;
     }
 
+    /**
+     * 创建无后缀临时文件
+     * @return
+     */
     public static File createTempFile(){
+        return createTempFile(CodeGenerator.randomChar(4));
+    }
+
+    /**
+     * 创建带后缀临时文件
+     * @param suffix
+     * @return
+     */
+    public static File createTempFile(String suffix){
         File tempFile = null;
         try {
-            tempFile = File.createTempFile(CodeGenerator.randomChar(4), CodeGenerator.randomChar(4));
+            tempFile = File.createTempFile(CodeGenerator.randomChar(4), ApplicationConstants.DOT + suffix);
         } catch (IOException e) {
             Exceptions.printException(e);
         }
+        log.debug("Create temp file absolute path is {}", tempFile.getAbsolutePath());
         return tempFile;
     }
 
@@ -232,10 +248,12 @@ public class AppFileUtil {
      * @return
      */
     public File downloadFromUrl(String fileUrl) {
-        File targetFile = createTempFile();
+        File targetFile = createTempFile(getFileSuffix(fileUrl));
         HttpURLConnection conn = null;
         try {
-            String urlStr = FilenameUtils.getFullPath(fileUrl) + encryptor.encrypt(getFileName(fileUrl));
+            log.debug("Download origal url is {}", fileUrl);
+            String urlStr = FilenameUtils.getFullPath(fileUrl) + urlEncryptor.encrypt(getFileName(fileUrl));
+            log.debug("Download real url is {}", urlStr);
             URL url = new URL(urlStr);
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoInput(true);

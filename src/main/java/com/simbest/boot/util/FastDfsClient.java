@@ -86,7 +86,7 @@ public class FastDfsClient {
      * <p>Title: uploadFile</p>
      * <p>Description: </p>
      * @param fileContent 文件的内容，字节数组
-     * @param extName 文件扩展名
+     * @param extName 文件扩展名，不包含（.）
      * @param metas 文件扩展信息
      * @return
      * @throws Exception

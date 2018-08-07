@@ -23,7 +23,7 @@ import javax.persistence.*;
 public class SysFile extends LogicModel {
     @Id
     @Column(name = "id")
-    @SequenceGenerator (name = "sys_file_seq", sequenceName = "sys_file_seq", allocationSize = 1)
+    @SequenceGenerator (name = "sys_file_seq", sequenceName = "sys_file_seq")
     @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_file_seq")
     private Long id;
 
