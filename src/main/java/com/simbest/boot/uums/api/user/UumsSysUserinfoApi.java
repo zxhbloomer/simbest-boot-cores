@@ -433,8 +433,8 @@ public class UumsSysUserinfoApi {
             log.error("--response对象为空!--");
             return null;
         }
-        if(!(response.getData() instanceof Set)){
-            log.error("--uums接口返回的类型不为Set--");
+        if(!(response.getData() instanceof List)){
+            log.error("--uums接口返回的类型不为List--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
