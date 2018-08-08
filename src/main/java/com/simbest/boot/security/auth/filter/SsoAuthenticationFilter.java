@@ -4,8 +4,8 @@
 package com.simbest.boot.security.auth.filter;
 
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
-import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.auth.provider.sso.service.SsoAuthenticationService;
+import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,11 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Enumeration;
 
 /**
  * 用途：单点登录拦截器
@@ -55,7 +52,7 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
         log.debug("Client will sso access {} with user {} and appcode {}", request.getRequestURI(), loginuser, appcode);
         if (StringUtils.isEmpty(loginuser) || StringUtils.isEmpty(appcode)) {
             throw new BadCredentialsException(
-                    "Authentication principal can not be null: " + loginuser);
+                    "Authentication principal can not be invalidate loginuser: " + loginuser + " and appcode: " + appcode);
         }
 
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();

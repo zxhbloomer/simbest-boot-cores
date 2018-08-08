@@ -1,25 +1,20 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.security.auth.authentication.sso.impl;
+package com.simbest.boot.security.auth.provider.sso.service.impl;
 
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.IPermission;
 import com.simbest.boot.security.IUser;
-import com.simbest.boot.security.SimplePermission;
-import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
-import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
-import com.simbest.boot.util.encrypt.RsaEncryptor;
-import com.simbest.boot.uums.api.permission.UumsSysPermissionApi;
-import com.simbest.boot.uums.api.user.UumsSysUserinfoApi;
+import com.simbest.boot.security.auth.provider.sso.service.SsoAuthenticationService;
+import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,7 +35,7 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
      * @return
      */
     @Override
-    public SsoUsernameAuthentication attemptAuthentication(Authentication authentication) {
+    public SsoUsernameAuthentication attemptAuthentication(Authentication authentication, IAuthService.KeyType keyType) {
         log.debug("Retrive username from request with: {}, appcode with {}", authentication.getPrincipal(), authentication.getCredentials());
         if(null != authentication.getPrincipal() && null != authentication.getCredentials()
                 && StringUtils.isNotEmpty(authentication.getPrincipal().toString())
@@ -49,7 +44,7 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
             String username = decryptUsername(authentication.getPrincipal().toString());
             log.debug("Actually get username from request with: {}, appcode with {}", username, authentication.getCredentials().toString());
             if(StringUtils.isNotEmpty(username)) {
-                return ssoAuthentication(username, authentication.getCredentials().toString());
+                return ssoAuthentication(username, authentication.getCredentials().toString(), keyType);
             } else{
                 return null;
             }
@@ -64,11 +59,11 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
      * @param appcode
      * @return
      */
-    public SsoUsernameAuthentication ssoAuthentication(String username, String appcode) {
+    public SsoUsernameAuthentication ssoAuthentication(String username, String appcode, IAuthService.KeyType keyType) {
         log.debug("Try to check user {} access app {}.", username, appcode);
         SsoUsernameAuthentication token = null;
         try {
-            IUser authUser = authService.findByUsername(username);
+            IUser authUser = authService.findByKey(username, keyType);
             log.debug("Login user is {}", authUser.toString());
             if(null != authUser) {
                 if(authService.checkUserAccessApp(username, appcode)) {

@@ -1,7 +1,7 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.security.auth.authentication.sso.impl;
+package com.simbest.boot.security.auth.provider.sso.service.impl;
 
 import com.simbest.boot.util.encrypt.AbstractEncryptor;
 import lombok.Data;

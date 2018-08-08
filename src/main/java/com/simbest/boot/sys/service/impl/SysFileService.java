@@ -10,6 +10,7 @@ import com.simbest.boot.sys.repository.SysFileRepository;
 import com.simbest.boot.sys.service.ISysFileService;
 import com.simbest.boot.util.AppFileUtil;
 import com.simbest.boot.util.office.ExcelUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.List;
  * 作者: lishuyi
  * 时间: 2018/2/23  10:14
  */
+@Slf4j
 @Service
 @DependsOn(value = {"appFileUtil"})
 public class SysFileService extends LogicService<SysFile, Long> implements ISysFileService {
@@ -96,5 +98,15 @@ public class SysFileService extends LogicService<SysFile, Long> implements ISysF
     public File getRealFileById(Long id) {
         SysFile sysFile = this.findById(id);
         return appFileUtil.getFileFromSystem(sysFile.getFilePath());
+    }
+
+    @Override
+    @Transactional
+    public void deleteById ( Long id ) {
+        SysFile sysFile = this.findById(id);
+        String filePath = sysFile.getFilePath();
+        super.deleteById(id);
+        int result = appFileUtil.deleteFile(filePath);
+        log.warn("Delete file result is {}", result);
     }
 }

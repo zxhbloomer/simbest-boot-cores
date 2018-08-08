@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -194,26 +195,6 @@ public class AppFileUtil {
         return tempFile;
     }
 
-//    public void getFileBUff(File file) {
-//        FileInputStream inputStream = null;
-//        try {
-//            inputStream = new FileInputStream(file);
-//            byte[] file_buff = new byte[(int) file.length()];
-//            inputStream.read(file_buff);
-//            // 获取文件扩展名
-//            String fileName = file.getName();
-//            String extName = null;
-//            if (fileName.contains(".")) {
-//                extName = fileName.substring(fileName.lastIndexOf(".") + 1);
-//            } else {
-//                return;
-//            }
-//        } catch (Exception e) {
-//            Exceptions.printException(e);
-//        }
-//
-//    }
-
     /**
      * 从系统中下载文件
      * @param filePath
@@ -278,5 +259,34 @@ public class AppFileUtil {
             }
         }
         return targetFile;
+    }
+
+
+    public int deleteFile(String filePath) {
+        int result = 0;
+        log.debug("Will remove file at {}, and filePath is {}", serverUploadLocation, filePath);
+        if (StringUtils.isNotEmpty(filePath)) {
+            switch (serverUploadLocation) {
+                case disk:
+                    try {
+                        FileUtils.forceDelete(new File(filePath));
+                    } catch (Exception e) {
+                        result = -1;
+                        Exceptions.printException(e);
+                    }
+                    break;
+                case fastdfs:
+                    try {
+                        FastDfsClient.deleteFile(filePath);
+                    } catch (Exception e) {
+                        result = -1;
+                        Exceptions.printException(e);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return result;
     }
 }

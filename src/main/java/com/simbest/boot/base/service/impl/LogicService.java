@@ -130,8 +130,8 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
             log.debug("@Logic Repository Service update a already object: " + o);
             T target = findById(pk);
             CustomBeanUtil.copyPropertiesIgnoreNull(o, target);
-            wrapUpdateInfo( o );
-            return logicRepository.save(o);
+            wrapUpdateInfo( target );
+            return logicRepository.save(target);
         } else {
             throw new UpdateNotExistObjectException();
         }

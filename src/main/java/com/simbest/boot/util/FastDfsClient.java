@@ -5,7 +5,10 @@ package com.simbest.boot.util;
 
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.constants.ApplicationConstants;
+import io.lettuce.core.ScriptOutputType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.csource.common.MyException;
 import org.csource.common.NameValuePair;
 import org.csource.fastdfs.ClientGlobal;
 import org.csource.fastdfs.StorageClient;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -104,5 +108,12 @@ public class FastDfsClient {
 
     public static String uploadFile(byte[] fileContent, String extName) throws Exception {
         return uploadFile(fileContent, extName, null);
+    }
+
+    public static Integer deleteFile(String storagePath) throws IOException, MyException {
+        String group = StringUtils.substringBefore(storagePath, "/");
+        String filename = StringUtils.substringAfter(storagePath, "/");
+        log.warn("Want remove file at group {}, filepath {}", group, filename);
+        return storageClient.delete_file(group, filename);
     }
 }

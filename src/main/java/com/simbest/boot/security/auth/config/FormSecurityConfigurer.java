@@ -163,7 +163,9 @@ public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
         RsaAuthenticationFilter filter = new RsaAuthenticationFilter();
         filter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(ApplicationConstants.LOGIN_PAGE, RequestMethod.POST.name()));
         filter.setAuthenticationManager(authenticationManagerBean());
+        //记录成功登录日志
         filter.setAuthenticationSuccessHandler(successLoginHandler);
+        //记录失败登录日志
         filter.setAuthenticationFailureHandler(failedLoginHandler);
         filter.setEncryptor(rsaEncryptor);
        return filter;
@@ -173,7 +175,9 @@ public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
     public UumsAuthenticationFilter uumsAuthenticationFilter() throws Exception {
         UumsAuthenticationFilter filter = new UumsAuthenticationFilter(new AntPathRequestMatcher(ApplicationConstants.UUMS_LOGIN_PAGE, RequestMethod.POST.name()));
         filter.setAuthenticationManager(authenticationManagerBean());
+        //记录成功登录日志
         filter.setAuthenticationSuccessHandler(successLoginHandler);
+        //记录失败登录日志
         filter.setAuthenticationFailureHandler(failedLoginHandler);
         return filter;
     }
@@ -185,6 +189,7 @@ public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
         filter.setSsoAuthenticationRegister(ssoAuthenticationRegister);
         // 不跳回首页
         filter.setAuthenticationSuccessHandler(new SsoSuccessLoginHandler());
+        //跳至登陆页，但不作任何提醒
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(ApplicationConstants.LOGIN_PAGE));
         return filter;
     }
@@ -193,7 +198,8 @@ public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
     public CaptchaAuthenticationFilter captchaUsernamePasswordAuthenticationFilter() throws Exception {
         CaptchaAuthenticationFilter filter = new CaptchaAuthenticationFilter(new AntPathRequestMatcher("/*login", RequestMethod.POST.name()));
         filter.setAuthenticationManager(authenticationManagerBean());
-        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(ApplicationConstants.LOGIN_PAGE));
+        //跳至登陆页，提醒验证码错误
+        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(ApplicationConstants.LOGIN_ERROR_PAGE));
         return filter;
     }
 

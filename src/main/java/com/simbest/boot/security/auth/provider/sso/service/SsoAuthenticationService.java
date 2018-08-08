@@ -1,9 +1,10 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.security.auth.authentication.sso;
+package com.simbest.boot.security.auth.provider.sso.service;
 
-import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -25,6 +26,6 @@ public interface SsoAuthenticationService {
      * @param authentication
      * @return
      */
-    SsoUsernameAuthentication attemptAuthentication(Authentication authentication);
+    SsoUsernameAuthentication attemptAuthentication(Authentication authentication, IAuthService.KeyType keyType);
 
 }

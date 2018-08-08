@@ -6,6 +6,7 @@ package com.simbest.boot.component.task;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.component.distributed.lock.AppRuntimeMaster;
 import com.simbest.boot.component.distributed.lock.DistributedRedisLock;
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.repository.SysTaskExecutedLogRepository;
 import com.simbest.boot.sys.service.IHeartTestService;
 import com.simbest.boot.util.server.HostUtil;
@@ -55,7 +56,7 @@ public class HeartTestTask extends AbstractTaskSchedule {
                 entry.getValue().doTest();
             }
         } else {
-            String testUrl = "http://localhost:" + hostUtil.getRunningPort() + contextPath +"/login";
+            String testUrl = "http://localhost:" + hostUtil.getRunningPort() + contextPath + ApplicationConstants.LOGIN_PAGE;
             String response = HttpClient
                     // 请求方式和请求url
                     .get(testUrl)

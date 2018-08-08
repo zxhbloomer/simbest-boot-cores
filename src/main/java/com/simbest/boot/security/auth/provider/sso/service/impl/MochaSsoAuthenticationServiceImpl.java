@@ -1,10 +1,9 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.security.auth.authentication.sso.impl;
+package com.simbest.boot.security.auth.provider.sso.service.impl;
 
 import com.mochasoft.portal.encrypt.EncryptorUtil;
-import com.simbest.boot.base.exception.Exceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +33,7 @@ public class MochaSsoAuthenticationServiceImpl extends AbstractSsoAuthentication
                 decryptUsername = EncryptorUtil.decode(portalToken, username, TIMEOUT);
             } catch (Exception e) {
 //                Exceptions.printException(e);
-                log.debug("Use {} decrypt username {} to {} faied......", this.getClass().toString(), username, decryptUsername);
+                log.warn("Use {} decrypt username {} to {} faied......", this.getClass().toString(), username, decryptUsername);
             }
         }
         log.debug("Decrypt username {} to {}", username, decryptUsername);
@@ -43,5 +42,10 @@ public class MochaSsoAuthenticationServiceImpl extends AbstractSsoAuthentication
 
     public static void main(String[] args) {
         System.out.println(EncryptorUtil.encode("SIMBEST_SSO", "xindanhua"));
+        try {
+            System.out.println(EncryptorUtil.decode("SIMBEST_SSO", "09EC2988F6BC63DDA752A7007FEDF2E47F274DE24BD8C47138D7EA8BE76AE65F9B77AE78D4F51A3938C8BE09AF1CCF8751A72BA86A58389DFE2DBBCB7D18C36F", TIMEOUT));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

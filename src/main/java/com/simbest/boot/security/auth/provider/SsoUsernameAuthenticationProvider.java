@@ -3,8 +3,9 @@
  */
 package com.simbest.boot.security.auth.provider;
 
-import com.simbest.boot.security.auth.authentication.sso.SsoAuthenticationService;
-import com.simbest.boot.security.auth.authentication.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.security.auth.provider.sso.service.SsoAuthenticationService;
+import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,7 @@ public class SsoUsernameAuthenticationProvider implements AuthenticationProvider
         Authentication successToken = null;
         for(SsoAuthenticationService authService : ssoAuthenticationServices) {
             log.info("SsoAuthenticationService {} attempt authentication with authentication {}",authService.getClass().getName(), authentication.toString());
-            successToken = authService.attemptAuthentication(authentication);
+            successToken = authService.attemptAuthentication(authentication, IAuthService.KeyType.username);
             if(null != successToken) {
                 log.warn("SsoAuthenticationService {} attempt authentication with authentication {} successfully......, get successToken {}",
                         authService.getClass().getName(), authentication.toString(), successToken.toString());
