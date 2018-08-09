@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.SimplePermission;
 import com.simbest.boot.security.SimpleUser;
 import com.simbest.boot.security.UserOrgTree;
@@ -16,7 +17,6 @@ import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -43,9 +43,9 @@ import java.util.Set;
 public class UumsSysUserinfoApi {
     private static final String USER_MAPPING = "/action/user/user/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
-    //private String uumsAddress="http://localhost:8080/uums";
+    /*@Value ("${app.uums.address}")
+    private String uumsAddress;*/
+    private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -442,6 +442,33 @@ public class UumsSysUserinfoApi {
         return permissions;
     }
 
+    /**
+     * 根据关键字查询用户身份信息，当前支持如下：
+     * 登录名     username
+     * 人员编号   employeeNumber
+     * 手机号码   preferredMobile
+     * 邮箱       email
+     * 保留关键字 reserve1 可存微信openid
+     * @param keyword
+     * @param keyType
+     * @param appcode
+     * @return
+     */
+    public SimpleUser findByKey(String keyword,IAuthService.KeyType keyType,String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findByKey"+SSO+"?keyType="+keyType)
+                .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("keyword",keyword)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
+        return auth;
+    }
 
     //增加用户的权限
    /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {

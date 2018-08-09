@@ -44,8 +44,8 @@ public class UumsSysAppController {
     @ApiOperation(value = "根据appCode查询应用的消息", notes = "根据appCode查询应用的消息")
     @ApiImplicitParam(name = "appcode", value = "应用code", dataType = "String", paramType = "query")
     @PostMapping("/findAppByAppCode")
-    public JsonResponse findById(@RequestParam(required = false)  String appcode) {
-        return JsonResponse.success(uumsSysAppApi.findAppByAppCode( appcode ));
+    public JsonResponse findById(@RequestParam(required = false)  String appcode,@RequestParam(required = false)  String username) {
+        return JsonResponse.success(uumsSysAppApi.findAppByAppCode( appcode ,username));
     }
 
 }

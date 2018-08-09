@@ -319,10 +319,10 @@ public class UumsSysAppApi {
     /**
      * 根据appCode查询应用的消息
      * @param appcode
+     * @param username
      * @return
      */
-    public SimpleApp findAppByAppCode(String appcode) {
-        String username = SecurityUtils.getCurrentUserName();
+    public SimpleApp findAppByAppCode(String appcode,String username) {
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAppByAppCode"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))

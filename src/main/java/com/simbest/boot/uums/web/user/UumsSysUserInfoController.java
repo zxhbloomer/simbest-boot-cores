@@ -1,6 +1,7 @@
 package com.simbest.boot.uums.web.user;
 
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.uums.api.user.UumsSysUserinfoApi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -281,6 +282,33 @@ public class UumsSysUserInfoController {
     public JsonResponse findPermissionByAppUserNoSession(@RequestParam(required = false) String username
             ,@RequestParam(required = false) String appcode ){
         return JsonResponse.success( uumsSysUserinfoApi.findPermissionByAppUserNoSession(username,appcode));
+    }
+
+    /**
+     * 根据关键字查询用户身份信息，当前支持如下：
+     * 登录名     username
+     * 人员编号   employeeNumber
+     * 手机号码   preferredMobile
+     * 邮箱       email
+     * 保留关键字 reserve1 可存微信openid
+     * @param keyword
+     * @param keyType
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "根据关键字查询用户身份信息", notes = "根据关键字查询用户身份信息")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "keyword", value = "关键字", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "keyType", value = "类型", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/findByKey")
+    public JsonResponse findByKey(@RequestParam(required = false) String keyword
+            ,@RequestParam(required = false) IAuthService.KeyType keyType,@RequestParam(required = false) String appcode){
+        return JsonResponse.success( uumsSysUserinfoApi.findByKey(keyword,keyType,appcode));
     }
 
     /**
