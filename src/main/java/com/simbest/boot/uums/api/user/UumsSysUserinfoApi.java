@@ -17,6 +17,7 @@ import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -43,9 +44,9 @@ import java.util.Set;
 public class UumsSysUserinfoApi {
     private static final String USER_MAPPING = "/action/user/user/";
     private static final String SSO = "/sso";
-    /*@Value ("${app.uums.address}")
-    private String uumsAddress;*/
-    private String uumsAddress="http://localhost:8080/uums";
+    @Value ("${app.uums.address}")
+    private String uumsAddress;
+    //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 
