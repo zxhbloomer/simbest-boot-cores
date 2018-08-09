@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.util;
 
+import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
@@ -12,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用途：读取Boot项目Classpath路径下的文件
@@ -38,5 +41,12 @@ public class BootAppFileReader {
             log.error("######################Load classpath file {} error.", filepath);
         }
         return bufferedReader;
+    }
+
+    public static String getClasspathFileToString(String filepath){
+        BufferedReader bufferedReader = getClasspathFile(filepath);
+        List<String> lines = bufferedReader.lines().collect(Collectors.toList());
+        String content = Joiner.on("\n").join(lines);
+        return content;
     }
 }

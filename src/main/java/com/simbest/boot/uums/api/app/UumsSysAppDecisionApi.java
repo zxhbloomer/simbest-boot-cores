@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.SimpleSysAppDecision;
+import com.simbest.boot.security.SimpleAppDecision;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
@@ -50,7 +50,7 @@ public class UumsSysAppDecisionApi {
      * @param appcode
      * @return
      */
-    public SimpleSysAppDecision findById( Long id, String appcode){
+    public SimpleAppDecision findById(Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -63,7 +63,7 @@ public class UumsSysAppDecisionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        SimpleSysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);
+        SimpleAppDecision auth = JacksonUtils.json2obj(json, SimpleAppDecision.class);
         return auth;
     }
 
@@ -96,7 +96,7 @@ public class UumsSysAppDecisionApi {
      * @param sysAppDecisionMap
      * @return
      */
-    public List<SimpleSysAppDecision> findDecisions(String appcode,Map sysAppDecisionMap) {
+    public List<SimpleAppDecision> findDecisions(String appcode, Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
@@ -114,7 +114,7 @@ public class UumsSysAppDecisionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleSysAppDecision> appDecisionList=JacksonUtils.json2map(json, new TypeReference<List<SimpleSysAppDecision>>(){});
+        List<SimpleAppDecision> appDecisionList=JacksonUtils.json2map(json, new TypeReference<List<SimpleAppDecision>>(){});
         return appDecisionList;
     }
 }

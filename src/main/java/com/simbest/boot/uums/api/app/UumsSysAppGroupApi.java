@@ -6,8 +6,6 @@ package com.simbest.boot.uums.api.app;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.ISysAppDecision;
-import com.simbest.boot.security.SimpleSysAppDecision;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
@@ -61,7 +59,7 @@ public class UumsSysAppGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        ISysAppDecision auth = JacksonUtils.json2obj(json, SimpleSysAppDecision.class);*/
+        IAppDecision auth = JacksonUtils.json2obj(json, SimpleAppDecision.class);*/
         return response;
     }
 
