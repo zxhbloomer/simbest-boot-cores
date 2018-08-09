@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.security.IAppDecision;
 import com.simbest.boot.security.SimpleAppDecision;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
@@ -96,7 +97,7 @@ public class UumsSysAppDecisionApi {
      * @param sysAppDecisionMap
      * @return
      */
-    public List<SimpleAppDecision> findDecisions(String appcode, Map sysAppDecisionMap) {
+    public List<IAppDecision> findDecisions(String appcode, Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
@@ -114,7 +115,7 @@ public class UumsSysAppDecisionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleAppDecision> appDecisionList=JacksonUtils.json2map(json, new TypeReference<List<SimpleAppDecision>>(){});
+        List<IAppDecision> appDecisionList=JacksonUtils.json2map(json, new TypeReference<List<IAppDecision>>(){});
         return appDecisionList;
     }
 }
