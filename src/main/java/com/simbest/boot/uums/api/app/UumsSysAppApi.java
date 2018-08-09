@@ -3,18 +3,20 @@
  */
 package com.simbest.boot.uums.api.app;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.security.SimpleApp;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -34,9 +36,9 @@ import java.util.Map;
 public class UumsSysAppApi {
     private static final String USER_MAPPING = "/action/app/app/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
-    //private String uumsAddress="http://localhost:8080/uums";
+   /* @Value ("${app.uums.address}")
+    private String uumsAddress;*/
+    private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -46,7 +48,7 @@ public class UumsSysAppApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findById( Long id, String appcode){
+    public SimpleApp findById( Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
@@ -54,7 +56,13 @@ public class UumsSysAppApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleApp auth = JacksonUtils.json2obj(json, SimpleApp.class);
+        return auth;
     }
 
     /**
@@ -135,7 +143,7 @@ public class UumsSysAppApi {
      * @param ids
      * @return
      */
-    public JsonResponse findAppByGroupNoPage(String appcode,String ids) {
+    public Map<String,Set<SimpleApp>> findAppByGroupNoPage( String appcode, String ids) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAppByGroupNoPage"+SSO)
@@ -143,7 +151,17 @@ public class UumsSysAppApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("ids",ids)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof Map )){
+            log.error("--uums接口返回的类型不为Map--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        return appMap;
     }
 
     /**
@@ -177,7 +195,7 @@ public class UumsSysAppApi {
      * @param ids
      * @return
      */
-    public JsonResponse findAppByGroupPermissionNoPage(String appcode, String ids) {
+    public Map<String,Set<SimpleApp>> findAppByGroupPermissionNoPage(String appcode, String ids) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAppByGroupPermissionNoPage"+SSO)
@@ -185,7 +203,17 @@ public class UumsSysAppApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("ids",ids)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof Map )){
+            log.error("--uums接口返回的类型不为Map--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        return appMap;
     }
 
     /**
@@ -217,7 +245,7 @@ public class UumsSysAppApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findAppByUserNoPage(String appcode) {
+    public Map<String,Set<SimpleApp>> findAppByUserNoPage(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAppByUserNoPage"+SSO)
@@ -225,7 +253,17 @@ public class UumsSysAppApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("usernames",username)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof Map )){
+            log.error("--uums接口返回的类型不为Map--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        return appMap;
     }
 
     /**
@@ -257,7 +295,7 @@ public class UumsSysAppApi {
      * @param appcode
      * @return
      */
-    public JsonResponse findAppByUserPermissionNoPage(String appcode) {
+    public Map<String,Set<SimpleApp>> findAppByUserPermissionNoPage(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAppByUserPermissionNoPage"+SSO)
@@ -265,7 +303,39 @@ public class UumsSysAppApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("usernames",username)
                 .asBean(JsonResponse.class);
-        return response;
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof Map )){
+            log.error("--uums接口返回的类型不为Map--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        return appMap;
+    }
+
+    /**
+     * 根据appCode查询应用的消息
+     * @param appcode
+     * @return
+     */
+    public SimpleApp findAppByAppCode(String appcode) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAppByAppCode"+SSO)
+                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
+                .param("appCode",appcode)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleApp auth = JacksonUtils.json2obj(json, SimpleApp.class);
+        return auth;
     }
 
 }
