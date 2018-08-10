@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.resource.ContentVersionStrategy;
+import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 /**
  * 用途：配置静态文件目录
@@ -18,6 +20,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        VersionResourceResolver versionResourceResolver = new VersionResourceResolver()
+                .addVersionStrategy(new ContentVersionStrategy(), "/**");
+
         registry.addResourceHandler(
                 "/webjars/**",
                 "/img/**",
@@ -33,6 +38,9 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
                         "classpath:/static/css/",
                         "classpath:/static/js/",
                         "classpath:/static/fonts/",
-                        "classpath:/static/html/");
+                        "classpath:/static/html/")
+                .setCachePeriod(-1) /* no cache */
+                .resourceChain(true)
+                .addResolver(versionResourceResolver);
     }
 }
