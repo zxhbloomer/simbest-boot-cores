@@ -14,7 +14,7 @@ import java.util.List;
  * 作者: lishuyi
  * 时间: 2018/2/23  10:14
  */
-public interface ISysFileService extends ILogicService<SysFile, Long> {
+public interface ISysFileService extends ILogicService<SysFile, String> {
 
     /**
      * 上传并保存单个文件
@@ -54,5 +54,5 @@ public interface ISysFileService extends ILogicService<SysFile, Long> {
      * @param id
      * @return
      */
-    File getRealFileById(Long id);
+    File getRealFileById(String id);
 }

@@ -6,7 +6,7 @@ package com.simbest.boot.config;
 import com.simbest.boot.constants.ApplicationConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
 @Slf4j
 public class RedisKeyGenerator implements KeyGenerator {
 
-    @Value("${spring.cache.redis.key-prefix}")
-    private String prefix;
+    @Autowired
+    private AppConfig config;
 
     /**
      * 返回带参数，完整的key值
@@ -67,7 +67,7 @@ public class RedisKeyGenerator implements KeyGenerator {
      */
     public StringBuilder getNoArgsKey(Object target, Method method) {
         StringBuilder sb = new StringBuilder();
-        sb.append(prefix);
+        sb.append(config.getRedisKeyPrefix());
         sb.append(target.getClass().getName() + ApplicationConstants.COLON);
         sb.append(method.getName());
         return sb;

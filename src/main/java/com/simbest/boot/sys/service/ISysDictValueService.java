@@ -10,17 +10,17 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import java.util.Map;
 
-public interface ISysDictValueService extends ILogicService<SysDictValue,Integer>{
+public interface ISysDictValueService extends ILogicService<SysDictValue,String>{
 
-    int updateEnable(boolean enabled, Integer dictValueId);
+    int updateEnable(boolean enabled, String dictValueId);
 
-    SysDictValue findById(Integer Id);
+    SysDictValue findById(String Id);
 
-    List<SysDictValue> findByParentId(Integer parentId);
+    List<SysDictValue> findByParentId(String parentId);
 
     SysDictValue save(SysDictValue dictValue);
 
-    void deleteById(Integer id);
+    void deleteById(String id);
 
 
     /**

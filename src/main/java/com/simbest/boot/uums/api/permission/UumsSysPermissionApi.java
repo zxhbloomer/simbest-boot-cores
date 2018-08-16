@@ -6,6 +6,7 @@ package com.simbest.boot.uums.api.permission;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.SimplePermission;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
@@ -38,8 +39,8 @@ import java.util.Map;
 public class UumsSysPermissionApi {
     private static final String USER_MAPPING = "/action/permission/permission/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
+    @Autowired
+    private AppConfig config;
     @Autowired
     private RsaEncryptor encryptor;
 
@@ -52,7 +53,7 @@ public class UumsSysPermissionApi {
     public SimplePermission findById(Integer id,String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findById"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
@@ -82,7 +83,7 @@ public class UumsSysPermissionApi {
         String json0=JacksonUtils.obj2json(sysPermissionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( json0 )
                 .asBean(JsonResponse.class );
@@ -98,7 +99,7 @@ public class UumsSysPermissionApi {
     public List<SimplePermission> findRoleAppPermission(String roleName, String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findRoleAppPermission"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findRoleAppPermission"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "roleName",roleName )
@@ -125,7 +126,7 @@ public class UumsSysPermissionApi {
     public List<SimplePermission> findPositionAppPermission( String positionName,String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionAppPermission"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findPositionAppPermission"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "positionName",positionName)

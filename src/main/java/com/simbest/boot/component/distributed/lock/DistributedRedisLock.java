@@ -3,15 +3,14 @@
  */
 package com.simbest.boot.component.distributed.lock;
 
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.ApplicationConstants;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 用途：
@@ -24,10 +23,10 @@ public class DistributedRedisLock {
     @Autowired
     private RedissonClient redisson;
 
-    @Value("${spring.cache.redis.key-prefix}")
-    private String keyPrefix;
+    @Autowired
+    private AppConfig config;
 
-    private static String prefix;
+    private static String redisKeyPrefix;
 
     private static DistributedRedisLock lockUtils;
 
@@ -35,7 +34,7 @@ public class DistributedRedisLock {
     public void init() {
         lockUtils = this;
         lockUtils.redisson = this.redisson;
-        lockUtils.prefix = this.keyPrefix;
+        lockUtils.redisKeyPrefix = config.getRedisKeyPrefix();
     }
 
     /**
@@ -43,7 +42,7 @@ public class DistributedRedisLock {
      * @param lockName
      */
     public static void tryLock(String lockName){
-        String key = prefix + lockName;
+        String key = redisKeyPrefix + lockName;
         RLock mylock = lockUtils.redisson.getLock(key);
         mylock.lock(ApplicationConstants.REDIS_LOCK_DEFAULT_TIMEOUT, ApplicationConstants.REDIS_LOCK_DEFAULT_TIME_UNIT); //lock提供带timeout参数，timeout结束强制解锁，防止死锁
     }
@@ -53,7 +52,7 @@ public class DistributedRedisLock {
      * @param lockName
      */
     public static void unlock(String lockName){
-        String key = prefix + lockName;
+        String key = redisKeyPrefix + lockName;
         RLock mylock = lockUtils.redisson.getLock(key);
         mylock.unlock();
     }
@@ -63,7 +62,7 @@ public class DistributedRedisLock {
      * @param lockName
      */
     public static void tryLock(String lockName, int seconds){
-        String key = prefix + lockName;
+        String key = redisKeyPrefix + lockName;
         RLock mylock = lockUtils.redisson.getLock(key);
         mylock.lock(seconds, ApplicationConstants.REDIS_LOCK_DEFAULT_TIME_UNIT); //lock提供带timeout参数，timeout结束强制解锁，防止死锁
     }

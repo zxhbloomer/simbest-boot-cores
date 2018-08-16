@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/sys/task/log")
-public class SysTaskExecutedLogController extends GenericController<SysTaskExecutedLog, Long> {
+public class SysTaskExecutedLogController extends GenericController<SysTaskExecutedLog, String> {
 
     @Autowired
     public SysTaskExecutedLogController(@Qualifier("sysTaskExecutedLogService")ISystemService service) {

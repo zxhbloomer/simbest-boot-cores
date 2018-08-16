@@ -3,9 +3,11 @@
  */
 package com.simbest.boot.security.auth.filter;
 
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.util.AppSessionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -33,9 +35,8 @@ import java.io.IOException;
  */
 public class CaptchaAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    // 是否开启验证码功能
-    @Value("${app.captcha.enable}")
-    private boolean isOpenValidateCode = true;
+    @Autowired
+    private AppConfig config;
 
     public CaptchaAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher);
@@ -51,7 +52,7 @@ public class CaptchaAuthenticationFilter extends AbstractAuthenticationProcessin
             chain.doFilter(request, response);
             return;
         }
-        if (isOpenValidateCode) {
+        if (config.isOpenValidateCode()) {
             if (!checkValidateCode(req, res)) {
                 return;
             }

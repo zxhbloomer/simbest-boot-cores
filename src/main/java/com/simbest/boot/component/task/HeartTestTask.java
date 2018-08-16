@@ -6,6 +6,7 @@ package com.simbest.boot.component.task;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.component.distributed.lock.AppRuntimeMaster;
 import com.simbest.boot.component.distributed.lock.DistributedRedisLock;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.repository.SysTaskExecutedLogRepository;
 import com.simbest.boot.sys.service.IHeartTestService;
@@ -32,8 +33,8 @@ public class HeartTestTask extends AbstractTaskSchedule {
     @Autowired
     private ApplicationContext appContext;
 
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
+    @Autowired
+    private AppConfig config;
 
     @Autowired
     private HostUtil hostUtil;
@@ -56,7 +57,7 @@ public class HeartTestTask extends AbstractTaskSchedule {
                 entry.getValue().doTest();
             }
         } else {
-            String testUrl = "http://localhost:" + hostUtil.getRunningPort() + contextPath + ApplicationConstants.LOGIN_PAGE;
+            String testUrl = "http://localhost:" + hostUtil.getRunningPort() + config.getContextPath() + ApplicationConstants.LOGIN_PAGE;
             String response = HttpClient
                     // 请求方式和请求url
                     .get(testUrl)

@@ -6,6 +6,7 @@ package com.simbest.boot.security.auth.provider;
 import com.mzlion.easyokhttp.HttpClient;
 import com.mzlion.easyokhttp.exception.HttpClientException;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.exceptions.AccesssAppDeniedException;
@@ -18,7 +19,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,8 +40,8 @@ public class UumsHttpValidationAuthenticationProvider implements AuthenticationP
 
     private final static String UUMS_URL = "/httpauth/validate";
 
-    @Value("${app.uums.address}")
-    private String address;
+    @Autowired
+    private AppConfig config;
 
     @Setter
     @Getter
@@ -54,7 +55,7 @@ public class UumsHttpValidationAuthenticationProvider implements AuthenticationP
             IUser authUser = null;
             try {
                 UumsAuthenticationCredentials uumsCredentials = (UumsAuthenticationCredentials)credentials;
-                JsonResponse response = HttpClient.post(address + UUMS_URL)
+                JsonResponse response = HttpClient.post(config.getUumsAddress() + UUMS_URL)
                         .param(AuthoritiesConstants.SSO_UUMS_USERNAME, principal.toString())
                         .param(AuthoritiesConstants.SSO_UUMS_PASSWORD, uumsCredentials.getPassword())
                         .param(AuthoritiesConstants.SSO_API_APP_CODE, uumsCredentials.getAppcode())

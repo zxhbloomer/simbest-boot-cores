@@ -37,13 +37,13 @@ public class SystemService<T extends SystemModel,PK extends Serializable> extend
         this.systemRepository = systemRepository;
     }
 
-    @Override
-    public <S extends T> List<S> saveAll ( Iterable<? extends T> iterable ) {
-        List<S> dataList = Lists.newArrayList();
-        for(T t:iterable){
-            dataList.add((S)this.insert( t ));
-        }
-        return dataList;
-    }
+//    @Override
+//    public <S extends T> List<S> saveAll ( Iterable<? extends T> iterable ) {
+//        List<S> dataList = Lists.newArrayList();
+//        for(T t:iterable){
+//            dataList.add((S)this.insert( t ));
+//        }
+//        return dataList;
+//    }
 
 }

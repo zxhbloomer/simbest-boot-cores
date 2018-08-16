@@ -9,7 +9,6 @@ import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.util.DateUtil;
 import com.simbest.boot.util.redis.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -27,9 +26,6 @@ import java.util.Date;
 public class RedisIdGenerator {
 
     public static int DEFAULT_FORMAT_ADD_LENGTH = 3;
-
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
 
     /**
      * 返回当前年（2位）+当前天在当前年的第几天（3位）+当前小时（2位）

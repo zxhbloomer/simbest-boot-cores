@@ -7,6 +7,7 @@ package com.simbest.boot.uums.api.user;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.SimplePermission;
@@ -44,8 +45,8 @@ import java.util.Set;
 public class UumsSysUserinfoApi {
     private static final String USER_MAPPING = "/action/user/user/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
+    @Autowired
+    private AppConfig config;
     //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
@@ -61,7 +62,7 @@ public class UumsSysUserinfoApi {
     public SimpleUser findById(Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findById"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
@@ -92,7 +93,7 @@ public class UumsSysUserinfoApi {
         String json0=JacksonUtils.obj2json(sysUserinfoMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( json0 )
                 .asBean(JsonResponse.class );
@@ -106,7 +107,7 @@ public class UumsSysUserinfoApi {
      * @return
      */
     public SimpleUser findByUsername(String username,String appcode) {
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findByUsername"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findByUsername"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
@@ -135,7 +136,7 @@ public class UumsSysUserinfoApi {
     public JsonResponse findUserByGroup(int page,  int size, String direction,  String properties,String appcode, Long groupSid ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByGroup"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByGroup"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("page", String.valueOf(page))
@@ -162,7 +163,7 @@ public class UumsSysUserinfoApi {
     public JsonResponse findUserByOrg(int page,  int size,  String direction,  String properties,String appcode, String orgCode ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByOrg"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByOrg"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("page", String.valueOf(page))
@@ -188,7 +189,7 @@ public class UumsSysUserinfoApi {
     public JsonResponse findUserByPosition( int page, int size, String direction, String properties,String appcode, String positionName ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByPosition"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByPosition"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("page", String.valueOf(page))
@@ -208,7 +209,7 @@ public class UumsSysUserinfoApi {
     public List<SimpleUser> findUserByRoleNoPage(Integer roleId ,String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByRoleNoPage"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByRoleNoPage"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("roleId", String.valueOf(roleId))
@@ -239,7 +240,7 @@ public class UumsSysUserinfoApi {
     public JsonResponse findUserByRole(int page, int size, String direction,  String properties,String appcode,Integer roleId ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByRole"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByRole"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("page", String.valueOf(page))
@@ -263,7 +264,7 @@ public class UumsSysUserinfoApi {
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByDecisionNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findUserByDecisionNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode
         +"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class);
@@ -289,7 +290,7 @@ public class UumsSysUserinfoApi {
     public List<UserOrgTree> findUserByUsernameNoPage(String appcode,String username){
         String loginUser = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", loginUser);
-        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByUsernameNoPage"+SSO)
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByUsernameNoPage"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
@@ -316,7 +317,7 @@ public class UumsSysUserinfoApi {
     public List<UserOrgTree> findOneStep(String appcode,String orgCode){
         String loginUser = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", loginUser);
-        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "findOneStep"+SSO)
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findOneStep"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("orgCode",orgCode)
@@ -348,7 +349,7 @@ public class UumsSysUserinfoApi {
     public JsonResponse findRoleNameIsARoleDim(int page,int size,String direction,String properties,String appcode,String truename, String preferredMobile ) {
         String loginUser = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", loginUser);
-        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "findRoleNameIsARoleDim"+SSO)
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findRoleNameIsARoleDim"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("page", String.valueOf(page))
@@ -385,7 +386,7 @@ public class UumsSysUserinfoApi {
 
     private Boolean checkUserAccessAppNoramal(String loginUser, String username, String appcode){
         log.debug("Http remote request user by username: {}", loginUser);
-        JsonResponse response= HttpClient.post(this.uumsAddress + USER_MAPPING + "checkUserAccessApp"+SSO)
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "checkUserAccessApp"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username", username)
@@ -424,7 +425,7 @@ public class UumsSysUserinfoApi {
 
     private Set<SimplePermission> findPermissionByAppUserNormal(String loginUser, String username, String appcode){
         log.debug("Http remote request user by username: {}", loginUser);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPermissionByAppUser"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findPermissionByAppUser"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
@@ -457,7 +458,7 @@ public class UumsSysUserinfoApi {
      */
     public SimpleUser findByKey(String keyword,IAuthService.KeyType keyType,String appcode) {
         String loginUser = SecurityUtils.getCurrentUserName();
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findByKey"+SSO+"?keyType="+keyType)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findByKey"+SSO+"?keyType="+keyType)
                 .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("keyword",keyword)
@@ -478,7 +479,7 @@ public class UumsSysUserinfoApi {
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "addAppAuthorities"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "addAppAuthorities"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class);
@@ -502,7 +503,7 @@ public class UumsSysUserinfoApi {
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByApp"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findUserByApp"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( js
     }on0 ).
@@ -519,7 +520,7 @@ public class UumsSysUserinfoApi {
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByAppNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode)
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findUserByAppNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode)
                 .json( json0 ).
                         asBean(JsonResponse.class);
         return response;
@@ -528,7 +529,7 @@ public class UumsSysUserinfoApi {
     public JsonResponse findUserByAllAppNoPage(@RequestParam String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findUserByAllAppNoPage"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByAllAppNoPage"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .asBean(JsonResponse.class);
@@ -547,7 +548,7 @@ public class UumsSysUserinfoApi {
         String json0=JacksonUtils.obj2json(sysAppGroups);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findUserByAppPermission"+SSO+"?loginuser="+username2+"&appcode="+appcode)
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findUserByAppPermission"+SSO+"?loginuser="+username2+"&appcode="+appcode)
                 .json( json0 )
                 .asBean(JsonResponse.class);
         return response;

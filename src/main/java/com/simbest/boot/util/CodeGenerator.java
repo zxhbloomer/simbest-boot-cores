@@ -24,8 +24,9 @@ public class CodeGenerator {
         System.out.println(addRightZeroForNum(4, 9));
         System.out.println(timestampRandomLast());
         System.out.println(timestampRandomLast());
-        for (int i = 0; i < 10; i++) {
-            System.out.println(timestampRandomLast("OA"));
+        for (int i = 0; i < 1000; i++) {
+            //System.out.println(timestampRandomLast("OA"));
+            System.out.println(randomInt(1, 1000));
         }
         String s = "B-20150604-00000008";
         System.out.println(s.substring(s.lastIndexOf("-") + 1));
@@ -52,6 +53,18 @@ public class CodeGenerator {
             sb.append((int) (Math.random() * (10)));
         }
         return sb.toString();
+    }
+
+    /**
+     * 生成指定范围内的随机数
+     * @param min
+     * @param max
+     * @return
+     */
+    public static int randomInt(int min, int max) {
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        return randomNum;
     }
 
     /**

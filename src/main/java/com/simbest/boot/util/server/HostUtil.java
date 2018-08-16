@@ -3,8 +3,10 @@
  */
 package com.simbest.boot.util.server;
 
+import com.simbest.boot.config.EmbeddedServletConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -19,6 +21,7 @@ import java.util.Enumeration;
  * 时间: 2018/5/12  15:53
  */
 @Component
+@DependsOn(value = {"embeddedServletConfiguration"})
 public class HostUtil {
 
     @Autowired
@@ -101,6 +104,7 @@ public class HostUtil {
      * @return
      */
     public int getRunningPort() {
-        return server.getWebServer().getPort();
+        //return server.getWebServer().getPort();
+        return EmbeddedServletConfiguration.serverPort;
     }
 }

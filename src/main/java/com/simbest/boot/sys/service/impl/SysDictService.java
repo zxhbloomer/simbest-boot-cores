@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SysDictService extends LogicService<SysDict, Integer> implements ISysDictService {
+public class SysDictService extends LogicService<SysDict, String> implements ISysDictService {
 
     private SysDictRepository dictRepository;
 
@@ -30,12 +30,12 @@ public class SysDictService extends LogicService<SysDict, Integer> implements IS
     }
 
     @Override
-    public List<SysDict> findByParentId(Integer parentId) {
+    public List<SysDict> findByParentId(String parentId) {
         return dictRepository.findByParentId(parentId);
     }
 
     @Override
-    public SysDict findById(Integer id) {
+    public SysDict findById(String id) {
         return dictRepository.findById(id).orElse(null);
     }
 

@@ -3,6 +3,8 @@
  */
 package com.simbest.boot.config;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.http.CookieSerializer;
@@ -19,11 +21,16 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 @Configuration
 public class RedisSessionConfiguration {
 
+    @Autowired
+    private AppConfig config;
+
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SECURITYID"); // <1>
-        //serializer.setCookiePath("/"); // <2>
+        //如果application.properties设置spring.session.cookie.path，以设置为准，通常为/，不设置则默认为应用context
+        if(StringUtils.isNotEmpty(config.getCookiePath()))
+            serializer.setCookiePath(config.getCookiePath()); // <2>
         serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // <3>
         return serializer;
     }

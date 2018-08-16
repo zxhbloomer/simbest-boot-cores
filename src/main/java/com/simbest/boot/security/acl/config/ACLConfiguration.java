@@ -6,7 +6,6 @@ package com.simbest.boot.security.acl.config;
 import com.simbest.boot.security.MySimpleGrantedAuthority;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +19,6 @@ import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.sql.DataSource;
 
@@ -35,8 +33,6 @@ public class ACLConfiguration {
 
     private final DataSource dataSource;
 
-    @Value("${spring.jpa.database}")
-    private String database;
 
     public ACLConfiguration(@Qualifier("dataSource") DataSource dataSource) {
         this.dataSource = dataSource;
@@ -45,10 +41,6 @@ public class ACLConfiguration {
     @Bean
     public JdbcMutableAclService aclService() {
         JdbcMutableAclService jdbcMutableAclService = new JdbcMutableAclService(dataSource, lookupStrategy(), cache());
-        if(database.equalsIgnoreCase("oracle")) {
-            jdbcMutableAclService.setClassIdentityQuery("select acl_class_seq.currval from dual");
-            jdbcMutableAclService.setSidIdentityQuery("select acl_sid_seq.currval from dual");
-        }
         return jdbcMutableAclService;
     }
 

@@ -88,14 +88,14 @@ public class RedisTestController {
     }
 
     @PostMapping(value = "/getById")
-    public JsonResponse getById(@RequestParam(required = false, defaultValue = "-1") final long id, Model model) {
+    public JsonResponse getById(@RequestParam(required = false, defaultValue = "-1") final String id, Model model) {
         SysCustomField field = fieldService.findById(id);
         return JsonResponse.success(field);
     }
 
     @PostMapping(value = "/update")
     public JsonResponse update(@RequestBody SysCustomField field) {
-        fieldService.save(field);
+        fieldService.update(field);
         return JsonResponse.defaultSuccessResponse();
     }
 }

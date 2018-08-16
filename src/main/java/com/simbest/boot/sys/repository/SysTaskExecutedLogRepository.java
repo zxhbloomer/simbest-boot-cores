@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  * 时间: 2018/6/10  13:42
  */
 @Repository
-public interface SysTaskExecutedLogRepository extends SystemRepository<SysTaskExecutedLog, Long> {
+public interface SysTaskExecutedLogRepository extends SystemRepository<SysTaskExecutedLog, String> {
 
 
 }

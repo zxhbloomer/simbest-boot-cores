@@ -6,9 +6,12 @@ package com.simbest.boot.sys.service.impl;
 
 import com.simbest.boot.base.annotations.AnnotationUtils;
 import com.simbest.boot.base.repository.Condition;
+import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysCustomField;
+import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.repository.SysCustomFieldRepository;
+import com.simbest.boot.sys.repository.SysDictRepository;
 import com.simbest.boot.sys.service.ISysCustomFieldService;
 import com.simbest.boot.util.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +33,15 @@ import java.util.Optional;
  */
 @Service
 @CacheConfig(cacheNames = ApplicationConstants.REDIS_DEFAULT_CACHE_PREFIX)
-public class SysCustomFieldService implements ISysCustomFieldService {
+public class SysCustomFieldService extends LogicService<SysCustomField, String> implements ISysCustomFieldService {
+
+    private SysCustomFieldRepository fieldRepository;
 
     @Autowired
-    private SysCustomFieldRepository fieldRepository;
+    public SysCustomFieldService(SysCustomFieldRepository fieldRepository ) {
+        super(fieldRepository);
+        this.fieldRepository = fieldRepository;
+    }
 
     @Autowired
     private AnnotationUtils annotationUtils;
@@ -43,35 +51,16 @@ public class SysCustomFieldService implements ISysCustomFieldService {
         return annotationUtils.getEntityCnNameClassifyMap();
     }
 
-    @Override
-    public Specification<SysCustomField> getSpecification(Condition conditions) {
-        return fieldRepository.getSpecification(conditions);
-    }
 
-    @Override
-    public Page findAll(Specification<SysCustomField> conditions, PageRequest pageable) {
-        return fieldRepository.findAll(conditions, pageable);
-    }
-
-    @Cacheable(key = "#p0")
-    @Override
-    public SysCustomField findById(Long id) {
-        return fieldRepository.findById(id).orElse(null);
-    }
 
     @Override
     public SysCustomField findByFieldClassify(String fieldClassify) {
         return fieldRepository.findByFieldClassify(fieldClassify);
     }
 
-    @Override
-    public void deleteById(Long id) {
-        fieldRepository.deleteById(id);
-    }
-
     @CachePut(key = "#p0.id")
     @Override
-    public SysCustomField save(SysCustomField field) {
+    public SysCustomField insert(SysCustomField field) {
         if (field.getId() == null) {
             field.setCreator(SecurityUtils.getCurrentUserName());
             field.setModifier(SecurityUtils.getCurrentUserName());

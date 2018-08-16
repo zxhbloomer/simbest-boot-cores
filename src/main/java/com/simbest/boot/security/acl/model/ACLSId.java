@@ -1,6 +1,8 @@
 package com.simbest.boot.security.acl.model;
 
+import com.simbest.boot.base.annotations.EntityIdPrefix;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,10 +30,11 @@ import java.io.Serializable;
 public class ACLSId implements Serializable {
 
     @Id
-    @Column(name = "id")
-    @SequenceGenerator(name = "acl_sid_seq", sequenceName = "acl_sid_seq")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "acl_sid_seq")
-    private Long id;
+    @Column(name = "id", length = 40)
+    @GeneratedValue(generator = "snowFlakeId")
+    @GenericGenerator(name = "snowFlakeId", strategy = "com.simbest.boot.util.distribution.id.SnowflakeId")
+    @EntityIdPrefix(prefix = "S") //主键前缀，此为可选项注解
+    private String id;
 
     @Column(name = "principal", nullable = false)
     private boolean principal;

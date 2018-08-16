@@ -5,6 +5,8 @@ package com.simbest.boot.util;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.simbest.boot.base.annotations.EntityIdPrefix;
+import com.simbest.boot.base.annotations.ExcelVOAttribute;
 import com.simbest.boot.base.exception.Exceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -92,6 +94,35 @@ public class ObjectUtil extends org.apache.commons.lang3.ObjectUtils {
             return id.get(obj);
         } catch (IllegalAccessException e) {
             Exceptions.printException(e);
+        }
+        return null;
+    }
+
+    /**
+     * 设置持久化对象的主键值
+     * @param obj
+     * @param value
+     */
+    public static void setEntityIdVaue(Object obj, Object value) {
+        try {
+            Field id = getEntityIdField(obj);
+            id.setAccessible(true);
+            id.set(obj, value);
+        } catch (IllegalAccessException e) {
+            Exceptions.printException(e);
+        }
+    }
+
+    /**
+     * 获取数据库主键EntityIdPrefix的定义前缀值
+     * @param obj
+     * @return
+     */
+    public static String getEntityIdPrefixVaue(Object obj) {
+        Field id = getEntityIdField(obj);
+        if (id.isAnnotationPresent(EntityIdPrefix.class)){
+            EntityIdPrefix prefix = id.getAnnotation(EntityIdPrefix.class);
+            return prefix.prefix();
         }
         return null;
     }

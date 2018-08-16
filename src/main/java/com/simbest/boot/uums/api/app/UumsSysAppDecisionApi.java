@@ -6,6 +6,7 @@ package com.simbest.boot.uums.api.app;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.IAppDecision;
 import com.simbest.boot.security.SimpleAppDecision;
@@ -39,8 +40,8 @@ import java.util.Map;
 public class UumsSysAppDecisionApi {
     private static final String USER_MAPPING = "/action/app/decision/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
+    @Autowired
+    private AppConfig config;
     //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
@@ -54,7 +55,7 @@ public class UumsSysAppDecisionApi {
     public SimpleAppDecision findById(Long id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findById"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
@@ -84,7 +85,7 @@ public class UumsSysAppDecisionApi {
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( json0 )
                 .asBean(JsonResponse.class );
@@ -103,7 +104,7 @@ public class UumsSysAppDecisionApi {
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findDecisions"+SSO+"?loginuser="+username2+"&appcode="+appcode+"&username="+username)
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findDecisions"+SSO+"?loginuser="+username2+"&appcode="+appcode+"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class );
         if(response==null){

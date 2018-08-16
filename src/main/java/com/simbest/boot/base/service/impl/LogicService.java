@@ -58,7 +58,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     @Override
     public boolean exists ( PK id ) {
         log.debug("@Logic Repository Service exists object by id: " + id);
-        return logicRepository.existsById( id );
+        return logicRepository.existsActive( id );
     }
 
     @Override

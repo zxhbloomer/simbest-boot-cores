@@ -6,6 +6,7 @@ package com.simbest.boot.uums.api.position;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.IPosition;
 import com.simbest.boot.security.SimplePosition;
@@ -39,8 +40,8 @@ import java.util.Map;
 public class UumsSysPositionApi {
     private static final String USER_MAPPING = "/action/position/position/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
+    @Autowired
+    private AppConfig config;
     //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
@@ -55,7 +56,7 @@ public class UumsSysPositionApi {
         log.debug("Http remote request user by username: {}", username);
         username=encryptor.encrypt(username);
         System.out.println("加密后为:"+username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findById"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, username)
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
@@ -84,7 +85,7 @@ public class UumsSysPositionApi {
         String json0=JacksonUtils.obj2json(sysPositionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
         +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( json0 )
                 .asBean(JsonResponse.class );
@@ -100,7 +101,7 @@ public class UumsSysPositionApi {
     public List<SimplePosition> findPositionByUsername(String username,String appcode) {
         String usernameCurrent = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", usernameCurrent);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionByUsername"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findPositionByUsername"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(usernameCurrent))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("username",username)
@@ -127,7 +128,7 @@ public class UumsSysPositionApi {
     public Map<String,List<SimplePosition>> findPositionOrgcodeAndUsername(String orgCode,String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPositionOrgcodeAndUsername"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findPositionOrgcodeAndUsername"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("orgCode", orgCode)

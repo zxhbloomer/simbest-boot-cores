@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.sys.model;
 
+import com.simbest.boot.base.annotations.EntityIdPrefix;
 import com.simbest.boot.base.model.SystemModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,10 +35,11 @@ import javax.persistence.SequenceGenerator;
 @Entity
 public class SysTaskExecutedLog extends SystemModel {
     @Id
-    @Column(name = "id")
-    @SequenceGenerator(name = "sys_task_executed_log_seq", sequenceName = "sys_task_executed_log_seq")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sys_task_executed_log_seq")
-    private Long id;
+    @Column(name = "id", length = 40)
+    @GeneratedValue(generator = "snowFlakeId")
+    @GenericGenerator(name = "snowFlakeId", strategy = "com.simbest.boot.util.distribution.id.SnowflakeId")
+    @EntityIdPrefix(prefix = "TL") //主键前缀，此为可选项注解
+    private String id;
 
     @Column(nullable = false, length = 200)
     @NonNull

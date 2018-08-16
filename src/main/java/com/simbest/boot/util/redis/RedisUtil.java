@@ -2,6 +2,7 @@ package com.simbest.boot.util.redis;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.util.json.JacksonUtils;
 import lombok.Getter;
@@ -41,8 +42,8 @@ public class RedisUtil {
 
     private static RedisUtil cacheUtils;
 
-    @Value("${spring.cache.redis.key-prefix}")
-    private String keyPrefix;
+    @Autowired
+    private AppConfig config;
 
     private static String prefix;
 
@@ -53,7 +54,7 @@ public class RedisUtil {
     public void init() {
         cacheUtils = this;
         cacheUtils.redisTemplate = this.redisTemplate;
-        cacheUtils.prefix = this.keyPrefix;
+        cacheUtils.prefix = config.getRedisKeyPrefix();
     }
 
     public static RedisTemplate<String, String> getRedisTemplate() {

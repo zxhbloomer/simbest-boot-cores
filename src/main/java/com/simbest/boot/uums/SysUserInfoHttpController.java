@@ -5,6 +5,7 @@ package com.simbest.boot.uums;
 
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.security.SecurityUtils;
@@ -33,9 +34,9 @@ public class SysUserInfoHttpController {
 
     private final static String USER_MAPPING = "/action/user/user/";
 
+    @Autowired
+    private AppConfig config;
 
-    @Value("${app.uums.address}")
-    private String uumsAddress;
 
     @Autowired
     private RsaEncryptor encryptor;
@@ -48,7 +49,7 @@ public class SysUserInfoHttpController {
     public JsonResponse query(@RequestParam Long id, @RequestParam String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {} and appcode: {}", username, appcode);
-        JsonResponse response = HttpClient.post(uumsAddress + USER_MAPPING + "findById/sso/")
+        JsonResponse response = HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findById/sso/")
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE, appcode)
                 .param("id", String.valueOf(id))

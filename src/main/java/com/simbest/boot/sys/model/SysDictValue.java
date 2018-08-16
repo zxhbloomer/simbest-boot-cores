@@ -3,11 +3,13 @@
  */
 package com.simbest.boot.sys.model;
 
+import com.simbest.boot.base.annotations.EntityIdPrefix;
 import com.simbest.boot.base.model.LogicModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -24,10 +26,11 @@ import javax.persistence.*;
 public class SysDictValue extends LogicModel {
 
     @Id
-    @Column(name = "id")
-    @SequenceGenerator(name = "sys_dict_value_seq", sequenceName = "sys_dict_value_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_dict_value_seq")
-    private Integer id;
+    @Column(name = "id", length = 40)
+    @GeneratedValue(generator = "snowFlakeId")
+    @GenericGenerator(name = "snowFlakeId", strategy = "com.simbest.boot.util.distribution.id.SnowflakeId")
+    @EntityIdPrefix(prefix = "V") //主键前缀，此为可选项注解
+    private String id;
 
     @Column(nullable = false, length = 50)
     private String name;
@@ -42,7 +45,7 @@ public class SysDictValue extends LogicModel {
     private Integer displayOrder;
 
     @Column
-    private Integer parentId;
+    private String parentId;
 
     @Column(nullable = false)
     private String dictType;

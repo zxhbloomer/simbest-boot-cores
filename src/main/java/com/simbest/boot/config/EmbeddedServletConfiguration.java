@@ -17,6 +17,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EmbeddedServletConfiguration {
 
+    public static int serverPort = 0;
+
     @Bean
     public TomcatServletWebServerFactory containerFactory() {
         return new TomcatServletWebServerFactory() {
@@ -33,6 +35,7 @@ public class EmbeddedServletConfiguration {
                      */
                     ((AbstractHttp11Protocol <?>) connector.getProtocolHandler()).setMaxSwallowSize(maxSize);
                     logger.info("Set MaxSwallowSize "+ maxSize);
+                    serverPort = connector.getPort();
                 }
             }
         };

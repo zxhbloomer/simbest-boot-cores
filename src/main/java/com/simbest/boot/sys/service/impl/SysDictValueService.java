@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class SysDictValueService extends LogicService<SysDictValue,Integer> implements ISysDictValueService{
+public class SysDictValueService extends LogicService<SysDictValue,String> implements ISysDictValueService{
 
     private SysDictValueRepository dictValueRepository;
 
@@ -30,7 +30,7 @@ public class SysDictValueService extends LogicService<SysDictValue,Integer> impl
     }
 
     @Override
-    public int updateEnable(boolean enabled, Integer dictValueId) {
+    public int updateEnable(boolean enabled, String dictValueId) {
         SysDictValue val = findById(dictValueId);
         if (val == null) {
             return 0;
@@ -45,11 +45,12 @@ public class SysDictValueService extends LogicService<SysDictValue,Integer> impl
     }
 
     @Override
-    public List<SysDictValue> findByParentId(Integer parentId) {
+    public List<SysDictValue> findByParentId(String parentId) {
         return dictValueRepository.findByParentId(parentId);
     }
 
-    public SysDictValue findById(Integer id) {
+    @Override
+    public SysDictValue findById(String id) {
         return dictValueRepository.findById(id).orElse(null);
     }
 
@@ -64,7 +65,7 @@ public class SysDictValueService extends LogicService<SysDictValue,Integer> impl
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(String id) {
         SysDictValue dictValue = findById(id);
         save(dictValue);
         List<SysDictValue> list = findByParentId(id);

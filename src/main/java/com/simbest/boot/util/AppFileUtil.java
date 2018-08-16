@@ -6,6 +6,7 @@ package com.simbest.boot.util;
 
 import com.google.common.collect.Lists;
 import com.simbest.boot.base.exception.Exceptions;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.web.SysFileController;
@@ -16,7 +17,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,14 +51,8 @@ public class AppFileUtil {
     @Autowired
     private UrlEncryptor urlEncryptor;
 
-    @Value("${app.host.port}")
-    private String nginxServer;
-
-    @Value("${app.file.upload.path}")
-    private String uploadPath;
-
-    @Value("${app.file.upload.location}")
-    private String uploadLocation;
+    @Autowired
+    private AppConfig config;
 
     public static StoreLocation serverUploadLocation = null;
 
@@ -66,7 +60,7 @@ public class AppFileUtil {
 
     @PostConstruct
     public void init() {
-        serverUploadLocation = Enum.valueOf(StoreLocation.class, uploadLocation);
+        serverUploadLocation = Enum.valueOf(StoreLocation.class, config.getUploadLocation());
     }
 
     /**
@@ -146,7 +140,7 @@ public class AppFileUtil {
             switch (serverUploadLocation) {
                 case disk:
                     byte[] bytes = multipartFile.getBytes();
-                    String storePath = uploadPath  + ApplicationConstants.SLASH + DateUtil.getCurrentStr()
+                    String storePath = config.getUploadPath()  + ApplicationConstants.SLASH + DateUtil.getCurrentStr()
                             + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH
                             + CodeGenerator.randomInt(4);
                     File targetFileDirectory = new File(storePath);
@@ -208,7 +202,7 @@ public class AppFileUtil {
                 realFile = new File(filePath);
                 break;
             case fastdfs:
-                realFile = downloadFromUrl(nginxServer + ApplicationConstants.SLASH + filePath);
+                realFile = downloadFromUrl(config.getAppHostPort() + ApplicationConstants.SLASH + filePath);
                 break;
         }
         return realFile;
@@ -220,7 +214,7 @@ public class AppFileUtil {
      * @return
      */
     public String getFileUrlFromFastDfs(String filePath){
-        return nginxServer + ApplicationConstants.SLASH + filePath;
+        return config.getAppHostPort() + ApplicationConstants.SLASH + filePath;
     }
 
     /**

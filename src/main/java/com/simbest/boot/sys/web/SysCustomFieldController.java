@@ -6,9 +6,11 @@ package com.simbest.boot.sys.web;
 import com.google.common.collect.Maps;
 import com.simbest.boot.base.enums.SysCustomFieldType;
 import com.simbest.boot.base.repository.Condition;
+import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysCustomField;
 import com.simbest.boot.sys.model.SysCustomFieldValue;
+import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.repository.SysCustomFieldRepository;
 import com.simbest.boot.sys.service.ISysCustomFieldService;
 import com.simbest.boot.sys.service.ISysCustomFieldValueService;
@@ -17,6 +19,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,9 +49,8 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/sys/sysfield")
-public class SysCustomFieldController {
+public class SysCustomFieldController extends LogicController<SysCustomField, String> {
 
-    @Autowired
     private ISysCustomFieldService fieldService;
 
     @Autowired
@@ -59,6 +61,12 @@ public class SysCustomFieldController {
 
     @Autowired
     private ISysDictService dictService;
+
+    @Autowired
+    public SysCustomFieldController(ISysCustomFieldService fieldService) {
+        super(fieldService);
+        this.fieldService=fieldService;
+    }
 
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @RequestMapping(value = "list", method = RequestMethod.GET)
@@ -92,7 +100,7 @@ public class SysCustomFieldController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @RequestMapping(value = "getById", method = RequestMethod.GET)
-    public ModelAndView getById(@RequestParam(required = false, defaultValue = "-1") final long id, Model model) {
+    public ModelAndView getById(@RequestParam(required = false, defaultValue = "-1") final String id, Model model) {
         SysCustomField field = fieldService.findById(id);
         model.addAttribute("field", field);
         model.addAttribute("fieldClassifyMap", fieldService.getFieldClassifyMap());
@@ -109,22 +117,19 @@ public class SysCustomFieldController {
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @PostMapping(value = "/create")
     public JsonResponse create(@RequestBody SysCustomField field) {
-        fieldService.save(field);
-        return JsonResponse.defaultSuccessResponse();
+        return super.create(field);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @PostMapping(value = "/update")
     public JsonResponse update(@RequestBody SysCustomField field) {
-        fieldService.save(field);
-        return JsonResponse.defaultSuccessResponse();
+        return super.update(field);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
-    @PostMapping(value = "/delete")
-    public JsonResponse delete(@RequestParam Long id, Model model) {
-        fieldService.deleteById(id);
-        return JsonResponse.defaultSuccessResponse();
+    @ApiOperation(value = "根据id删除自定义字段", notes = "根据id删除自定义字段")
+    public JsonResponse deleteById(@RequestParam(required = false) String id) {
+        return super.deleteById( id );
     }
 
     @ApiOperation(value = "获取自定义字段列表", notes = "通过此接口来获取某实体类型自定义字段")
@@ -138,7 +143,7 @@ public class SysCustomFieldController {
     public JsonResponse getSysCustomFieldsByFieldClassify(@RequestParam(required = false, defaultValue = "1") int page, //
                                                           @RequestParam(required = false, defaultValue = "10") int size, //
                                                           @RequestParam(required = true) String fieldClassify, //
-                                                          @RequestParam(required = false, defaultValue = "-1") long fieldEntityId //
+                                                          @RequestParam(required = false, defaultValue = "-1") String fieldEntityId //
     ) {
         // 获取分页规则
         Pageable pageable = fieldRepository.getPageable(page, size, null, null);
@@ -168,12 +173,12 @@ public class SysCustomFieldController {
         map.put("searchD", searchD);
 
         //当fieldEntityId存在时，即某个实体类型存在时，读取该实体类型已经设置过的自定义字段的字段值
-        if (fieldEntityId != -1) {
+        if (StringUtils.isNotEmpty(fieldEntityId)) {
             Condition condition1 = new Condition();
             condition1.eq("fieldClassify", fieldClassify);
             condition1.eq("fieldEntityId", fieldEntityId);
             Specification<SysCustomFieldValue> s1 = fieldValueService.getSpecification(condition1);
-            List<SysCustomFieldValue> values = fieldValueService.findAll(s1);
+            Iterable<SysCustomFieldValue> values = fieldValueService.findAllNoPage(s1);
             map.put("values", values);
         }
 

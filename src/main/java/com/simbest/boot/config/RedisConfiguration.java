@@ -60,22 +60,7 @@ import java.util.Map;
 public class RedisConfiguration extends CachingConfigurerSupport {
 
     @Autowired
-    private Environment env;
-
-    @Value("${spring.redis.cluster.nodes}")
-    private String clusterNodes;
-
-    @Value("${spring.redis.cluster.password}")
-    private String password;
-
-    @Value("${spring.redis.cluster.max-redirects}")
-    private String maxRedirects;
-
-    @Value("${server.servlet.session.timeout}")
-    private Integer maxInactiveIntervalInSeconds;
-
-    @Value("${spring.session.redis.namespace}")
-    private String redisNamespace;
+    private AppConfig config;
 
     @Autowired
     private RedisKeyGenerator redisKeyGenerator;
@@ -85,11 +70,11 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 
     @PostConstruct
     private void afterPropertiesSet() {
-        log.info("setting spring session with redis timeout {} seconds", maxInactiveIntervalInSeconds);
-        sessionRepository.setDefaultMaxInactiveInterval(maxInactiveIntervalInSeconds);
+        log.info("setting spring session with redis timeout {} seconds", config.getRedisMaxInactiveIntervalInSeconds());
+        sessionRepository.setDefaultMaxInactiveInterval(config.getRedisMaxInactiveIntervalInSeconds());
         // 注释以下代码，配合RedisSessionConfiguration的CookiePath=/可以实现同域名应用间Cookie共享Session
-        log.info("setting spring session with redis namespace {} ", redisNamespace);
-        sessionRepository.setRedisKeyNamespace(redisNamespace);
+        log.info("setting spring session with redis namespace {} ", config.getRedisNamespace());
+        sessionRepository.setRedisKeyNamespace(config.getRedisNamespace());
     }
 
 //    @Bean
@@ -108,10 +93,10 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     @Bean
     public RedisClusterConfiguration redisClusterConfiguration(){
         Map<String, Object> source = Maps.newHashMap();
-        source.put("spring.redis.cluster.nodes", clusterNodes);
-        log.debug("Redis cluster nodes: {}", clusterNodes);
-        source.put("spring.redis.cluster.max-redirects", maxRedirects);
-        log.info("Redis cluster max redirects: {}", maxRedirects);
+        source.put("spring.redis.cluster.nodes", config.getRedisClusterNodes());
+        log.debug("Redis cluster nodes: {}", config.getRedisClusterNodes());
+        source.put("spring.redis.cluster.max-redirects", config.getRedisMaxRedirects());
+        log.info("Redis cluster max redirects: {}", config.getRedisMaxRedirects());
         return new RedisClusterConfiguration(new MapPropertySource("RedisClusterConfiguration", source));
     }
 
@@ -133,16 +118,16 @@ public class RedisConfiguration extends CachingConfigurerSupport {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         LettuceConnectionFactory factory;
-        if (clusterNodes.split(ApplicationConstants.COMMA).length == 1) {
+        if (config.getRedisClusterNodes().split(ApplicationConstants.COMMA).length == 1) {
             RedisStandaloneConfiguration standaloneConfig = new RedisStandaloneConfiguration();
-            standaloneConfig.setHostName(clusterNodes.split(ApplicationConstants.COLON)[0]);
-            standaloneConfig.setPort(Integer.valueOf(clusterNodes.split(ApplicationConstants.COLON)[1]));
-            standaloneConfig.setPassword(RedisPassword.of(password));
+            standaloneConfig.setHostName(config.getRedisClusterNodes().split(ApplicationConstants.COLON)[0]);
+            standaloneConfig.setPort(Integer.valueOf(config.getRedisClusterNodes().split(ApplicationConstants.COLON)[1]));
+            standaloneConfig.setPassword(RedisPassword.of(config.getRedisPassword()));
             standaloneConfig.setDatabase(0);
             factory = new LettuceConnectionFactory(standaloneConfig);
         } else {
             RedisClusterConfiguration clusterConfig = redisClusterConfiguration();
-            clusterConfig.setPassword(RedisPassword.of(password));
+            clusterConfig.setPassword(RedisPassword.of(config.getRedisPassword()));
             factory = new LettuceConnectionFactory(clusterConfig);
         }
         return factory;
@@ -171,7 +156,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory());
         // 设置默认过期时间：60 分钟
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(maxInactiveIntervalInSeconds))
+                .entryTtl(Duration.ofSeconds(config.getRedisMaxInactiveIntervalInSeconds()))
                 //.prefixKeysWith("cache:key:uums:") //无法区分不同对象相同id时的key
                 // .disableCachingNullValues()
                 // 使用注解时的序列化、反序列化
@@ -275,23 +260,23 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
-        Config config = new Config();
-        if (clusterNodes.split(ApplicationConstants.COMMA).length == 1) {
-            config.useSingleServer().setAddress("redis://"+clusterNodes)
-            .setPassword(password);
+        Config redissonConfig = new Config();
+        if (config.getRedisClusterNodes().split(ApplicationConstants.COMMA).length == 1) {
+            redissonConfig.useSingleServer().setAddress("redis://"+config.getRedisClusterNodes())
+            .setPassword(config.getRedisPassword());
         } else {
-            String[] nodes = clusterNodes.split(ApplicationConstants.COMMA);
+            String[] nodes = config.getRedisClusterNodes().split(ApplicationConstants.COMMA);
             for(int i=0; i<nodes.length; i++){
                 nodes[i] = "redis://"+ nodes[i];
             }
-            config.useClusterServers()
+            redissonConfig.useClusterServers()
                     .setScanInterval(2000) // cluster state scan interval in milliseconds
-                    .setPassword(password)
+                    .setPassword(config.getRedisPassword())
                     .addNodeAddress(nodes);
 //                    .addNodeAddress("redis://10.92.80.70:26379", "redis://10.92.80.70:26389", "redis://10.92.80.70:26399")
 //                    .addNodeAddress("redis://10.92.80.71:26379", "redis://10.92.80.71:26389", "redis://10.92.80.71:26399");
         }
-        return Redisson.create(config);
+        return Redisson.create(redissonConfig);
     }
 
     @Bean

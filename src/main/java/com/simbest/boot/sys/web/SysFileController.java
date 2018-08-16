@@ -5,19 +5,16 @@ package com.simbest.boot.sys.web;
 
 import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
-import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.model.UploadFileResponse;
 import com.simbest.boot.sys.service.ISysFileService;
 import com.simbest.boot.util.AppFileUtil;
-import com.simbest.boot.util.encrypt.Des3Encryptor;
 import com.simbest.boot.util.encrypt.UrlEncryptor;
 import com.simbest.boot.util.encrypt.WebOffice3Des;
 import com.simbest.boot.util.json.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
@@ -50,7 +47,7 @@ import java.util.Map;
  */
 @Slf4j
 @Controller
-public class SysFileController extends LogicController<SysFile, Long> {
+public class SysFileController extends LogicController<SysFile, String> {
 
     public final static String UPLOAD_PROCESS_FILES_URL = "/sys/file/uploadProcessFiles";
     public final static String UPLOAD_PROCESS_FILES_URL_SSO = "/sys/file/uploadProcessFiles/sso";
@@ -68,8 +65,8 @@ public class SysFileController extends LogicController<SysFile, Long> {
     @Autowired
     private AppFileUtil appFileUtil;
 
-    @Value("${app.host.port}")
-    private String nginxServer;
+    @Autowired
+    private AppConfig config;
 
     @Autowired
     public SysFileController(ISysFileService fileService) {
@@ -153,7 +150,7 @@ public class SysFileController extends LogicController<SysFile, Long> {
      * @throws FileNotFoundException
      */
     @GetMapping(value = {DOWNLOAD_URL, DOWNLOAD_URL_SSO})
-    public ResponseEntity<?> download(@RequestParam("id") Long id) throws FileNotFoundException {
+    public ResponseEntity<?> download(@RequestParam("id") String id) throws FileNotFoundException {
         SysFile sysFile = fileService.findById(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -180,17 +177,17 @@ public class SysFileController extends LogicController<SysFile, Long> {
      * @throws Exception
      */
     @GetMapping(value = {OPEN_URL, OPEN_URL_SSO})
-    public String open(@RequestParam("id") Long id) throws Exception{
+    public String open(@RequestParam("id") String id) throws Exception{
         SysFile sysFile = fileService.findById(id);
         log.debug("Want access file online url is {}", sysFile.getFilePath());
-        String redirectUrl = nginxServer+"/webOffice/?furl="+ WebOffice3Des.encode(appFileUtil.getFileUrlFromFastDfs(sysFile.getFilePath()));
+        String redirectUrl = config.getAppHostPort()+"/webOffice/?furl="+ WebOffice3Des.encode(appFileUtil.getFileUrlFromFastDfs(sysFile.getFilePath()));
         log.warn("webOfficeUrl is :"+redirectUrl);
         return "redirect:"+redirectUrl;
     }
 
     @PostMapping(value = "/sys/file/deleteById")
     @ResponseBody
-    public JsonResponse deleteById(@RequestParam("id") Long id){
+    public JsonResponse deleteById(@RequestParam("id") String id){
         fileService.deleteById(id);
         return JsonResponse.defaultSuccessResponse();
     }

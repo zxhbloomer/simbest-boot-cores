@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -26,13 +25,6 @@ public class DistributedLockFactoryBean implements FactoryBean<DistributedLockTe
 
     @Autowired
     private RedissonClient redisson;
-
-    @Value("${spring.redis.cluster.nodes}")
-    private String clusterNodes;
-
-    @Value("${spring.redis.cluster.password}")
-    private String password;
-
 
     @PostConstruct
     public void init() {

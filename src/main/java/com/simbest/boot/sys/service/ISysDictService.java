@@ -8,12 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
-public interface ISysDictService extends ILogicService<SysDict, Integer> {
-    List<SysDict> findByParentId(Integer parentId);
+public interface ISysDictService extends ILogicService<SysDict, String> {
+    List<SysDict> findByParentId(String parentId);
     List<SysDict> findByEnabled(Boolean enabled);
     List<SysDict> findByAll();
 
-    SysDict  findById(Integer Id);
+    SysDict  findById(String Id);
 
     SysDict save(SysDict dict);
 

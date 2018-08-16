@@ -23,7 +23,7 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/sys/dictValue")
-public class SysDictValueController extends LogicController<SysDictValue,Integer>{
+public class SysDictValueController extends LogicController<SysDictValue,String>{
 
     private ISysDictValueService sysDictValueService;
 
@@ -68,7 +68,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     //@PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @ApiOperation(value = "根据id删除字典值", notes = "根据id删除字典值")
     @ApiImplicitParam (name = "id", value = "字典值ID",  dataType = "Integer", paramType = "query")
-    public JsonResponse deleteById(@RequestParam(required = false) Integer id) {
+    public JsonResponse deleteById(@RequestParam(required = false) String id) {
         return super.deleteById( id );
     }
 
@@ -78,7 +78,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
      * @return
      */
     @ApiOperation(value = "先修改再逻辑删除字典值", notes = "先修改再逻辑删除字典值")
-    public JsonResponse delete(@RequestBody(required = false) SysDictValue sysDictValue) {
+    public JsonResponse delete(SysDictValue sysDictValue) {
         return super.delete(sysDictValue);
     }
 
@@ -89,7 +89,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
      */
     //@PreAuthorize("hasAuthority('ROLE_SUPER')")  // 指定角色权限才能操作方法
     @ApiOperation(value = "批量逻辑删除字典值", notes = "批量逻辑删除字典值")
-    public JsonResponse deleteAllByIds(@RequestBody(required = false) Integer[] ids) {
+    public JsonResponse deleteAllByIds(@RequestBody(required = false) String[] ids) {
         return  super.deleteAllByIds(ids);
     }
 
@@ -103,7 +103,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     @ApiImplicitParams ({@ApiImplicitParam(name = "id", value = "角色ID", required = true, dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "enabled", value = "是否可用", required = true, dataType = "Boolean", paramType = "query")
     })
-    public JsonResponse updateEnable(@RequestParam(required = false) Integer id, @RequestParam(required = false) Boolean enabled) {
+    public JsonResponse updateEnable(@RequestParam(required = false) String id, @RequestParam(required = false) Boolean enabled) {
         return  super.updateEnable( id,enabled );
     }
 
@@ -117,7 +117,7 @@ public class SysDictValueController extends LogicController<SysDictValue,Integer
     @ApiOperation(value = "根据id查询字典值", notes = "根据id查询字典值")
     @ApiImplicitParam(name = "id", value = "字典类型ID", dataType = "Integer", paramType = "query")
     @PostMapping(value = {"/findById","/findById/sso"})
-    public JsonResponse findById(@RequestParam(required = false) Integer id) {
+    public JsonResponse findById(@RequestParam(required = false) String id) {
         return super.findById( id );
     }
 

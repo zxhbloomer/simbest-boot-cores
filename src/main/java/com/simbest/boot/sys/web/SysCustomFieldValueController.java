@@ -4,13 +4,17 @@
 package com.simbest.boot.sys.web;
 
 import com.simbest.boot.base.repository.Condition;
+import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.sys.model.SysCustomField;
 import com.simbest.boot.sys.model.SysCustomFieldValue;
 import com.simbest.boot.sys.model.SysCustomFieldValueDto;
 import com.simbest.boot.sys.service.ISysCustomFieldService;
 import com.simbest.boot.sys.service.ISysCustomFieldValueService;
 import com.simbest.boot.sys.service.ISysDictService;
 import com.simbest.boot.util.security.SecurityUtils;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,17 +32,21 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/sys/sysfieldvalue")
-public class SysCustomFieldValueController {
+public class SysCustomFieldValueController extends LogicController<SysCustomFieldValue, String> {
 
     @Autowired
     private ISysCustomFieldService fieldService;
 
-    @Autowired
     private ISysCustomFieldValueService fieldValueService;
-
 
     @Autowired
     private ISysDictService dictService;
+
+    @Autowired
+    public SysCustomFieldValueController(ISysCustomFieldValueService fieldValueService) {
+        super(fieldValueService);
+        this.fieldValueService=fieldValueService;
+    }
 
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
     @PostMapping(value = "getEntityValues")
@@ -50,39 +58,13 @@ public class SysCustomFieldValueController {
         return JsonResponse.builder() //
                 .errcode(JsonResponse.SUCCESS_CODE) //
                 .message("查询成功！") //
-                .data(fieldValueService.findAll(fieldValueService.getSpecification(c)))
+                .data(fieldValueService.findAllNoPage(fieldValueService.getSpecification(c)))
                 .build();
     }
-//
-//    @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
-//    @RequestMapping(value = "getById", method = RequestMethod.GET)
-//    public ModelAndView getById(@RequestParam(required = false, defaultValue = "-1") final long id, Model model) {
-//        Optional<SysCustomField> userOptional = fieldService.findById(id);
-//        SysCustomField field = fieldService.findById(id).orElse(new SysCustomField());
-//        model.addAttribute("field", field);
-//        model.addAttribute("fieldClassifyMap", fieldService.getFieldClassifyMap());
-//        model.addAttribute("dictList", dictService.findByEnabled(true));
-//        SysCustomFieldType[] types = SysCustomFieldType.values();
-//        Map<String,String> typeMap = Maps.newTreeMap();
-//        for (SysCustomFieldType type : types){
-//            typeMap.put(type.name(), type.getValue());
-//        }
-//        model.addAttribute("fieldTypes", typeMap);
-//        return new ModelAndView("sys/sysfield/form", "fieldModel", model);
-//    }
-
-
-
-    /*      field.setCreator(SecurityUtils.getCurrentUserName());
-            field.setCreatedTime(new Date());
-            field.setModifier(SecurityUtils.getCurrentUserName());
-            field.setModifiedTime(new Date());
-            field.setEnabled(true);
-            field.setRemoved(false);*/
 
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
-    @PostMapping(value = "/create")
-    public JsonResponse create( @RequestBody SysCustomFieldValueDto fieldValues) {
+    @PostMapping(value = "/createDto")
+    public JsonResponse createDto( @RequestBody SysCustomFieldValueDto fieldValues) {
 
         List<SysCustomFieldValue> fieldValuess = fieldValues.getSysfieldvalue();
         List<SysCustomFieldValue> fields =  new ArrayList<>(  );
@@ -96,8 +78,8 @@ public class SysCustomFieldValueController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
-    @PostMapping(value = "/update")
-    public JsonResponse update(@RequestBody SysCustomFieldValueDto fieldValues) {
+    @PostMapping(value = "/updateDto")
+    public JsonResponse updateDto(@RequestBody SysCustomFieldValueDto fieldValues) {
         List<SysCustomFieldValue> fieldValuess = fieldValues.getSysfieldvalue();
         List<SysCustomFieldValue> fields =  new ArrayList<>(  );
         for(SysCustomFieldValue field  :fieldValuess){
@@ -110,13 +92,13 @@ public class SysCustomFieldValueController {
         fieldValueService.saveAll(fields);
         return JsonResponse.defaultSuccessResponse();
     }
-//
-//    @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
-//    @PostMapping(value = "/delete")
-//    public JsonResponse delete(@RequestParam Long id, Model model) {
-//        fieldService.deleteById(id);
-//        return JsonResponse.defaultSuccessResponse();
-//    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER','ROLE_ADMIN')")
+    @ApiOperation(value = "根据id删除自定义字段值", notes = "根据id删除自定义字段值")
+    @ApiImplicitParam(name = "id", value = "自定义字段值ID",  dataType = "String", paramType = "query")
+    public JsonResponse deleteById(@RequestParam(required = false) String id) {
+        return super.deleteById( id );
+    }
 //
 //    @ApiOperation(value = "获取自定义字段列表", notes = "通过此接口来获取某实体类型自定义字段")
 //    @ApiImplicitParams({ //

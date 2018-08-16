@@ -6,6 +6,7 @@ package com.simbest.boot.uums.api.org;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
+import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.SimpleOrg;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
@@ -38,8 +39,8 @@ import java.util.Map;
 public class UumsSysOrgApi {
     private static final String USER_MAPPING = "/action/org/org/";
     private static final String SSO = "/sso";
-    @Value ("${app.uums.address}")
-    private String uumsAddress;
+    @Autowired
+    private AppConfig config;
     //private String uumsAddress="http://localhost:8080/uums";
     @Autowired
     private RsaEncryptor encryptor;
@@ -53,7 +54,7 @@ public class UumsSysOrgApi {
     public SimpleOrg findById( Integer id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findById"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findById"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("id", String.valueOf(id))
@@ -83,7 +84,7 @@ public class UumsSysOrgApi {
         String json0=JacksonUtils.obj2json(sysOrgMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(this.uumsAddress + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAll"+SSO+"?loginuser="+username2+"&appcode="+appcode
                 +"&page="+page+"&size="+size+"&direction="+direction+"&properties="+properties)
                 .json( json0 )
                 .asBean(JsonResponse.class );
@@ -99,7 +100,7 @@ public class UumsSysOrgApi {
     public SimpleOrg findListByOrgCode(String appcode,String orgCode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findListByOrgCode"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findListByOrgCode"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("orgCode", orgCode)
@@ -122,7 +123,7 @@ public class UumsSysOrgApi {
     public  List<SimpleOrg> findSonByParentOrgId( String appcode, String orgCode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findSonByParentOrgId"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findSonByParentOrgId"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("orgCode", orgCode)
@@ -149,7 +150,7 @@ public class UumsSysOrgApi {
     public List<SimpleOrg> findAllOrgByParentoCode (String appcode,String orgCode ) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findAllOrgByParentoCode"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findAllOrgByParentoCode"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("orgCode", orgCode)
@@ -176,7 +177,7 @@ public class UumsSysOrgApi {
     public SimpleOrg findParentBySon (String appcode,String orgCode ) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findParentBySon"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findParentBySon"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param("orgCode", orgCode)
@@ -198,7 +199,7 @@ public class UumsSysOrgApi {
     public SimpleOrg findRoot(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findRoot"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findRoot"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .asBean(JsonResponse.class);
@@ -219,7 +220,7 @@ public class UumsSysOrgApi {
     public List<SimpleOrg> findRootAndNext(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findRootAndNext"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findRootAndNext"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .asBean(JsonResponse.class);
@@ -244,7 +245,7 @@ public class UumsSysOrgApi {
     public SimpleOrg findOrgByAppCode(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findOrgByAppCode"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findOrgByAppCode"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "appCode",appcode )
@@ -266,7 +267,7 @@ public class UumsSysOrgApi {
     public List<SimpleOrg> findPOrgAndCityOrg(String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        JsonResponse response =  HttpClient.post(this.uumsAddress + USER_MAPPING + "findPOrgAndCityOrg"+SSO)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findPOrgAndCityOrg"+SSO)
                 .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .param( "appCode",appcode )

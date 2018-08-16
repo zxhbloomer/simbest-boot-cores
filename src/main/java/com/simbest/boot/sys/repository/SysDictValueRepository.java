@@ -1,5 +1,6 @@
 package com.simbest.boot.sys.repository;
 
+import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.sys.model.SysDictValue;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public interface SysDictValueRepository extends com.simbest.boot.base.repository.LogicRepository<SysDictValue, Integer>, com.simbest.boot.base.repository.SystemRepository<SysDictValue, Integer> {
+public interface SysDictValueRepository extends LogicRepository<SysDictValue, String> {
 
-    List<SysDictValue> findByParentId(Integer parentId);
+    List<SysDictValue> findByParentId(String parentId);
 
     List<SysDictValue> findByEnabled(Boolean enabled);
 
@@ -31,7 +32,7 @@ public interface SysDictValueRepository extends com.simbest.boot.base.repository
             " and d.dict_type=:dictType and dv.parent_id=:parentId"+
             " order by dv.display_order asc ";
     @Query (value = sql2,nativeQuery = true)
-    List<SysDictValue> findDictValue(@Param ("dictType") String dictType,@Param ("parentId")Integer parentId);
+    List<SysDictValue> findDictValue(@Param ("dictType") String dictType,@Param ("parentId")String parentId);
 
     /**
      *根据字典类型以及值的父类型来查询数据字典中的相应值name以及value的值
@@ -40,7 +41,7 @@ public interface SysDictValueRepository extends com.simbest.boot.base.repository
             " and d.dict_type=:dictType and dv.parent_id=:parentId"+
             " order by dv.display_order asc ";
     @Query (value = sql4,nativeQuery = true)
-    List<Map<String,String>> findDictValue2(@Param ("dictType") String dictType,@Param ("parentId")Integer parentId);
+    List<Map<String,String>> findDictValue2(@Param ("dictType") String dictType,@Param ("parentId")String parentId);
 
     /**
      * 查看数据字典的所有值
@@ -56,5 +57,5 @@ public interface SysDictValueRepository extends com.simbest.boot.base.repository
     String sql5 = " SELECT dv.* from sys_dict_value dv where dv.enabled=1 and dv.dict_type=:dictType and dv.parent_id=:parentId "+
             " order by case dv.display_order when null then 10000000 end,dv.display_order asc ";
     @Query (value = sql5,nativeQuery = true)
-    List<SysDictValue> findDictVlueByTypeAndParent(@Param( "dictType" ) String dictType,@Param( "parentId" ) Integer parentId);
+    List<SysDictValue> findDictVlueByTypeAndParent(@Param( "dictType" ) String dictType,@Param( "parentId" ) String parentId);
 }

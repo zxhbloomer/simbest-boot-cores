@@ -3,12 +3,14 @@
  */
 package com.simbest.boot.sys.model;
 
+import com.simbest.boot.base.annotations.EntityIdPrefix;
 import com.simbest.boot.base.model.LogicModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,10 +35,11 @@ import javax.persistence.SequenceGenerator;
 public class SysCustomFieldValue extends LogicModel {
 
     @Id
-    @Column(name = "id")
-    @SequenceGenerator(name = "sys_custom_field_value_seq", sequenceName = "sys_custom_field_value_seq")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "sys_custom_field_value_seq")
-    private Long id;
+    @Column(name = "id", length = 40)
+    @GeneratedValue(generator = "snowFlakeId")
+    @GenericGenerator(name = "snowFlakeId", strategy = "com.simbest.boot.util.distribution.id.SnowflakeId")
+    @EntityIdPrefix(prefix = "V") //主键前缀，此为可选项注解
+    private String id;
 
     //所属实体分类
     private String fieldClassify;

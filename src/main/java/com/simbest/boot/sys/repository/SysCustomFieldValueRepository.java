@@ -3,7 +3,7 @@
  */
 package com.simbest.boot.sys.repository;
 
-import com.simbest.boot.base.repository.BaseRepository;
+import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.sys.model.SysCustomFieldValue;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  * 时间: 2017/12/22  15:51
  */
 @Repository
-public interface SysCustomFieldValueRepository extends BaseRepository<SysCustomFieldValue, Long> {
+public interface SysCustomFieldValueRepository extends LogicRepository<SysCustomFieldValue, String> {
 
 }

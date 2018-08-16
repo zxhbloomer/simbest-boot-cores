@@ -4,8 +4,10 @@
 package com.simbest.boot.sys.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.simbest.boot.base.annotations.EntityIdPrefix;
 import com.simbest.boot.base.model.LogicModel;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -22,10 +24,11 @@ import javax.persistence.*;
 @Entity
 public class SysFile extends LogicModel {
     @Id
-    @Column(name = "id")
-    @SequenceGenerator (name = "sys_file_seq", sequenceName = "sys_file_seq")
-    @GeneratedValue(strategy = GenerationType.AUTO,generator = "sys_file_seq")
-    private Long id;
+    @Column(name = "id", length = 40)
+    @GeneratedValue(generator = "snowFlakeId")
+    @GenericGenerator(name = "snowFlakeId", strategy = "com.simbest.boot.util.distribution.id.SnowflakeId")
+    @EntityIdPrefix(prefix = "V") //主键前缀，此为可选项注解
+    private String id;
 
     //文件名称
     @Column(nullable = false, length = 200)
@@ -61,4 +64,7 @@ public class SysFile extends LogicModel {
     @Column(nullable = false, length = 500)
     @NonNull
     private String downLoadUrl;
+
+    //专门用于标识是否跟随应用，不跟随磁盘的文件
+    private Boolean isLocal;
 }

@@ -3,7 +3,12 @@
  */
 package com.simbest.boot.util.distribution.id;
 
+import com.simbest.boot.exceptions.IdGeneratorException;
+import com.simbest.boot.util.CodeGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * 用途：分布式ID生成器
@@ -13,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * 参考tweeter的snowflake
  */
 @Slf4j
+@Component
 public class IdGenerator {
 
     private final long workerId;
@@ -27,14 +33,25 @@ public class IdGenerator {
     private final long sequenceMask = -1L ^ -1L << this.sequenceBits;                 // 4095,111111111111,12位
     private long lastTimestamp = -1L;
 
-    private IdGenerator(long workerId) {
+    public static IdGenerator idWorker;
+
+    @PostConstruct
+    public void init() {
+        idWorker = new IdGenerator();
+    }
+
+    public IdGenerator(){
+        this(CodeGenerator.randomInt(1, 1000));
+    }
+
+    public IdGenerator(long workerId) {
         if (workerId > this.maxWorkerId || workerId < 0) {
             throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", this.maxWorkerId));
         }
         this.workerId = workerId;
     }
 
-    public synchronized long nextId() throws Exception {
+    public synchronized long nextId() {
         long timestamp = this.timeGen();
         if (this.lastTimestamp == timestamp) { // 如果上一个timestamp与新产生的相等，则sequence加一(0-4095循环); 对新的timestamp，sequence从0开始
             this.sequence = this.sequence + 1 & this.sequenceMask;
@@ -47,17 +64,17 @@ public class IdGenerator {
 
         if (timestamp < this.lastTimestamp) {
             log.error(String.format("clock moved backwards.Refusing to generate id for %d milliseconds", (this.lastTimestamp - timestamp)));
-            throw new Exception(String.format("clock moved backwards.Refusing to generate id for %d milliseconds", (this.lastTimestamp - timestamp)));
+            throw new IdGeneratorException(String.format("clock moved backwards.Refusing to generate id for %d milliseconds", (this.lastTimestamp - timestamp)));
         }
 
         this.lastTimestamp = timestamp;
         return timestamp - this.epoch << this.timestampLeftShift | this.workerId << this.workerIdShift | this.sequence;
     }
 
-    private static IdGenerator flowIdWorker = new IdGenerator(1);
-    public static IdGenerator getFlowIdWorkerInstance() {
-        return flowIdWorker;
-    }
+//    private static IdGenerator flowIdWorker = new IdGenerator(1);
+//    public static IdGenerator getFlowIdWorkerInstance() {
+//        return flowIdWorker;
+//    }
 
 
 
@@ -81,7 +98,7 @@ public class IdGenerator {
 
     public static void main(String[] args) throws Exception {
         log.debug(String.valueOf(timeGen()));
-        IdGenerator idWorker = IdGenerator.getFlowIdWorkerInstance();
+        IdGenerator idWorker = new IdGenerator();
         log.debug(String.valueOf(idWorker.nextId()));
         log.debug(String.valueOf(idWorker.nextId()));
     }

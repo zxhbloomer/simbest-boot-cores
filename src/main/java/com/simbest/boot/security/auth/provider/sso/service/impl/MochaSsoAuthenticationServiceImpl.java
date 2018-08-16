@@ -4,8 +4,10 @@
 package com.simbest.boot.security.auth.provider.sso.service.impl;
 
 import com.mochasoft.portal.encrypt.EncryptorUtil;
+import com.simbest.boot.config.AppConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,15 +24,15 @@ public class MochaSsoAuthenticationServiceImpl extends AbstractSsoAuthentication
 
     private final static Integer TIMEOUT = 1800;
 
-    @Value("${app.oa.portal.token}")
-    private String portalToken;
+    @Autowired
+    private AppConfig config;
 
     @Override
     public String decryptUsername(String username) {
         String decryptUsername = null;
         if(StringUtils.isNotEmpty(username)){
             try {
-                decryptUsername = EncryptorUtil.decode(portalToken, username, TIMEOUT);
+                decryptUsername = EncryptorUtil.decode(config.getMochaPortalToken(), username, TIMEOUT);
             } catch (Exception e) {
 //                Exceptions.printException(e);
                 log.warn("Use {} decrypt username {} to {} faied......", this.getClass().toString(), username, decryptUsername);

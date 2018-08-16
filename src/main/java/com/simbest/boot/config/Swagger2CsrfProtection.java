@@ -4,7 +4,7 @@
 package com.simbest.boot.config;
 
 import com.google.common.collect.ImmutableList;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
 @Component
 public class Swagger2CsrfProtection implements RequestMatcher {
 
-    @Value("${app.swagger.address}")
-    private String swaggerUrl;
+    @Autowired
+    private AppConfig config;
 
     private static final Pattern ALLOWED_METHODS =
             Pattern.compile("^(DELETE|PUT|HEAD|TRACE|OPTIONS)$");
@@ -37,7 +37,7 @@ public class Swagger2CsrfProtection implements RequestMatcher {
         final String referer = request.getHeader("Referer");
         if (remoteHost != null && referer != null
                 && LOCALHOST_PATTERNS.contains(remoteHost)
-                && swaggerUrl.equals(referer)) {
+                && config.getSwaggerUrl().equals(referer)) {
             return false;
         }
         // otherwise, CSRF is required

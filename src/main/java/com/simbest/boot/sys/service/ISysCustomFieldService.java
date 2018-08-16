@@ -3,21 +3,17 @@
  */
 package com.simbest.boot.sys.service;
 
-import com.simbest.boot.base.repository.Condition;
+import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.sys.model.SysCustomField;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 用途：实体自定义字段逻辑层
  * 作者: lishuyi
  * 时间: 2017/12/22  15:51
  */
-public interface ISysCustomFieldService {
+public interface ISysCustomFieldService extends ILogicService<SysCustomField, String> {
 
     /**
      * 获取系统有自定义字段的实体类型
@@ -26,16 +22,6 @@ public interface ISysCustomFieldService {
      */
     Map<String, String> getFieldClassifyMap();
 
-    Specification<SysCustomField> getSpecification(Condition conditions);
-
-    /**
-     * 查询某个自定义字段
-     *
-     * @param id 自定义字段Id
-     * @return
-     */
-    SysCustomField findById(Long id);
-
     /**
      * 查询某个自定义字段
      *
@@ -43,11 +29,5 @@ public interface ISysCustomFieldService {
      * @return
      */
     SysCustomField findByFieldClassify(String fieldClassify);
-
-    Page findAll(Specification<SysCustomField> conditions, PageRequest pageable);
-
-    void deleteById(Long id);
-
-    SysCustomField save(SysCustomField field);
 
 }
