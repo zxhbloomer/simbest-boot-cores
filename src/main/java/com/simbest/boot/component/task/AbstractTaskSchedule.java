@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Slf4j
 public abstract class AbstractTaskSchedule {
+
     public final static String CHECK_SUCCESS = "PASS";
 
     public final static String CHECK_FAILED = "FAILED";
@@ -30,10 +31,7 @@ public abstract class AbstractTaskSchedule {
         this.repository = repository;
     }
 
-    /**
-     * 需要子类主键调度器执行Scheduled
-     */
-    public void checkAndExecute() {
+    public void checkAndExecute(boolean writeLog) {
         if(appRuntime.getMyHost().equals(appRuntime.getMasterHost())
                 && appRuntime.getMyPort().equals(appRuntime.getMasterPort())) {
             log.debug("I'm master running {} on {}, i could execute the job", appRuntime.getMyHost(), appRuntime.getMyPort());
@@ -47,20 +45,29 @@ public abstract class AbstractTaskSchedule {
                 log.error("Execute taskName with {} failed.", this.getClass().getSimpleName());
                 Exceptions.printException(e);
             }
-            Long endTime = System.currentTimeMillis();
-            SysTaskExecutedLog log = SysTaskExecutedLog.builder()
-                    .taskName(this.getClass().getSimpleName())
-                    .hostname(appRuntime.getMyHost())
-                    .port(appRuntime.getMyPort())
-                    .durationTime(endTime - beginTime)
-                    .content(StringUtils.substring(content, 0, 2000))
-                    .executeFlag(executeFlag)
-                    .build();
-            repository.save(log);
+            if(writeLog) {
+                Long endTime = System.currentTimeMillis();
+                SysTaskExecutedLog log = SysTaskExecutedLog.builder()
+                        .taskName(this.getClass().getSimpleName())
+                        .hostname(appRuntime.getMyHost())
+                        .port(appRuntime.getMyPort())
+                        .durationTime(endTime - beginTime)
+                        .content(StringUtils.substring(content, 0, 2000))
+                        .executeFlag(executeFlag)
+                        .build();
+                repository.save(log);
+            }
         } else {
             log.debug("Master running {} on {}, I'm running {} on {}, I couldn't execute the job",
                     appRuntime.getMasterHost(), appRuntime.getMasterPort(), appRuntime.getMyHost(), appRuntime.getMyPort());
         }
+    }
+
+    /**
+     * 需要子类主键调度器执行Scheduled
+     */
+    public void checkAndExecute() {
+        checkAndExecute(true);
     }
 
     /**

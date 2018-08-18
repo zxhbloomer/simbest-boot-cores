@@ -205,7 +205,7 @@ public class SysDictValueController extends LogicController<SysDictValue,String>
         }
         dictValue.setParentId(dictValue.getId());
         dictValue.setId(null);
-        SysDictValue newSysDictValue = sysDictValueService.save(dictValue);
+        SysDictValue newSysDictValue = sysDictValueService.insert(dictValue);
         return JsonResponse.defaultSuccessResponse();
     }
 

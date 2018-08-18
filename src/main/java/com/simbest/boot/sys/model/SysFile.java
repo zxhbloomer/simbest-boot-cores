@@ -52,12 +52,15 @@ public class SysFile extends LogicModel {
     private Long fileSize;
 
     //归属流程
+    @Column
     private String pmInsType;
 
     //归属流程ID
+    @Column
     private String pmInsId;
 
     //归属流程区块
+    @Column
     private String pmInsTypePart;
 
     //文件下载URL
@@ -65,6 +68,14 @@ public class SysFile extends LogicModel {
     @NonNull
     private String downLoadUrl;
 
-    //专门用于标识是否跟随应用，不跟随磁盘的文件
-    private Boolean isLocal;
+    //专门用于标识是否跟随应用，不跟随云存储的文件
+    @Column
+    private Boolean isLocal = false;
+
+    @Column(nullable = false, length = 500)
+    @JsonIgnore //隐藏不对外暴露内部路径
+    private String backupPath;
+
+    @Column
+    private Boolean isBackup = false;
 }

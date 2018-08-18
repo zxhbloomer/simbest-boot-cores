@@ -10,11 +10,13 @@ import com.simbest.boot.base.annotations.ExcelVOAttribute;
 import com.simbest.boot.base.exception.Exceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -91,7 +93,13 @@ public class ObjectUtil extends org.apache.commons.lang3.ObjectUtils {
         try {
             Field id = getEntityIdField(obj);
             id.setAccessible(true);
-            return id.get(obj);
+            Object idValue = id.get(obj);
+            if(null != idValue && idValue instanceof String){
+                if(StringUtils.isEmpty(idValue.toString())){
+                    idValue = null;
+                }
+            }
+            return idValue;
         } catch (IllegalAccessException e) {
             Exceptions.printException(e);
         }
@@ -177,6 +185,21 @@ public class ObjectUtil extends org.apache.commons.lang3.ObjectUtils {
             }
         }
         return indicateField;
+    }
+
+    /**
+     * 获取被Transient标注的非持久化字段
+     * @param obj
+     * @return
+     */
+    public static Set<Field> getEntityTransientField(Object obj) {
+        Set<Field> fields = Sets.newHashSet();
+        for (Field field : getAllFields(obj.getClass())) {
+            if (field.isAnnotationPresent(Transient.class)) {
+                fields.add(field);
+            }
+        }
+        return fields;
     }
 
     /**

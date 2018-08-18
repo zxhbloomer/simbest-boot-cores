@@ -28,9 +28,10 @@ public class RedisSessionConfiguration {
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SECURITYID"); // <1>
-        //如果application.properties设置spring.session.cookie.path，以设置为准，通常为/，不设置则默认为应用context
-        if(StringUtils.isNotEmpty(config.getCookiePath()))
-            serializer.setCookiePath(config.getCookiePath()); // <2>
+        // 目前设计不能设置，否则导致不同应用相同Cookie在检查Session到期时间时报错
+        // Failed to deserialize object type; nested exception is java.lang.ClassNotFoundException: com.simbest.boot.uums.role.model.SysRole
+//        if(StringUtils.isNotEmpty(config.getCookiePath()))
+//            serializer.setCookiePath(config.getCookiePath()); // <2>
         serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // <3>
         return serializer;
     }

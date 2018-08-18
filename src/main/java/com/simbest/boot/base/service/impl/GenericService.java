@@ -195,10 +195,12 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
      */
     @Override
     @Transactional
-    public T insert ( T o ) {
-        if(null == ObjectUtil.getEntityIdVaue(o)) {
-            log.debug("@Generic Repository Service create new object: " + o);
-            return genericRepository.save(o);
+    public T insert ( T source ) {
+        if(null == ObjectUtil.getEntityIdVaue(source)) {
+            log.debug("@Generic Repository Service create new object: " + source);
+            T target = genericRepository.save(source);
+            CustomBeanUtil.copyTransientProperties(source,target);
+            return target;
         } else {
             throw new InsertExistObjectException();
         }
@@ -206,13 +208,15 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
 
     @Override
     @Transactional
-    public T update ( T o ) {
-        PK pk = (PK)ObjectUtil.getEntityIdVaue(o);
+    public T update ( T source ) {
+        PK pk = (PK)ObjectUtil.getEntityIdVaue(source);
         if(null != pk) {
-            log.debug("@Generic Repository Service update a already object: " + o);
+            log.debug("@Generic Repository Service update a already object: " + source);
             T target = findById(pk);
-            CustomBeanUtil.copyPropertiesIgnoreNull(o, target);
-            return genericRepository.save(target);
+            CustomBeanUtil.copyPropertiesIgnoreNull(source, target);
+            T newTarget = genericRepository.save(target);
+            CustomBeanUtil.copyTransientProperties(target,newTarget);
+            return newTarget;
         } else {
             throw new UpdateNotExistObjectException();
         }

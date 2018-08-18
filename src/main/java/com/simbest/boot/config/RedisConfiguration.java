@@ -73,6 +73,8 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         log.info("setting spring session with redis timeout {} seconds", config.getRedisMaxInactiveIntervalInSeconds());
         sessionRepository.setDefaultMaxInactiveInterval(config.getRedisMaxInactiveIntervalInSeconds());
         // 注释以下代码，配合RedisSessionConfiguration的CookiePath=/可以实现同域名应用间Cookie共享Session
+        // 而目前设计必须设置，否则导致不同应用相同Cookie在检查Session到期时间时报错
+        // Failed to deserialize object type; nested exception is java.lang.ClassNotFoundException: com.simbest.boot.uums.role.model.SysRole
         log.info("setting spring session with redis namespace {} ", config.getRedisNamespace());
         sessionRepository.setRedisKeyNamespace(config.getRedisNamespace());
     }

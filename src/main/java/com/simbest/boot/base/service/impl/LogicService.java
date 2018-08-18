@@ -4,6 +4,7 @@ import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.ILogicService;
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.exceptions.InsertExistObjectException;
 import com.simbest.boot.exceptions.UpdateNotExistObjectException;
 import com.simbest.boot.util.CustomBeanUtil;
 import com.simbest.boot.util.ObjectUtil;
@@ -116,22 +117,30 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
 
     @Override
     @Transactional
-    public T insert ( T o) {
-        log.debug("@Logic Repository Service insert object: " + o);
-        wrapCreateInfo( o );
-        return logicRepository.save(o);
+    public T insert ( T source) {
+        if(null == ObjectUtil.getEntityIdVaue(source)) {
+            log.debug("@Logic Repository Service create new object: " + source);
+            wrapCreateInfo(source);
+            T target = logicRepository.save(source);
+            CustomBeanUtil.copyTransientProperties(source,target);
+            return target;
+        } else {
+            throw new InsertExistObjectException();
+        }
     }
 
     @Override
     @Transactional
-    public T update ( T o) {
-        PK pk = (PK) ObjectUtil.getEntityIdVaue(o);
+    public T update ( T source) {
+        PK pk = (PK)ObjectUtil.getEntityIdVaue(source);
         if(null != pk) {
-            log.debug("@Logic Repository Service update a already object: " + o);
+            log.debug("@Logic Repository Service update a already object: " + source);
             T target = findById(pk);
-            CustomBeanUtil.copyPropertiesIgnoreNull(o, target);
+            CustomBeanUtil.copyPropertiesIgnoreNull(source, target);
             wrapUpdateInfo( target );
-            return logicRepository.save(target);
+            T newTarget = logicRepository.save(target);
+            CustomBeanUtil.copyTransientProperties(target,newTarget);
+            return newTarget;
         } else {
             throw new UpdateNotExistObjectException();
         }

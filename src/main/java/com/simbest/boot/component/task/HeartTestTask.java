@@ -5,7 +5,6 @@ package com.simbest.boot.component.task;
 
 import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.component.distributed.lock.AppRuntimeMaster;
-import com.simbest.boot.component.distributed.lock.DistributedRedisLock;
 import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.repository.SysTaskExecutedLogRepository;
@@ -14,7 +13,6 @@ import com.simbest.boot.util.server.HostUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -46,7 +44,7 @@ public class HeartTestTask extends AbstractTaskSchedule {
 
     @Scheduled(cron = "${app.task.heart.test.job}")
     public void checkAndExecute() {
-        super.checkAndExecute();
+        super.checkAndExecute(false);
     }
 
     @Override

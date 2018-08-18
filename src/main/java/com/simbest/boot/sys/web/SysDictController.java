@@ -11,10 +11,13 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 用途：数据字典控制器
@@ -158,7 +161,7 @@ public class SysDictController extends LogicController<SysDict, String> {
      */
     @PostMapping(value = "/findDictTree")
     public JsonResponse findDictTree() {
-        List<SysDict> roots = sysDictService.findByAll();
+        Iterable<SysDict> roots = sysDictService.findAllNoPage();
         return JsonResponse.success( roots);
     }
 
@@ -177,7 +180,7 @@ public class SysDictController extends LogicController<SysDict, String> {
         }
         dict.setParentId(dict.getId());
         dict.setId(null);
-        SysDict newDict = sysDictService.save(dict);
+        SysDict newDict = sysDictService.insert(dict);
         return JsonResponse.defaultSuccessResponse();
     }
 

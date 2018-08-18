@@ -153,7 +153,8 @@ public class AppFileUtil {
                     filePath = path.toString();
                     break;
                 case fastdfs:
-                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()), getFileSuffix(multipartFile.getOriginalFilename()));
+                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()),
+                            multipartFile.getOriginalFilename(), getFileSuffix(multipartFile.getOriginalFilename()));
                     break;
             }
             SysFile sysFile = SysFile.builder().fileName(multipartFile.getOriginalFilename()).fileType(getFileSuffix(multipartFile.getOriginalFilename()))
