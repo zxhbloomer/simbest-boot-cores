@@ -48,19 +48,29 @@ public enum MessageEnum {
 	 */
     MB000002("正在${operation}，请勿重复操作！"),
 
-	/**
-	 * 上传失败，请重新上传!
-	 */
-    MB000003("${fileName} 上传失败，请确认后重新上传！"  ),
+    /**
+     * 上传失败，请重新上传!
+     */
+    MB000003("${fileName} 上传失败，请确认后重新上传！"),
+
+    /**
+     * 文件导入成功！
+     */
+    MB000004("文件导入成功！"),
+
+    /**
+     * 文件导入失败！
+     */
+    MB000005("文件导入失败！"),
 
 	/**
 	 * @param companyName	        : 公司名称。
 	 * @param departmentName		: 部门名称。
-	 * @param truename			    : 审批人姓名。
+	 * @param trueName			    : 审批人姓名。
      * @param positionName			: 职务名称。
-	 * @消息内容 工单已流转至${companyName}${departmentName}-{truename}${positionName}进行办理。
+	 * @消息内容 工单已流转至${companyName}${departmentName}-${trueName}${positionName}进行办理。
 	 */
-    MW000001("工单已流转至${companyName}${departmentName}-{truename}${positionName}进行办理"),
+    MW000001("工单已流转至${companyName}${departmentName}-${trueName}${positionName}进行办理"),
 
 	/**
 	 * 流程提交失败。
@@ -173,10 +183,10 @@ public enum MessageEnum {
 	public static void main( String... s) {
 		System.out.println(MessageEnum.MS000000.getMessage());
 		Map<String, String> paramMap = Maps.newHashMap();
-		//${companyName}${departmentName}-{truename}${positionName}
+		//${companyName}${departmentName}-{trueName}${positionName}
 		paramMap.put("companyName", "郑州分公司");
         paramMap.put("departmentName", "人力资源部");
-        paramMap.put("truename", "毛然");
+        paramMap.put("trueName", "毛然");
         paramMap.put("positionName", "经理");
 		System.out.println(MessageEnum.MW000001.getMessage(paramMap));
 		System.out.println(MessageEnum.MB000002.getMessage("文件上传"));
