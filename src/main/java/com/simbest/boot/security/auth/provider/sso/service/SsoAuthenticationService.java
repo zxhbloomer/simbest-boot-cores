@@ -3,9 +3,7 @@
  */
 package com.simbest.boot.security.auth.provider.sso.service;
 
-import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
-import org.springframework.security.core.Authentication;
 
 /**
  * 用途：单点登录验证服务
@@ -26,6 +24,6 @@ public interface SsoAuthenticationService {
      * @param authentication
      * @return
      */
-    SsoUsernameAuthentication attemptAuthentication(Authentication authentication, IAuthService.KeyType keyType);
+    SsoUsernameAuthentication attemptAuthentication(SsoUsernameAuthentication authentication);
 
 }

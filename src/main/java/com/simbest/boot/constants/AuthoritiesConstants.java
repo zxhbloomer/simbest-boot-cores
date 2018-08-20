@@ -25,9 +25,15 @@ public class AuthoritiesConstants {
 
     public static final String SSO_UUMS_PASSWORD = "password";
 
+    public static final String SSO_API_KEYWORD = "keyword";
+
+    public static final String SSO_API_KEYTYPE = "keytype";
+
     public static final String SSO_API_USERNAME = "loginuser";
 
     public static final String SSO_API_APP_CODE = "appcode";
+
+    public static final String SSO_API_UID = "uid";
 
     public static final int PASSWORD_SALT_LENGTH = 12;
 

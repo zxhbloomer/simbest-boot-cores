@@ -4,12 +4,15 @@
 package com.simbest.boot.security.auth.provider.sso.token;
 
 
+import com.simbest.boot.security.IUser;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+import java.security.Principal;
 import java.util.Collection;
 
 /**
@@ -25,12 +28,6 @@ public class SsoUsernameAuthentication extends AbstractAuthenticationToken {
     @Setter @Getter
     private Object credentials; //appcode
 
-    public SsoUsernameAuthentication(Object principal, Object credentials){
-        this(AuthorityUtils.NO_AUTHORITIES);
-        this.principal = principal;
-        this.credentials = credentials;
-    }
-
     /**
      * Creates a token with the supplied array of authorities.
      *
@@ -41,10 +38,32 @@ public class SsoUsernameAuthentication extends AbstractAuthenticationToken {
         super(authorities);
     }
 
-    public SsoUsernameAuthentication(Object principal, Collection<? extends GrantedAuthority> authorities) {
-        super(authorities);
+    /**
+     * 认证前
+     * @param principal UsernamePrincipal 或者 KeyTypePrincipal
+     * @param credentials
+     */
+    public SsoUsernameAuthentication(Principal principal, Object credentials){
+        this(AuthorityUtils.NO_AUTHORITIES);
         this.principal = principal;
+        this.credentials = credentials;
+    }
+
+    /**
+     * 认证后
+     * @param iuser
+     * @param authorities
+     */
+    public SsoUsernameAuthentication(IUser iuser, Object credentials, Collection<? extends GrantedAuthority> authorities) {
+        super(authorities);
+        this.principal = iuser;
+        this.credentials = credentials;
         super.setAuthenticated(true); // must use super, as we override
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }

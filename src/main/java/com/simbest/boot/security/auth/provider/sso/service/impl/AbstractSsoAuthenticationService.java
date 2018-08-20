@@ -8,13 +8,16 @@ import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.IPermission;
 import com.simbest.boot.security.IUser;
 import com.simbest.boot.security.auth.provider.sso.service.SsoAuthenticationService;
+import com.simbest.boot.security.auth.provider.sso.token.KeyTypePrincipal;
 import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.auth.provider.sso.token.UsernamePrincipal;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
+import java.security.Principal;
 import java.util.Set;
 
 /**
@@ -35,20 +38,19 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
      * @return
      */
     @Override
-    public SsoUsernameAuthentication attemptAuthentication(Authentication authentication, IAuthService.KeyType keyType) {
+    public SsoUsernameAuthentication attemptAuthentication(SsoUsernameAuthentication authentication) {
         log.debug("Retrive username from request with: {}, appcode with {}", authentication.getPrincipal(), authentication.getCredentials());
-        if(null != authentication.getPrincipal() && null != authentication.getCredentials()
-                && StringUtils.isNotEmpty(authentication.getPrincipal().toString())
-                && StringUtils.isNotEmpty(authentication.getCredentials().toString())){
-
-            String username = decryptUsername(authentication.getPrincipal().toString());
-            log.debug("Actually get username from request with: {}, appcode with {}", username, authentication.getCredentials().toString());
-            if(StringUtils.isNotEmpty(username)) {
-                return ssoAuthentication(username, authentication.getCredentials().toString(), keyType);
+        if(null != authentication.getPrincipal() && null != authentication.getCredentials()){
+            String keyword = decryptUsername(((Principal)authentication.getPrincipal()).getName());
+            log.debug("Actually get username from request with: {}, appcode with {}", keyword, authentication.getCredentials().toString());
+            if(StringUtils.isNotEmpty(keyword)) {
+                return attemptAuthentication(keyword, authentication);
             } else{
+                log.warn("-_- I am {} decrypt {} failed", this.getClass().getSimpleName(), authentication.toString());
                 return null;
             }
         }else{
+            log.error(">_< Want use sso authenticate, but something is null");
             return null;
         }
     }
@@ -59,13 +61,20 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
      * @param appcode
      * @return
      */
-    public SsoUsernameAuthentication ssoAuthentication(String username, String appcode, IAuthService.KeyType keyType) {
-        log.debug("Try to check user {} access app {}.", username, appcode);
+    public SsoUsernameAuthentication attemptAuthentication(String keyword, SsoUsernameAuthentication authentication) {
+        log.debug("Try to check user {} access app {}.", keyword, authentication.getCredentials());
         SsoUsernameAuthentication token = null;
         try {
-            IUser authUser = authService.findByKey(username, keyType);
-            log.debug("Login user is {}", authUser.toString());
+            IUser authUser = null;
+            if(authentication.getPrincipal() instanceof UsernamePrincipal){
+                authUser = authService.findByKey(keyword, IAuthService.KeyType.username);
+            } else if (authentication.getPrincipal() instanceof KeyTypePrincipal){
+                authUser = authService.findByKey(keyword, ((KeyTypePrincipal)authentication.getPrincipal()).getKeyType());
+            }
+            log.debug("Login user is {}", authUser);
             if(null != authUser) {
+                String username = authUser.getUsername();
+                String appcode = authentication.getCredentials().toString();
                 if(authService.checkUserAccessApp(username, appcode)) {
                     log.debug("Check user {} access app {} sucessfully....", username, appcode);
                     //追加权限
@@ -75,11 +84,11 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
                         authUser.addAppPermissions(appPermission);
                         authUser.addAppAuthorities(appPermission);
                     }
-                    token = new SsoUsernameAuthentication(authUser, authUser.getAuthorities());
+                    token = new SsoUsernameAuthentication(authUser, authentication.getCredentials(), authUser.getAuthorities());
                 }
             }
         } catch (Exception e){
-            log.debug("SSO authentication failed from request with user {} for app {}", username, appcode);
+            log.debug("SSO authentication failed from request with user {} for app {}", keyword, authentication.getCredentials());
             Exceptions.printException(e);
         }
         return token;

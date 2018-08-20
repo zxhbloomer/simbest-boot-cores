@@ -457,11 +457,10 @@ public class UumsSysUserinfoApi {
      * @return
      */
     public SimpleUser findByKey(String keyword,IAuthService.KeyType keyType,String appcode) {
-        String loginUser = SecurityUtils.getCurrentUserName();
-        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findByKey"+SSO+"?keyType="+keyType)
-                .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(loginUser))
-                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
-                .param("keyword",keyword)
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findByKey"+SSO)
+                .param(AuthoritiesConstants.SSO_API_KEYWORD, encryptor.encrypt(keyword))
+                .param(AuthoritiesConstants.SSO_API_KEYTYPE, keyType.name())
+                .param(AuthoritiesConstants.SSO_API_APP_CODE, appcode)
                 .asBean(JsonResponse.class);
         if(response==null){
             log.error("--response对象为空!--");

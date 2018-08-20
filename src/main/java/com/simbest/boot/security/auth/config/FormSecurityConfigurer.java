@@ -44,7 +44,7 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
-@Order(10)
+@Order(100)
 public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Autowired

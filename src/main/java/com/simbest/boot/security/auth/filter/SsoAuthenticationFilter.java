@@ -4,8 +4,11 @@
 package com.simbest.boot.security.auth.filter;
 
 import com.simbest.boot.constants.AuthoritiesConstants;
+import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.provider.sso.service.SsoAuthenticationService;
+import com.simbest.boot.security.auth.provider.sso.token.KeyTypePrincipal;
 import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
+import com.simbest.boot.security.auth.provider.sso.token.UsernamePrincipal;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +21,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 
 /**
  * 用途：单点登录拦截器
@@ -35,29 +39,33 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
         super(requiresAuthenticationRequestMatcher);
     }
 
-    protected String obtainUsername(HttpServletRequest request) {
-        String loginuser = request.getParameter(AuthoritiesConstants.SSO_API_USERNAME);
-        if(StringUtils.isEmpty(loginuser)){
-            // for ha.cmcc portal
-            loginuser = request.getParameter("uid");
+    protected Principal obtainPrincipal(HttpServletRequest request) {
+        Principal principal = null;
+        if(StringUtils.isNotEmpty(request.getParameter(AuthoritiesConstants.SSO_API_USERNAME))){
+            principal = UsernamePrincipal.builder().username(request.getParameter(AuthoritiesConstants.SSO_API_USERNAME)).build();
+        } else if(StringUtils.isNotEmpty(request.getParameter(AuthoritiesConstants.SSO_API_UID))){
+            principal = UsernamePrincipal.builder().username(request.getParameter(AuthoritiesConstants.SSO_API_UID)).build();
+        } else if(StringUtils.isNotEmpty(request.getParameter(AuthoritiesConstants.SSO_API_KEYWORD))){
+            principal = KeyTypePrincipal.builder().keyword(request.getParameter(AuthoritiesConstants.SSO_API_KEYWORD))
+                    .keyType(IAuthService.KeyType.valueOf(request.getParameter(AuthoritiesConstants.SSO_API_KEYTYPE))).build();
         }
-        return loginuser;
+        return principal;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        String loginuser = obtainUsername(request);
+        Principal principal = obtainPrincipal(request);
         String appcode = request.getParameter(AuthoritiesConstants.SSO_API_APP_CODE);
-        log.debug("Client will sso access {} with user {} and appcode {}", request.getRequestURI(), loginuser, appcode);
-        if (StringUtils.isEmpty(loginuser) || StringUtils.isEmpty(appcode)) {
+        log.debug("Client will sso access {} with user {} and appcode {}", request.getRequestURI(), principal.getName(), appcode);
+        if (null == principal || StringUtils.isEmpty(appcode)) {
             throw new BadCredentialsException(
-                    "Authentication principal can not be invalidate loginuser: " + loginuser + " and appcode: " + appcode);
+                    "Authentication principal can not be invalidate loginuser: " + principal.getName() + " and appcode: " + appcode);
         }
 
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (authenticationIsRequired(existingAuth, loginuser)) {
-            SsoUsernameAuthentication ssoUsernameAuthentication = new SsoUsernameAuthentication(loginuser, appcode);
+        if (authenticationIsRequired(existingAuth, principal)) {
+            SsoUsernameAuthentication ssoUsernameAuthentication = new SsoUsernameAuthentication(principal, appcode);
             return this.getAuthenticationManager().authenticate(ssoUsernameAuthentication);
         }
         return existingAuth;
@@ -69,11 +77,11 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
      * @param username 用户名
      * @return true/false
      */
-    private boolean authenticationIsRequired(Authentication existingAuth, String username) {
+    private boolean authenticationIsRequired(Authentication existingAuth, Principal principal) {
+        String decryptName = null;
         for(SsoAuthenticationService authService : ssoAuthenticationRegister.getSsoAuthenticationService()) {
-            String decryptUsername = authService.decryptUsername(username);
-            if(StringUtils.isNotEmpty(decryptUsername)) {
-                username = decryptUsername;
+            decryptName = authService.decryptUsername(principal.getName());
+            if(StringUtils.isNotEmpty(decryptName)) {
                 break;
             }
         }
@@ -81,7 +89,7 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
         if (existingAuth == null || !existingAuth.isAuthenticated()) {
             return true;
         } else if (existingAuth instanceof SsoUsernameAuthentication
-                && !existingAuth.getName().equals(username)) {
+                && !existingAuth.getName().equals(decryptName)) {
             return true;
         }
         return false;
