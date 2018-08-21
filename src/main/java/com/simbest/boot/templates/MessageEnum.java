@@ -16,21 +16,30 @@ public enum MessageEnum {
 
 	/**
 	 * 消息分类：字母+数字的格式
-     *      字母部分含义：第一个字母M 代码是消息提示，第二字母S:表示系统级别上的提示；W:表示所属流程操作提示；B:表示所属业务操作提示；
+     *      字母部分含义：
+     *          第一个字母
+     *              M 代码是消息提示，
+     *          第二字母
+     *              S:表示系统级别上的提示；
+     *              W:表示所属流程操作提示；
+     *              B:表示所属业务操作提示；
+     *              T:表示是模板类的消息提示
      *      数字部门含义：按照功能顺序排列
 	 * 
 	 * <pre>
      * 所属模块/流程：
      * MW000001("操作${content}失败!")
-     *
 	 * </pre>
      *
 	 * <pre>
 	 * 所属模块/业务：
      * MB000001("操作成功!")
+     * </pre>
      *
-     *
-	 * </pre>
+     * <pre>
+     * 所属模块/模板类提示信息：
+     * MT000001("协作配合:您收到汪祥向您发送的"关于台前分公司拆除楼顶消防水箱的请示"的协作配合事件，请及时处理。")
+     * </pre>
 	 */
 
     /**
@@ -75,7 +84,16 @@ public enum MessageEnum {
 	/**
 	 * 流程提交失败。
 	 */
-    MW000002("流程提交失败！");
+    MW000002("流程提交失败！"),
+
+    /**
+     * @param appName	            : 系统名称。
+     * @param fromUser		        : 发送人。
+     * @param itemSubject			: 事项主题。
+     * @消息内容 协作配合:您收到汪祥向您发送的"关于台前分公司拆除楼顶消防水箱的请示"的事件，请及时处理。
+     */
+    MT000001("${appName}:您收到${fromUser}向您发送的\"${itemSubject}\"的${appName}事件，请及时处理。");
+
 
 
     private String message;
@@ -191,6 +209,11 @@ public enum MessageEnum {
 		System.out.println(MessageEnum.MW000001.getMessage(paramMap));
 		System.out.println(MessageEnum.MB000002.getMessage("文件上传"));
 		System.out.println(MessageEnum.values().length + " 个消息模板");
+        paramMap = Maps.newHashMap();
+        paramMap.put("appName", "协作配合");
+        paramMap.put("fromUser", "汪祥");
+        paramMap.put("itemSubject", "关于台前分公司拆除楼顶消防水箱的请示");
+        System.out.println(MessageEnum.MT000001.getMessage(paramMap));
 		System.out.println(getObjStrForJS());
     }
 }
