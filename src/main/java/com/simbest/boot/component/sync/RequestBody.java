@@ -22,6 +22,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class RequestBody<T> {
 
+    public static final String REQUEST_TOKEN = "OaApi";
+
     //请求方IP
     @NonNull
     private String clientIp;
