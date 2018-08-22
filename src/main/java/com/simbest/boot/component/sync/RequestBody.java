@@ -63,6 +63,10 @@ public class RequestBody<T> {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date requestTime;
 
+    //请求密码，采用Sha1-加密
+    @NonNull
+    private String requestToken;
+
     //请求数据
     @NonNull
     private T data;
