@@ -63,11 +63,15 @@ public class FastDfsClient {
     }
 
     public static String uploadFile(byte[] fileContent, String fileName, String extName) throws Exception {
+        String fileLength = String.valueOf(fileContent.length);
+        log.debug("FastDfsClient upload fileName {} extName {} with length {}", fileLength, fileName, extName);
         NameValuePair[] metas = new NameValuePair[3];
         metas[0] = new NameValuePair("fileName", fileName);
         metas[1] = new NameValuePair("extName", extName);
-        metas[2] = new NameValuePair("fileSize", String.valueOf(fileContent.length));
-        return uploadFile(fileContent, extName, metas);
+        metas[2] = new NameValuePair("fileSize", fileLength);
+        String result = uploadFile(fileContent, extName, metas);
+        log.debug("FastDfsClient upload result is {}", result);
+        return result;
     }
 
     /**
@@ -179,9 +183,10 @@ public class FastDfsClient {
         FastDfsClient.storageClient = storageClient;
 
         //test upload
-        File initialFile = new File("C:\\Users\\lenovo\\Desktop\\日志.txt");
+        File initialFile = new File("C:\\Users\\lenovo\\Desktop\\RAC安装.txt");
         InputStream targetStream = new FileInputStream(initialFile);
-        String uploadResult = FastDfsClient.uploadFile(IOUtils.toByteArray(targetStream), "日志.txt", "txt");
+        String uploadResult = FastDfsClient.uploadFile(IOUtils.toByteArray(targetStream),
+                AppFileUtil.getFileName(initialFile.getAbsolutePath()), AppFileUtil.getFileSuffix(initialFile.getCanonicalPath()));
         System.out.println(uploadResult);
 
         //test query

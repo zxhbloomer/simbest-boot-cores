@@ -320,17 +320,17 @@ public class RsaEncryptor extends AbstractEncryptor {
     }
 
     public static void main(String[] args) throws Exception {
-        RsaEncryptor util = new RsaEncryptor();
-        String public_key = util.getKeyFromFile("E:\\01_Work\\10_OA\\hacmcc\\01-项目库\\01-统一信息平台\\02-代码库\\04-普元电子流应用\\simbest-boot-uums\\src\\main\\resources\\certificate\\rsa\\rsa_public_key.pem");
-        String private_key = util.getKeyFromFile("E:\\01_Work\\10_OA\\hacmcc\\01-项目库\\01-统一信息平台\\02-代码库\\04-普元电子流应用\\simbest-boot-uums\\src\\main\\resources\\certificate\\rsa\\pkcs8_private_key.pem");
-        util.loadPublicKey(public_key);
-        util.loadPrivateKey(private_key);
-        Md5Encryptor  encryptor = new Md5Encryptor();
-        String md5 = encryptor.encryptSource("123456");
+        RsaEncryptor rsaEncryptor = new RsaEncryptor();
+        String public_key = rsaEncryptor.getKeyFromFile("certificate/rsa/rsa_public_key.pem");
+        String private_key = rsaEncryptor.getKeyFromFile("certificate/rsa/pkcs8_private_key.pem");
+        rsaEncryptor.loadPublicKey(public_key);
+        rsaEncryptor.loadPrivateKey(private_key);
 
-        String code = util.encrypt(md5);
+        String source = "hanhailing";
+        String code = rsaEncryptor.encrypt(source);
         System.out.println("###########################");
         System.out.println(code);
-        System.out.println(util.decrypt("k9wOcGK8onngJNX4XEJcVgMWJoebU/IsV/qDFNMdhr362vvNBl6vc+hgo4R4M4yhOZvribxmHmbHLSGEY/cN0X8+VaEKnYFUD2Y0GV6xKdSHvm8IH241D2Zmcoyo/6UZzC2VuEEUUsE1Pu8zjR1cLVIVCmmrt8wnT2Om3uT74/A="));
+        System.out.println(rsaEncryptor.decryptCode(code));
+
     }
 }

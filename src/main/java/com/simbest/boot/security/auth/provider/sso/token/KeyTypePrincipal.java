@@ -29,6 +29,6 @@ public class KeyTypePrincipal implements Principal, Serializable {
 
     @Override
     public String getName() {
-        return null;
+        return keyword;
     }
 }

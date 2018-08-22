@@ -7,7 +7,9 @@ import com.simbest.boot.constants.ApplicationConstants;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
@@ -29,6 +31,8 @@ public class SuccessLogoutHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
         log.debug("Logout Sucessfull with Principal: " + authentication);
+        request.logout();
+        new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(request, response, authentication);
         response.setStatus(HttpServletResponse.SC_OK);
         request.getRequestDispatcher(ApplicationConstants.LOGIN_PAGE).forward(request, response);
     }

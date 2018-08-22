@@ -48,7 +48,7 @@ public class MultiHttpSecurityConfig {
     private UumsHttpValidationAuthenticationProvider httpValidationAuthenticationProvider;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder myBCryptPasswordEncoder() {
         // 默认密码加密长度12
         // 参考：http://zhjwpku.com/2017/11/30/bcrypt-in-spring-security.html
         return new BCryptPasswordEncoder(AuthoritiesConstants.PASSWORD_SALT_LENGTH);
@@ -58,7 +58,7 @@ public class MultiHttpSecurityConfig {
     public AuthenticationProvider jdbcAuthenticationProvider() {
         DaoAuthenticationProvider impl = new DaoAuthenticationProvider();
         impl.setUserDetailsService(authService);
-        impl.setPasswordEncoder(passwordEncoder());
+        impl.setPasswordEncoder(myBCryptPasswordEncoder());
         impl.setHideUserNotFoundExceptions(true);
         return impl;
     }

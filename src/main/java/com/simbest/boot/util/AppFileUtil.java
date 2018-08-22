@@ -75,6 +75,17 @@ public class AppFileUtil {
     }
 
     /**
+     * 根据路径返回文件名，如：http://aaa/bbb.jpg C:/aaa/abc.jpg 返回abc.jpg
+     *
+     * @param pathToName
+     * @return
+     */
+    public static String getFileName(String pathToName) {
+        Assert.notNull(pathToName, "File name can not empty!");
+        return FilenameUtils.getName(pathToName);
+    }
+
+    /**
      * 根据路径返回文件名，如：http://aaa/bbb.jpg C:/aaa/abc.jpg 返回abc
      *
      * @param pathToName
@@ -88,24 +99,15 @@ public class AppFileUtil {
     /**
      * 根据路径返回文件后缀，如：http://aaa/bbb.jpg C:/aaa/abc.jpg 返回jpg
      *
-     * @param fileName hello.doc
-     * @return doc
+     * @param fileName
+     * @return
      */
     public static String getFileSuffix(String pathToName) {
         Assert.notNull(pathToName, "File name can not empty!");
         return FilenameUtils.getExtension(pathToName);
     }
 
-    /**
-     * 根据路径返回文件名，如：http://aaa/bbb.jpg C:/aaa/abc.jpg 返回abc.jpg
-     *
-     * @param pathToName
-     * @return
-     */
-    public static String getFileName(String pathToName) {
-        Assert.notNull(pathToName, "File name can not empty!");
-        return FilenameUtils.getName(pathToName);
-    }
+
 
     /**
      * 上传单个文件
@@ -136,7 +138,8 @@ public class AppFileUtil {
                 continue;
             }
             String filePath = null;
-            log.debug("Will upload file {} to {}", multipartFile.getOriginalFilename(), serverUploadLocation);
+            String filename = getFileName(multipartFile.getOriginalFilename());
+            log.debug("Will upload file {} to {}", filename, serverUploadLocation);
             switch (serverUploadLocation) {
                 case disk:
                     byte[] bytes = multipartFile.getBytes();
@@ -148,16 +151,16 @@ public class AppFileUtil {
                         FileUtils.forceMkdir(targetFileDirectory);
                         log.debug("Directory {} is not exist, force create direcorty....", storePath);
                     }
-                    Path path = Paths.get(targetFileDirectory.getPath() + ApplicationConstants.SLASH + multipartFile.getOriginalFilename());
+                    Path path = Paths.get(targetFileDirectory.getPath() + ApplicationConstants.SLASH + filename);
                     Files.write(path, bytes);
                     filePath = path.toString();
                     break;
                 case fastdfs:
                     filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()),
-                            multipartFile.getOriginalFilename(), getFileSuffix(multipartFile.getOriginalFilename()));
+                            filename, getFileSuffix(filename));
                     break;
             }
-            SysFile sysFile = SysFile.builder().fileName(multipartFile.getOriginalFilename()).fileType(getFileSuffix(multipartFile.getOriginalFilename()))
+            SysFile sysFile = SysFile.builder().fileName(filename).fileType(getFileSuffix(filename))
                     .filePath(filePath).fileSize(multipartFile.getSize()).downLoadUrl(SysFileController.DOWNLOAD_URL).
                             build();
             log.debug("Upload save file is {}", sysFile.toString());
@@ -283,5 +286,12 @@ public class AppFileUtil {
             }
         }
         return result;
+    }
+
+    public static void main(String[] args) {
+        String file = "http://aaa/bbb.jpg";
+        System.out.println(getFileName(file));
+        System.out.println(getFileBaseName(file));
+        System.out.println(getFileSuffix(file));
     }
 }

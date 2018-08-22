@@ -72,10 +72,7 @@ public class SysFile extends LogicModel {
     @Column
     private Boolean isLocal = false;
 
-    @Column(nullable = false, length = 500)
-    @JsonIgnore //隐藏不对外暴露内部路径
+    @Column(length = 500)
+    @JsonIgnore //隐藏不对外暴露内部备份路径
     private String backupPath;
-
-    @Column
-    private Boolean isBackup = false;
 }

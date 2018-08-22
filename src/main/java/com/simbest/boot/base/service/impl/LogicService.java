@@ -150,7 +150,7 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     @Transactional
     public void deleteById ( PK id ) {
         T o = findById(id);
-        update(o);
+        wrapUpdateInfo(o);
         log.debug("@Logic Repository Service deleteById object by id: " + id);
         logicRepository.logicDelete( id );
     }
@@ -167,23 +167,22 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
     @Transactional
     public void deleteAll ( Iterable<? extends T> iterable ) {
         log.debug("@Logic Repository Service deleteAll Iterable param");
-        logicRepository.logicDelete( iterable );
+        iterable.forEach( o -> delete(o));
     }
 
     @Override
     @Transactional
     public void deleteAll ( ) {
         log.debug("@Logic Repository Service deleteAll null param");
-        logicRepository.logicDeleteAll();
+        Iterable<? extends T> iterable = findAllNoPage();
+        deleteAll(iterable);
     }
 
     @Override
     @Transactional
     public void deleteAllByIds ( Iterable<? extends PK> pks ) {
         log.debug("@Logic Repository Service deleteAllByIds Iterable param");
-        for(PK pk: pks){
-            deleteById(pk);
-        }
+        pks.forEach( pk -> deleteById(pk));
     }
 
     @Override

@@ -39,6 +39,22 @@ public class SsoAuthenticationFilter extends AbstractAuthenticationProcessingFil
         super(requiresAuthenticationRequestMatcher);
     }
 
+    /**
+     * 普通单点方法
+     * /findByXXX/sso?loginuser=加密串
+     * /findByXXX/sso?uid=加密串
+     * /findByXXX/sso?keyword=加密串&keytype=keytype
+     *
+     * 特殊单点方法-1
+     * /findByUsername/sso?loginuser=加密串&username=username明文
+     * /findByUsername/sso?uid=加密串&username=username明文
+     * /findByUsername/sso?keyword=username加密串&keytype=username&username=username明文
+     *
+     * 特殊单点方法-2
+     * /findByKey/sso?keyword=keyword加密串&keytype=keytype
+     * @param request
+     * @return
+     */
     protected Principal obtainPrincipal(HttpServletRequest request) {
         Principal principal = null;
         if(StringUtils.isNotEmpty(request.getParameter(AuthoritiesConstants.SSO_API_USERNAME))){
