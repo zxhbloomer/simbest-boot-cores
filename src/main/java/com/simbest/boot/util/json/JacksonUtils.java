@@ -100,7 +100,7 @@ public class JacksonUtils {
      * @param listType
      * @return
      */
-    public static <T> T json2list(String jsonStr, TypeReference<T> listType) {
+    public static <T> T json2Type(String jsonStr, TypeReference<T> listType) {
         T result = null;
         if (!StringUtils.isEmpty(jsonStr)) {
             if (jsonStr != null && listType != null) {
@@ -110,28 +110,6 @@ public class JacksonUtils {
                     log.error(String.format("Error 12000: failed translate Json source {} to list object", jsonStr));
                     log.error(Exceptions.getStackTraceAsString(e));
                 }
-            }
-        } else {
-            log.error(String.format("@@@@Error 12000: Json source is empty!!!"));
-        }
-        return result;
-    }
-
-    /**
-     * 将Json字符串转换为对象实体Map集合
-     *
-     * @param jsonStr
-     * @param mapType
-     * @return
-     */
-    public static <T> T json2map(String jsonStr, TypeReference<T> mapType) {
-        T result = null;
-        if (!StringUtils.isEmpty(jsonStr)) {
-            try {
-                result = mapper.readValue(jsonStr, mapType);
-            } catch (IOException e) {
-                log.error(String.format("Error 12000: failed translate Json source {} to map object", jsonStr));
-                log.error(Exceptions.getStackTraceAsString(e));
             }
         } else {
             log.error(String.format("@@@@Error 12000: Json source is empty!!!"));

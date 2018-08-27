@@ -113,7 +113,7 @@ public class UumsSysPermissionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePermission>>(){});
+        List<SimplePermission> permissionList=JacksonUtils.json2Type(json, new TypeReference<List<SimplePermission>>(){});
         return permissionList;
     }
 
@@ -140,7 +140,7 @@ public class UumsSysPermissionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimplePermission> permissionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePermission>>(){});
+        List<SimplePermission> permissionList=JacksonUtils.json2Type(json, new TypeReference<List<SimplePermission>>(){});
         return permissionList;
     }
 

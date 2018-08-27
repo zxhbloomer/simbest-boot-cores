@@ -28,7 +28,7 @@ public class Md5Encryptor extends AbstractEncryptor {
      */
     public static void main(String[] args) {
         Md5Encryptor encryptor = new Md5Encryptor();
-        encryptor.encrypt("16A559CEC6FFB428A97C880FDC5247E91440492159");
+        encryptor.encrypt("123456");
         encryptor.encryptSource("1");
     }
 

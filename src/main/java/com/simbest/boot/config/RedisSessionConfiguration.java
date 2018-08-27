@@ -28,11 +28,15 @@ public class RedisSessionConfiguration {
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SECURITYID"); // <1>
-        // 目前设计不能设置，否则导致不同应用相同Cookie在检查Session到期时间时报错
+
+        // 目前设计不能设置，否则导致不同应用相同时， 在检查Session到期时间时，相同浏览器生产Cookie一致，且CookiePath一致时， 因为应用没有SysRole等信息报错
         // Failed to deserialize object type; nested exception is java.lang.ClassNotFoundException: com.simbest.boot.uums.role.model.SysRole
 //        if(StringUtils.isNotEmpty(config.getCookiePath()))
 //            serializer.setCookiePath(config.getCookiePath()); // <2>
-        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // <3>
+
+        //不做设置，避免微信、CAS等服务器302重定向时丢Session
+//        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // <3>
+
         return serializer;
     }
 

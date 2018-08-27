@@ -115,7 +115,7 @@ public class UumsSysPositionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimplePosition> positionList=JacksonUtils.json2map(json, new TypeReference<List<SimplePosition>>(){});
+        List<SimplePosition> positionList=JacksonUtils.json2Type(json, new TypeReference<List<SimplePosition>>(){});
         return positionList;
     }
 
@@ -142,7 +142,7 @@ public class UumsSysPositionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        Map<String,List<SimplePosition>> maps=JacksonUtils.json2map(json, new TypeReference<Map<String,List<SimplePosition>>>(){});
+        Map<String,List<SimplePosition>> maps=JacksonUtils.json2Type(json, new TypeReference<Map<String,List<SimplePosition>>>(){});
         return maps;
     }
 }

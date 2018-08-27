@@ -174,7 +174,7 @@ public class UumsSysRoleApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleRole> roleList=JacksonUtils.json2map(json, new TypeReference<List<SimpleRole>>(){});
+        List<SimpleRole> roleList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleRole>>(){});
         return roleList;
     }
 
@@ -201,7 +201,7 @@ public class UumsSysRoleApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleRole> roleList=JacksonUtils.json2map(json, new TypeReference<List<SimpleRole>>(){});
+        List<SimpleRole> roleList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleRole>>(){});
         return roleList;
     }
 

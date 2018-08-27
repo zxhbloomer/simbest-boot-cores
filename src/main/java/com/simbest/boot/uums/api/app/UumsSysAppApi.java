@@ -162,7 +162,7 @@ public class UumsSysAppApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2Type(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
         return appMap;
     }
 
@@ -214,7 +214,7 @@ public class UumsSysAppApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2Type(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
         return appMap;
     }
 
@@ -264,7 +264,7 @@ public class UumsSysAppApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2Type(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
         return appMap;
     }
 
@@ -314,7 +314,7 @@ public class UumsSysAppApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2map(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
+        Map<String,Set<SimpleApp>> appMap=JacksonUtils.json2Type(json, new TypeReference<Map<String,Set<SimpleApp>>>(){});
         return appMap;
     }
 

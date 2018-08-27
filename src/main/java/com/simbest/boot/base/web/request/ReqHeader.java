@@ -1,7 +1,7 @@
 /*
  * 版权所有 © 北京晟壁科技有限公司 2008-2027。保留一切权利!
  */
-package com.simbest.boot.component.sync;
+package com.simbest.boot.base.web.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestBody<T> {
+public class ReqHeader<T> {
 
     public static final String REQUEST_TOKEN = "OaApi";
 

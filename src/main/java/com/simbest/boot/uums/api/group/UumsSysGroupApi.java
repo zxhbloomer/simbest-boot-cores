@@ -162,7 +162,7 @@ public class UumsSysGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        List<SimpleGroup> groupList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleGroup>>(){});
         return groupList;
     }
 
@@ -189,7 +189,7 @@ public class UumsSysGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        List<SimpleGroup> groupList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleGroup>>(){});
         return groupList;
     }
 
@@ -222,7 +222,7 @@ public class UumsSysGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        List<SimpleGroup> groupList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleGroup>>(){});
         return groupList;
     }
 
@@ -250,7 +250,7 @@ public class UumsSysGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        List<SimpleGroup> groupList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleGroup>>(){});
         return groupList;
     }
 
@@ -300,7 +300,7 @@ public class UumsSysGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        List<SimpleGroup> groupList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleGroup>>(){});
         return groupList;
     }
 
@@ -350,7 +350,7 @@ public class UumsSysGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleGroup> groupList=JacksonUtils.json2map(json, new TypeReference<List<SimpleGroup>>(){});
+        List<SimpleGroup> groupList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleGroup>>(){});
         return groupList;
     }
 

@@ -137,7 +137,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleOrg> orgList=JacksonUtils.json2map(json, new TypeReference<List<SimpleOrg>>(){});
+        List<SimpleOrg> orgList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleOrg>>(){});
         return orgList;
     }
 
@@ -164,7 +164,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleOrg> orgList = JacksonUtils.json2map(json, new TypeReference<List<SimpleOrg>>(){});
+        List<SimpleOrg> orgList = JacksonUtils.json2Type(json, new TypeReference<List<SimpleOrg>>(){});
         return orgList;
     }
 
@@ -233,7 +233,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleOrg> orgList = JacksonUtils.json2map(json, new TypeReference<List<SimpleOrg>>(){});
+        List<SimpleOrg> orgList = JacksonUtils.json2Type(json, new TypeReference<List<SimpleOrg>>(){});
         return orgList;
     }
 
@@ -281,7 +281,7 @@ public class UumsSysOrgApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleOrg> orgList = JacksonUtils.json2map(json, new TypeReference<List<SimpleOrg>>(){});
+        List<SimpleOrg> orgList = JacksonUtils.json2Type(json, new TypeReference<List<SimpleOrg>>(){});
         return orgList;
     }
 

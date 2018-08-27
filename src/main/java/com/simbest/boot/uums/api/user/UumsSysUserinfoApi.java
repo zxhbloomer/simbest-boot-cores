@@ -223,7 +223,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleUser> userList=JacksonUtils.json2map(json, new TypeReference<List<SimpleUser>>(){});
+        List<SimpleUser> userList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleUser>>(){});
         return userList;
     }
 
@@ -277,7 +277,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<UserOrgTree> userList=JacksonUtils.json2list(json, new TypeReference<List<UserOrgTree>>(){});
+        List<UserOrgTree> userList=JacksonUtils.json2Type(json, new TypeReference<List<UserOrgTree>>(){});
         return userList;
     }
 
@@ -304,7 +304,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<UserOrgTree> userList=JacksonUtils.json2list(json, new TypeReference<List<UserOrgTree>>(){});
+        List<UserOrgTree> userList=JacksonUtils.json2Type(json, new TypeReference<List<UserOrgTree>>(){});
         return userList;
     }
 
@@ -331,7 +331,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<UserOrgTree> userList=JacksonUtils.json2list(json, new TypeReference<List<UserOrgTree>>(){});
+        List<UserOrgTree> userList=JacksonUtils.json2Type(json, new TypeReference<List<UserOrgTree>>(){});
         return userList;
     }
 
@@ -440,7 +440,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        Set<SimplePermission> permissions=JacksonUtils.json2map(json, new TypeReference<Set<SimplePermission>>(){});
+        Set<SimplePermission> permissions=JacksonUtils.json2Type(json, new TypeReference<Set<SimplePermission>>(){});
         return permissions;
     }
 

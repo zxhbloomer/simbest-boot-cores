@@ -116,7 +116,7 @@ public class UumsSysAppDecisionApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        List<SimpleAppDecision> appDecisionList=JacksonUtils.json2map(json, new TypeReference<List<SimpleAppDecision>>(){});
+        List<SimpleAppDecision> appDecisionList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleAppDecision>>(){});
         return appDecisionList;
     }
 }
