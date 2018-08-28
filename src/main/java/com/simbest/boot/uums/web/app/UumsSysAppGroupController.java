@@ -47,7 +47,7 @@ public class UumsSysAppGroupController {
             @ApiImplicitParam(name = "appcode", value = "应用code", dataType = "String", paramType = "query")
     })
     @PostMapping("/findById")
-    public JsonResponse findById(@RequestParam Long id,@RequestParam  String appcode) {
+    public JsonResponse findById(@RequestParam String id,@RequestParam  String appcode) {
         return JsonResponse.success(uumsSysAppGroupApi.findById( id,appcode ));
     }
 

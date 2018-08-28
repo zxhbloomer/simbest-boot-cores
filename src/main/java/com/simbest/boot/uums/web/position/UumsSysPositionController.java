@@ -48,7 +48,7 @@ public class UumsSysPositionController {
         @ApiImplicitParam(name = "appcode",value = "appcode",dataType = "String",paramType = "query" )
     })
     @PostMapping(value="/findById")
-    public JsonResponse findById( @RequestParam Integer id, @RequestParam String appcode) {
+    public JsonResponse findById( @RequestParam String id, @RequestParam String appcode) {
         return JsonResponse.success(uumsSysPositionApi.findById(id,appcode));
     }
 

@@ -115,7 +115,7 @@ public class UumsSysUserInfoController {
             @ApiImplicitParam(name = "appcode", value = "appcode", dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/findUserByRoleNoPage")
-    public JsonResponse findUserByRoleNoPage( @RequestParam Integer roleId , @RequestParam String appcode){
+    public JsonResponse findUserByRoleNoPage( @RequestParam String roleId , @RequestParam String appcode){
         return JsonResponse.success(uumsSysUserinfoApi.findUserByRoleNoPage(roleId,appcode ));
     }
 

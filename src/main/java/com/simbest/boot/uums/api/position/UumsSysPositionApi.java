@@ -8,14 +8,12 @@ import com.mzlion.easyokhttp.HttpClient;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.config.AppConfig;
 import com.simbest.boot.constants.AuthoritiesConstants;
-import com.simbest.boot.security.IPosition;
 import com.simbest.boot.security.SimplePosition;
 import com.simbest.boot.util.encrypt.RsaEncryptor;
 import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -51,7 +49,7 @@ public class UumsSysPositionApi {
      * @param id
      * @return
      */
-    public SimplePosition findById(Integer id,String appcode) {
+    public SimplePosition findById(String id,String appcode) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         username=encryptor.encrypt(username);

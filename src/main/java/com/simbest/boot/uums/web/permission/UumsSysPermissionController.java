@@ -48,7 +48,7 @@ public class UumsSysPermissionController {
             @ApiImplicitParam(name = "appcode", value = "应用code", dataType = "String", paramType = "query")
     })
     @PostMapping("/findById")
-    public JsonResponse findById(@RequestParam Integer id,@RequestParam  String appcode) {
+    public JsonResponse findById(@RequestParam String id,@RequestParam  String appcode) {
         return JsonResponse.success(uumsSysPermissionApi.findById( id,appcode ));
     }
 

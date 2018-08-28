@@ -18,7 +18,6 @@ import com.simbest.boot.util.json.JacksonUtils;
 import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class UumsSysUserinfoApi {
      * @return
      */
 
-    public SimpleUser findById(Long id, String appcode){
+    public SimpleUser findById(String id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findById"+SSO)
@@ -133,7 +132,7 @@ public class UumsSysUserinfoApi {
      * @return
      */
 
-    public JsonResponse findUserByGroup(int page,  int size, String direction,  String properties,String appcode, Long groupSid ){
+    public JsonResponse findUserByGroup(int page,  int size, String direction,  String properties,String appcode, String groupSid ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByGroup"+SSO)
@@ -206,7 +205,7 @@ public class UumsSysUserinfoApi {
      * @param roleId
      * @return
      */
-    public List<SimpleUser> findUserByRoleNoPage(Integer roleId ,String appcode){
+    public List<SimpleUser> findUserByRoleNoPage(String roleId ,String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByRoleNoPage"+SSO)
@@ -237,7 +236,7 @@ public class UumsSysUserinfoApi {
      * @param roleId
      * @return
      */
-    public JsonResponse findUserByRole(int page, int size, String direction,  String properties,String appcode,Integer roleId ){
+    public JsonResponse findUserByRole(int page, int size, String direction,  String properties,String appcode,String roleId ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByRole"+SSO)
