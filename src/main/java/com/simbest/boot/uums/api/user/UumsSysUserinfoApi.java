@@ -123,6 +123,34 @@ public class UumsSysUserinfoApi {
     }
 
     /**
+     * 单表条件查询不分页
+     * @param appcode
+     * @param simpleUser
+     * @return
+     */
+    public List<SimpleUser> findAllNoPage(String appcode, SimpleUser simpleUser ) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(simpleUser);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAllNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode )
+                .json( json0 )
+                .asBean(JsonResponse.class );
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleUser> userList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleUser>>(){});
+        return userList;
+    }
+
+    /**
      * 根据用户名查询用户信息(BPS专用)
      * @param username
      * @param appcode
