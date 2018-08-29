@@ -2,6 +2,7 @@ package com.simbest.boot.uums.web.user;
 
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.security.SimpleUser;
 import com.simbest.boot.uums.api.user.UumsSysUserinfoApi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -22,6 +23,28 @@ public class UumsSysUserInfoController {
 
     @Autowired
     private UumsSysUserinfoApi uumsSysUserinfoApi;
+
+    /**
+     * 不登录更新用户信息
+     * @param keyword
+     * @param keyType
+     * @param appcode
+     * @param simpleUser
+     * @return
+     */
+    @ApiOperation(value = "不登录更新用户信息", notes = "不登录更新用户信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "keyword", value = "用户名", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "keyType", value = "用户名", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", paramType = "query")
+    })
+    @PostMapping(value = "/update")
+    public JsonResponse update( @RequestParam(required = false) String keyword,
+                                @RequestParam(required = false) IAuthService.KeyType keyType,
+                                @RequestParam(required = false) String appcode,
+                                @RequestBody(required = false) SimpleUser simpleUser) {
+        return JsonResponse.success( uumsSysUserinfoApi.update(keyword,keyType,appcode,simpleUser));
+    }
 
     /**
      * 获取角色信息列表并分页

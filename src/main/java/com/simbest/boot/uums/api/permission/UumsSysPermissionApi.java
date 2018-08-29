@@ -90,6 +90,33 @@ public class UumsSysPermissionApi {
     }
 
     /**
+     * 单表条件查询不分页
+     * @param simplePermission
+     * @return
+     */
+    public List<SimplePermission> findAllNoPage(String appcode,SimplePermission simplePermission) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(simplePermission);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAllNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode )
+                .json( json0 )
+                .asBean(JsonResponse.class );
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimplePermission> permissionList=JacksonUtils.json2Type(json, new TypeReference<List<SimplePermission>>(){});
+        return permissionList;
+    }
+
+    /**
      * 根据某个角色以及应用查询其下的权限
      * @param roleName
      * @param appcode

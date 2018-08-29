@@ -50,14 +50,37 @@ public class UumsSysUserinfoApi {
     @Autowired
     private RsaEncryptor encryptor;
 
+    /**
+     * 不登录更新用户信息
+     * @param keyword
+     * @param keyType
+     * @param appcode
+     * @param simpleUser
+     * @return
+     */
+    public SimpleUser update(String keyword,IAuthService.KeyType keyType,String appcode,SimpleUser simpleUser){
+        String json0=JacksonUtils.obj2json(simpleUser);
+        String keyword1=encryptor.encrypt(keyword);
+        String keyword2=keyword1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "update"+SSO+"?keyword="+keyword2+"&keytype="+keyType
+                +"&appcode="+appcode)
+                .json( json0 )
+                .asBean(JsonResponse.class );
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
+        return auth;
+    }
 
-/**
+    /**
      * 根据id查找
      * @param id
      * @param appcode
      * @return
      */
-
     public SimpleUser findById(String id, String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
@@ -131,7 +154,6 @@ public class UumsSysUserinfoApi {
      * @param groupSid
      * @return
      */
-
     public JsonResponse findUserByGroup(int page,  int size, String direction,  String properties,String appcode, String groupSid ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
@@ -158,7 +180,6 @@ public class UumsSysUserinfoApi {
      * @param orgCode
      * @return
      */
-
     public JsonResponse findUserByOrg(int page,  int size,  String direction,  String properties,String appcode, String orgCode ){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
