@@ -6,6 +6,9 @@ package com.simbest.boot.security.auth.handle;
 import com.simbest.boot.constants.ApplicationConstants;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -27,6 +30,9 @@ import java.io.IOException;
 @Component
 public class SuccessLogoutHandler implements LogoutSuccessHandler {
 
+    @Autowired
+    private Environment env;
+
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
@@ -34,6 +40,10 @@ public class SuccessLogoutHandler implements LogoutSuccessHandler {
         request.logout();
         new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(request, response, authentication);
         response.setStatus(HttpServletResponse.SC_OK);
-        request.getRequestDispatcher(ApplicationConstants.LOGIN_PAGE).forward(request, response);
+        if(StringUtils.isNotEmpty(env.getProperty("app.cas.server.address"))){
+            response.sendRedirect(env.getProperty("server.servlet.context-path") + ApplicationConstants.CAS_LOGOUT_PAGE);
+        } else {
+            request.getRequestDispatcher(ApplicationConstants.LOGIN_PAGE).forward(request, response);
+        }
     }
 }
