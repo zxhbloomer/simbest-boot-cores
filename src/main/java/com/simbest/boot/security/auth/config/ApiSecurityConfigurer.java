@@ -6,6 +6,8 @@ package com.simbest.boot.security.auth.config;
 import com.simbest.boot.base.service.IOauth2ClientDetailsService;
 import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.authentication.Oauth2RedisTokenStore;
+import com.simbest.boot.security.auth.oauth2.CustomWebResponseExceptionTranslator;
+import com.simbest.boot.security.auth.oauth2.OauthExceptionEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -20,6 +22,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 
 /**
  * 用途：RESTFul 接口安全配置
@@ -42,18 +45,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
  * http://localhost:8080/uums/oauth/token?grant_type=refresh_token&client_id=password_changer&client_secret=e10adc3949ba59abbe56e057f20f883e&refresh_token=fbde81ee-f419-42b1-1234-9191f1f95be9
  */
 @Configuration
-@EnableAuthorizationServer
 @Order(20)
 public class ApiSecurityConfigurer {
-
-    @Autowired
-    private IAuthService authService;
-
-    @Autowired
-    private Oauth2RedisTokenStore redisTokenStore;
-
-    @Autowired
-    private IOauth2ClientDetailsService oauth2ClientDetailsService;
 
     @Configuration
     @EnableResourceServer
@@ -61,7 +54,7 @@ public class ApiSecurityConfigurer {
 
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
-            resources.resourceId("*").stateless(true);
+            resources.resourceId("*").stateless(true).authenticationEntryPoint(new OauthExceptionEntryPoint());
         }
 
         @Override
@@ -75,14 +68,28 @@ public class ApiSecurityConfigurer {
         }
     }
 
+
+
+
+
     @Configuration
     @EnableAuthorizationServer
     protected class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
         @Autowired
-        AuthenticationManager authenticationManager;
+        private AuthenticationManager authenticationManager;
+
         @Autowired
-        RedisConnectionFactory redisConnectionFactory;
+        private IAuthService authService;
+
+        @Autowired
+        private Oauth2RedisTokenStore redisTokenStore;
+
+        @Autowired
+        private IOauth2ClientDetailsService oauth2ClientDetailsService;
+
+        @Autowired
+        private CustomWebResponseExceptionTranslator exceptionTranslator;
 
         @Override
         public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -92,7 +99,7 @@ public class ApiSecurityConfigurer {
         @Override
         public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
             // 配置token获取和验证时的策略
-            security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
+            security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()").allowFormAuthenticationForClients();
         }
 
         @Override
@@ -102,6 +109,8 @@ public class ApiSecurityConfigurer {
                     .tokenStore(redisTokenStore)
                     // 不添加userDetailsService，刷新access_token时会报错
                     .userDetailsService(authService);
+
+            endpoints.exceptionTranslator(exceptionTranslator);
         }
     }
 

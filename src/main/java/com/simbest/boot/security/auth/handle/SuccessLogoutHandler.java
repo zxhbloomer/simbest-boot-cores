@@ -41,7 +41,11 @@ public class SuccessLogoutHandler implements LogoutSuccessHandler {
         new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(request, response, authentication);
         response.setStatus(HttpServletResponse.SC_OK);
         if(StringUtils.isNotEmpty(env.getProperty("app.cas.server.address"))){
-            response.sendRedirect(env.getProperty("server.servlet.context-path") + ApplicationConstants.CAS_LOGOUT_PAGE);
+            if(StringUtils.isNotEmpty(env.getProperty("server.servlet.context-path"))) {
+                response.sendRedirect(env.getProperty("server.servlet.context-path") + ApplicationConstants.CAS_LOGOUT_PAGE);
+            } else {
+                response.sendRedirect(request.getContextPath() + ApplicationConstants.CAS_LOGOUT_PAGE);
+            }
         } else {
             request.getRequestDispatcher(ApplicationConstants.LOGIN_PAGE).forward(request, response);
         }
