@@ -91,13 +91,13 @@ public class UumsSysPermissionApi {
 
     /**
      * 单表条件查询不分页
-     * @param simplePermission
+     * @param simplePermissionMap
      * @return
      */
-    public List<SimplePermission> findAllNoPage(String appcode,SimplePermission simplePermission) {
+    public List<SimplePermission> findAllNoPage(String appcode,Map simplePermissionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(simplePermission);
+        String json0=JacksonUtils.obj2json(simplePermissionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
         JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAllNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode )

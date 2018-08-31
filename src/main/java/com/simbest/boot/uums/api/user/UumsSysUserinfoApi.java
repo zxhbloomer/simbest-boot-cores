@@ -53,16 +53,16 @@ public class UumsSysUserinfoApi {
     /**
      * 不登录更新用户信息
      * @param keyword
-     * @param keyType
+     * @param keytype
      * @param appcode
      * @param simpleUser
      * @return
      */
-    public SimpleUser update(String keyword,IAuthService.KeyType keyType,String appcode,SimpleUser simpleUser){
+    public SimpleUser update(String keyword,IAuthService.KeyType keytype,String appcode,SimpleUser simpleUser){
         String json0=JacksonUtils.obj2json(simpleUser);
         String keyword1=encryptor.encrypt(keyword);
         String keyword2=keyword1.replace("+","%2B");
-        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "update"+SSO+"?keyword="+keyword2+"&keytype="+keyType
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "update"+SSO+"?keyword="+keyword2+"&keytype="+keytype
                 +"&appcode="+appcode)
                 .json( json0 )
                 .asBean(JsonResponse.class );
@@ -500,14 +500,14 @@ public class UumsSysUserinfoApi {
      * 邮箱       email
      * 保留关键字 reserve1 可存微信openid
      * @param keyword
-     * @param keyType
+     * @param keytype
      * @param appcode
      * @return
      */
-    public SimpleUser findByKey(String keyword,IAuthService.KeyType keyType,String appcode) {
+    public SimpleUser findByKey(String keyword,IAuthService.KeyType keytype,String appcode) {
         JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findByKey"+SSO)
                 .param(AuthoritiesConstants.SSO_API_KEYWORD, encryptor.encrypt(keyword))
-                .param(AuthoritiesConstants.SSO_API_KEYTYPE, keyType.name())
+                .param(AuthoritiesConstants.SSO_API_KEYTYPE, keytype.name())
                 .param(AuthoritiesConstants.SSO_API_APP_CODE, appcode)
                 .asBean(JsonResponse.class);
         if(response==null){

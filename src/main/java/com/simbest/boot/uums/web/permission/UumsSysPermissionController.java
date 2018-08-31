@@ -4,7 +4,6 @@
 package com.simbest.boot.uums.web.permission;
 
 import com.simbest.boot.base.web.response.JsonResponse;
-import com.simbest.boot.security.SimplePermission;
 import com.simbest.boot.uums.api.permission.UumsSysPermissionApi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -12,6 +11,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -57,8 +58,8 @@ public class UumsSysPermissionController {
     @ApiOperation(value = "获取全部权限信息列表不分页", notes = "获取全部权限信息列表不分页")
     @ApiImplicitParam(name = "appcode", value = "应用code", dataType = "String", paramType = "query")
     @PostMapping("/findAllNoPage")
-    public JsonResponse findAllNoPage(@RequestParam(required = false) String appcode,@RequestBody(required = false) SimplePermission simplePermission) {
-        return JsonResponse.success(uumsSysPermissionApi.findAllNoPage(appcode,simplePermission ));
+    public JsonResponse findAllNoPage(@RequestParam(required = false) String appcode,@RequestBody(required = false) Map simplePermissionMap) {
+        return JsonResponse.success(uumsSysPermissionApi.findAllNoPage(appcode,simplePermissionMap ));
     }
 
     /**
