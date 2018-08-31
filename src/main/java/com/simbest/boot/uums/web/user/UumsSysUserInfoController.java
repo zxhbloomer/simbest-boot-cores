@@ -78,6 +78,18 @@ public class UumsSysUserInfoController {
     }
 
     /**
+     * 获取角色信息列表不分页
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "获取角色信息列表不分页", notes = "获取角色信息列表不分页")
+    @ApiImplicitParam(name = "appcode", value = "应用代码", dataType = "String", paramType = "query") //
+    @PostMapping("/findAllNoPage")
+    public JsonResponse findAllNoPage(@RequestParam String appcode, @RequestBody Map simpleUserMap ) {
+        return JsonResponse.success(uumsSysUserinfoApi.findAllNoPage(appcode,simpleUserMap));
+    }
+
+    /**
      *根据用户名查询用户信息
      * @param username
      * @return

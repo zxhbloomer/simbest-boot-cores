@@ -125,13 +125,13 @@ public class UumsSysUserinfoApi {
     /**
      * 单表条件查询不分页
      * @param appcode
-     * @param simpleUser
+     * @param simpleUserMap
      * @return
      */
-    public List<SimpleUser> findAllNoPage(String appcode, SimpleUser simpleUser ) {
+    public List<SimpleUser> findAllNoPage(String appcode, Map simpleUserMap ) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
-        String json0=JacksonUtils.obj2json(simpleUser);
+        String json0=JacksonUtils.obj2json(simpleUserMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
         JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAllNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode )
