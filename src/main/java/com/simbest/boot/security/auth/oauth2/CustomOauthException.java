@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 
 /**
- * 用途：
+ * 用途：自定义OAUTH2受保护的资源请求异常
  * 作者: lishuyi
  * 时间: 2018/8/29  21:49
  */

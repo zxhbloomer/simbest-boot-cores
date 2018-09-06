@@ -41,7 +41,7 @@ public class SysDictValue extends LogicModel {
     @Column
     private String description;
 
-    @Column(nullable = false)
+    @Column
     private Integer displayOrder;
 
     @Column
@@ -50,6 +50,6 @@ public class SysDictValue extends LogicModel {
     @Column(nullable = false)
     private String dictType;
 
-    @Transient
+    @Column
     private Boolean isDefault;
 }

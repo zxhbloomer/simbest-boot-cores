@@ -6,8 +6,11 @@ package com.simbest.boot.security.auth.config;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.IAuthService;
 import com.simbest.boot.security.auth.provider.CustomAbstractAuthenticationProvider;
+import com.simbest.boot.security.auth.provider.CustomDaoAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.SsoUsernameAuthenticationProvider;
 import com.simbest.boot.security.auth.provider.UumsHttpValidationAuthenticationProvider;
+import com.simbest.boot.util.encrypt.Md5Encryptor;
+import com.simbest.boot.util.encrypt.MochaEncryptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +50,9 @@ public class MultiHttpSecurityConfig {
     @Autowired
     private UumsHttpValidationAuthenticationProvider httpValidationAuthenticationProvider;
 
+    @Autowired
+    private Md5Encryptor encryptor;
+
     @Bean
     public PasswordEncoder myBCryptPasswordEncoder() {
         // 默认密码加密长度12
@@ -56,10 +62,11 @@ public class MultiHttpSecurityConfig {
 
     @Bean
     public AuthenticationProvider jdbcAuthenticationProvider() {
-        DaoAuthenticationProvider impl = new DaoAuthenticationProvider();
+        CustomDaoAuthenticationProvider impl = new CustomDaoAuthenticationProvider();
         impl.setUserDetailsService(authService);
         impl.setPasswordEncoder(myBCryptPasswordEncoder());
         impl.setHideUserNotFoundExceptions(true);
+        impl.setEncryptor(encryptor);
         return impl;
     }
 

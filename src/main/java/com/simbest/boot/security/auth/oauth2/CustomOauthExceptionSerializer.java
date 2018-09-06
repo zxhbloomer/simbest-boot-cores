@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * 用途：
+ * 用途：自定义OAUTH2受保护的资源请求异常序列化
  * 作者: lishuyi
  * 时间: 2018/8/29  21:50
  */

@@ -9,9 +9,10 @@ import com.simbest.boot.security.auth.authentication.Oauth2RedisTokenStore;
 import com.simbest.boot.security.auth.oauth2.CustomWebResponseExceptionTranslator;
 import com.simbest.boot.security.auth.oauth2.OauthExceptionEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -22,7 +23,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 /**
  * 用途：RESTFul 接口安全配置
@@ -32,14 +34,16 @@ import org.springframework.security.oauth2.provider.error.WebResponseExceptionTr
  * https://github.com/longfeizheng/springboot2.0-oauth2
  * 作者: lishuyi
  * 时间: 2018/1/20  11:24
- *
+ * <p>
  * 获取token请求（/oauth/token），请求所需参数：client_id、client_secret、grant_type
  * client模式：http://localhost:8080/uums/oauth/token?grant_type=client_credentials&scope=all&client_id=password_changer&client_secret=e10adc3949ba59abbe56e057f20f883e
  * password模式： http://localhost:8080/uums/oauth/token?grant_type=password&scope=all&client_id=password_changer&client_secret=e10adc3949ba59abbe56e057f20f883e&username=hadmin&password=e10adc3949ba59abbe56e057f20f883e
  *
+ * http://andaily.com/blog/?p=528 返回格式
+ * <p>
  * 检查token是否有效（/oauth/check_token），请求所需参数：token
  * http://localhost:8080/uums/oauth/check_token?token=f57ce129-2d4d-4bd7-1111-f31ccc69d4d1
- *
+ * <p>
  * 注意：client模式没有refresh_token
  * 刷新token请求（/oauth/token），请求所需参数：grant_type、refresh_token、client_id、client_secret
  * http://localhost:8080/uums/oauth/token?grant_type=refresh_token&client_id=password_changer&client_secret=e10adc3949ba59abbe56e057f20f883e&refresh_token=fbde81ee-f419-42b1-1234-9191f1f95be9
@@ -48,36 +52,48 @@ import org.springframework.security.oauth2.provider.error.WebResponseExceptionTr
 @Order(20)
 public class ApiSecurityConfigurer {
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private CustomWebResponseExceptionTranslator customWebResponseExceptionTranslator;
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        final OAuth2AccessDeniedHandler handler = new OAuth2AccessDeniedHandler();
+        handler.setExceptionTranslator(customWebResponseExceptionTranslator);
+        return handler;
+    }
+
     @Configuration
     @EnableResourceServer
-    protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+    protected class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) {
-            resources.resourceId("*").stateless(true).authenticationEntryPoint(new OauthExceptionEntryPoint());
+            resources.resourceId("*").authenticationEntryPoint(new OauthExceptionEntryPoint());
         }
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
             http
-                    .antMatcher("/**/api/**")
-                    .authorizeRequests()
-                    .anyRequest().authenticated()
+                    .requestMatchers()
+                    .antMatchers("/**/api/**")
                     .and()
-                    .httpBasic();
+                    .authorizeRequests()
+                    .antMatchers("/**/api/**")
+                    .authenticated()
+                    .and().httpBasic()
+                    .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(new OauthExceptionEntryPoint());
         }
+
     }
-
-
 
 
 
     @Configuration
     @EnableAuthorizationServer
     protected class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
-
-        @Autowired
-        private AuthenticationManager authenticationManager;
 
         @Autowired
         private IAuthService authService;
@@ -94,12 +110,16 @@ public class ApiSecurityConfigurer {
         @Override
         public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
             clients.withClientDetails(oauth2ClientDetailsService);
-        }
+    }
 
         @Override
         public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-            // 配置token获取和验证时的策略
-            security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()").allowFormAuthenticationForClients();
+            security
+                    .tokenKeyAccess("permitAll()")
+                    .checkTokenAccess("isAuthenticated()")
+                    .allowFormAuthenticationForClients()
+                    .authenticationEntryPoint(new OauthExceptionEntryPoint())
+                    .accessDeniedHandler(accessDeniedHandler());
         }
 
         @Override
@@ -108,9 +128,8 @@ public class ApiSecurityConfigurer {
             endpoints.authenticationManager(authenticationManager)
                     .tokenStore(redisTokenStore)
                     // 不添加userDetailsService，刷新access_token时会报错
-                    .userDetailsService(authService);
-
-            endpoints.exceptionTranslator(exceptionTranslator);
+                    .userDetailsService(authService)
+                    .exceptionTranslator(exceptionTranslator);
         }
     }
 

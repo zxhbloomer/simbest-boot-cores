@@ -42,7 +42,7 @@ public class SysDict extends LogicModel {
     @Column
     private String description;
 
-    @Column(nullable = false)
+    @Column
     private Integer displayOrder;
 
     @Column

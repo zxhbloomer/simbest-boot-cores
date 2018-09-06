@@ -53,14 +53,6 @@ public class SysDictValueService extends LogicService<SysDictValue,String> imple
     }
 
     /**
-     *
-     */
-    @Override
-    public Page findAll(Specification<SysDictValue> conditions, Pageable pageable) {
-        return dictValueRepository.findAll(conditions, pageable);
-    }
-
-    /**
      * 根据字典类型以及上级数据字典值id查询数据字典中相应值的name以及value的值
      * @param sysDictValue
      * @return

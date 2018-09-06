@@ -9,7 +9,10 @@ import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.util.DateUtil;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -67,8 +70,9 @@ public class JsonResponse {
      * @return 默认失败输出
      */
     public static JsonResponse defaultErrorResponse() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         return JsonResponse.builder().errcode(ERROR_CODE).timestamp(DateUtil.getCurrent())
-                .status(ERROR_STATUS).build();
+                .status(ERROR_STATUS).path(request.getServletPath()).build();
     }
 
     /**
