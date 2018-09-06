@@ -18,8 +18,8 @@ import java.util.Map;
 @Api (description = "系统用户操作相关接口")
 @Slf4j
 @RestController
-@RequestMapping("/uums/sys/userinfo")
-public class UumsSysUserInfoController {
+@RequestMapping("/sys/uums/userinfo")
+public class UumsSysUserInfoToMinController {
 
     @Autowired
     private UumsSysUserinfoApi uumsSysUserinfoApi;
@@ -75,18 +75,6 @@ public class UumsSysUserInfoController {
                                  @RequestParam String appcode,
                                  @RequestBody Map map ) {
         return JsonResponse.success(uumsSysUserinfoApi.findAll(page,size,direction,properties,appcode,map));
-    }
-
-    /**
-     * 获取角色信息列表不分页
-     * @param appcode
-     * @return
-     */
-    @ApiOperation(value = "获取角色信息列表不分页", notes = "获取角色信息列表不分页")
-    @ApiImplicitParam(name = "appcode", value = "应用代码", dataType = "String", paramType = "query") //
-    @PostMapping("/findAllNoPage")
-    public JsonResponse findAllNoPage(@RequestParam String appcode, @RequestBody Map simpleUserMap ) {
-        return JsonResponse.success(uumsSysUserinfoApi.findAllNoPage(appcode,simpleUserMap));
     }
 
     /**

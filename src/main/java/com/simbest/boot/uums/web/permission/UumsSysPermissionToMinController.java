@@ -30,8 +30,8 @@ import java.util.Map;
 
 @Api (description = "系统权限操作相关接口" )
 @RestController
-@RequestMapping("/uums/sys/perimission")
-public class UumsSysPermissionController {
+@RequestMapping("/sys/uums/perimission")
+public class UumsSysPermissionToMinController {
 
     @Autowired
     private UumsSysPermissionApi uumsSysPermissionApi;
