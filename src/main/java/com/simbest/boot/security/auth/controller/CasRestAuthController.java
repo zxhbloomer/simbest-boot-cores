@@ -29,7 +29,7 @@ import java.io.UnsupportedEncodingException;
  * 作者: lishuyi
  * 时间: 2018/8/22  19:18
  */
-@Api(description = "CAS REST认证相关接口")
+@Api(description = "CasRestAuthController", tags = {"权限管理-统一认证登录校验"})
 @Slf4j
 @RestController
 @RequestMapping(value = "/anonymous/cas")

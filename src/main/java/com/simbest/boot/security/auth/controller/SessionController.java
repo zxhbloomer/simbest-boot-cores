@@ -30,11 +30,11 @@ import java.util.Set;
  * 作者: lishuyi
  * 时间: 2018/4/25  23:49
  */
-@Api(description = "系统管理维护控制器")
+@Api(description = "SessionController", tags = {"权限管理-Session会话管理"})
 @Slf4j
 @RestController
 @RequestMapping("/sys/admin")
-public class AdminController {
+public class SessionController {
 
     @Autowired
     private SessionRegistry sessionRegistry;

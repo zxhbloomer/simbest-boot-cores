@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  * 作者: lishuyi
  * 时间: 2018/1/31  15:49
  */
-@Api(description = "登录控制器")
+@Api(description = "IndexController", tags = {"权限管理-首页控制器"})
 @Slf4j
 @Controller
 public class IndexController {

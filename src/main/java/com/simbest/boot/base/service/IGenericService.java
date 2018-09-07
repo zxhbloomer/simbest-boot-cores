@@ -135,7 +135,7 @@ public interface IGenericService <T extends GenericModel,PK extends Serializable
      * @param <S>
      * @return
      */
-    <S extends T> Iterable<S> saveAll(Iterable<? extends T> iterable);
+    List<T> saveAll(Iterable<T> entities);
 
     /**
      * 根据主键删除数据

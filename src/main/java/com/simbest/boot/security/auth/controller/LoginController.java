@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author baimengqi baimengqi@simbest.com.cn
  * @version v0.0.1
  */
-@Api(description = "登录控制器")
+@Api(description = "LoginController", tags = {"权限管理-登录校验控制器"})
 @Slf4j
 @Controller
 @RequestMapping("/login")

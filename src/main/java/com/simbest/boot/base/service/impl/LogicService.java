@@ -1,5 +1,6 @@
 package com.simbest.boot.base.service.impl;
 
+import com.google.common.collect.Lists;
 import com.simbest.boot.base.model.LogicModel;
 import com.simbest.boot.base.repository.LogicRepository;
 import com.simbest.boot.base.service.ILogicService;
@@ -144,6 +145,18 @@ public class LogicService<T extends LogicModel,PK extends Serializable> extends 
         } else {
             throw new UpdateNotExistObjectException();
         }
+    }
+
+    @Override
+    @Transactional
+    public List<T> saveAll(Iterable<T> entities) {
+        log.debug("@Logic Repository Service saveAll");
+        List<T> list = Lists.newArrayList();
+        for(T o : entities){
+            o = insert(o);
+            list.add(o);
+        }
+        return list;
     }
 
     @Override

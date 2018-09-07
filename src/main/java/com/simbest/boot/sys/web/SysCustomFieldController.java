@@ -15,6 +15,7 @@ import com.simbest.boot.sys.repository.SysCustomFieldRepository;
 import com.simbest.boot.sys.service.ISysCustomFieldService;
 import com.simbest.boot.sys.service.ISysCustomFieldValueService;
 import com.simbest.boot.sys.service.ISysDictService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +47,7 @@ import java.util.Optional;
  * 作者: lishuyi
  * 时间: 2017/12/22  15:51
  */
+@Api(description = "SysCustomFieldController", tags = {"系统管理-自定义字段管理"})
 @Slf4j
 @RestController
 @RequestMapping("/sys/sysfield")

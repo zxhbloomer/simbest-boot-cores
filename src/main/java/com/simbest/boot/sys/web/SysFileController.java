@@ -13,6 +13,7 @@ import com.simbest.boot.util.AppFileUtil;
 import com.simbest.boot.util.encrypt.UrlEncryptor;
 import com.simbest.boot.util.encrypt.WebOffice3Des;
 import com.simbest.boot.util.json.JacksonUtils;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -45,6 +46,7 @@ import java.util.Map;
  * 作者: lishuyi https://www.mkyong.com/spring-boot/spring-boot-file-upload-example-ajax-and-rest/
  * 时间: 2018/2/23  10:14
  */
+@Api(description = "SysFileController", tags = {"系统管理-文件管理"})
 @Slf4j
 @Controller
 public class SysFileController extends LogicController<SysFile, String> {

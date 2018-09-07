@@ -38,12 +38,14 @@ public class SystemService<T extends SystemModel,PK extends Serializable> extend
     }
 
 //    @Override
-//    public <S extends T> List<S> saveAll ( Iterable<? extends T> iterable ) {
-//        List<S> dataList = Lists.newArrayList();
-//        for(T t:iterable){
-//            dataList.add((S)this.insert( t ));
+//    public List<T> saveAll(Iterable<T> entities) {
+//        log.debug("@SystemService saveAll");
+//        List<S> list = Lists.newArrayList();
+//        for(S o : entities){
+//            o = (S) insert(o);
+//            list.add(o);
 //        }
-//        return dataList;
+//        return list;
 //    }
 
 }

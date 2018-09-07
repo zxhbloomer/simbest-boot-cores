@@ -3,6 +3,8 @@
  */
 package com.simbest.boot.base.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.simbest.boot.constants.ApplicationConstants;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -32,10 +34,12 @@ public abstract class GenericModel implements Serializable, Comparable {
 
     @Transient
     //时间区间-开始时间
+    @JsonFormat(pattern = ApplicationConstants.FORMAT_DATE_TIME, timezone = ApplicationConstants.FORMAT_TIME_ZONE)
     private Date ssDate;
 
     @Transient
     //时间区间-结束时间
+    @JsonFormat(pattern = ApplicationConstants.FORMAT_DATE_TIME, timezone = ApplicationConstants.FORMAT_TIME_ZONE)
     private Date eeDate;
 
     @Transient

@@ -7,6 +7,7 @@ import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysDict;
 import com.simbest.boot.sys.service.ISysDictService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +25,7 @@ import java.util.List;
  * 作者: zlxtk
  * 时间: 2018/2/22  10:14
  */
-
+@Api(description = "SysDictController", tags = {"系统管理-数据字典管理"})
 @RestController
 @RequestMapping("/sys/dict")
 public class SysDictController extends LogicController<SysDict, String> {

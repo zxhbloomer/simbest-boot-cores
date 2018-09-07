@@ -49,7 +49,7 @@ public class CustomDynamicWhere implements Serializable {
      * @param paramMap                    注入的参数  为命名参数 :value
      * @return
      */
-    public List<Map<String, Object>> queryNamedParameterForList(String sql,Map<String, Object> paramMap){
+    public List<Map<String, Object>> queryNamedParameterForList(String sql,Map<String, ?> paramMap){
         return namedParameterJdbcTemplate.queryForList(sql, paramMap);
     }
 }

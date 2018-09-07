@@ -23,5 +23,4 @@ public class ApplicationServiceConfiguration {
     public ISystemService sysTaskExecutedLogService(SysTaskExecutedLogRepository repository) {
         return new SystemService(repository);
     }
-
 }

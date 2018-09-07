@@ -6,6 +6,7 @@ package com.simbest.boot.security.auth.controller;
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.util.captcha.Captcha;
 import com.simbest.boot.util.captcha.SpecCaptcha;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author baimengqi baimengqi@simbest.com.cn
  * @version v0.0.1
  */
+@Api(description = "CaptchaController", tags = {"权限管理-验证码管理"})
 @Slf4j
 @RestController
 public class CaptchaController {

@@ -222,14 +222,11 @@ public class GenericService<T extends GenericModel,PK extends Serializable> impl
         }
     }
 
-    /**
-     * @see
-     */
     @Override
     @Transactional
-    public <S extends T> Iterable<S> saveAll ( Iterable<? extends T> param ) {
+    public List<T> saveAll(Iterable<T> entities){
         log.debug("@Generic Repository Service saveAll");
-        return (Iterable<S>)genericRepository.saveAll( param );
+        return genericRepository.saveAll(entities);
     }
 
 
