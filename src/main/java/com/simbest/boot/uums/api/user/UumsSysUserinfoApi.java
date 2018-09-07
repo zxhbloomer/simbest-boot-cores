@@ -519,6 +519,30 @@ public class UumsSysUserinfoApi {
         return auth;
     }
 
+
+    /**
+     * 根据群组sid查询OA账号，真实姓名及该用户的职位id，职位排序和职位名以及所在组织的displayName
+     * @param appcode
+     * @param groupSid
+     * @return
+     */
+    public Set<Map<String,Object>> findUserInfoByGroupSidNoPage(String appcode,String groupSid) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserInfoByGroupSidNoPage"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("groupSid",groupSid)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Set<Map<String,Object>> auth = JacksonUtils.json2Type(json, new TypeReference<Set<Map<String,Object>>>(){});
+        return auth;
+    }
+
     //增加用户的权限
    /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {
         String username = SecurityUtils.getCurrentUserName();

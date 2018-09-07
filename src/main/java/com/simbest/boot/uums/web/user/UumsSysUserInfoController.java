@@ -346,6 +346,18 @@ public class UumsSysUserInfoController {
         return JsonResponse.success( uumsSysUserinfoApi.findByKey(keyword,keyType,appcode));
     }
 
+    @ApiOperation(value = "根据群组sid查询OA账号，真实姓名及该用户的职位id，职位排序和职位名以及所在组织的displayName", notes = "根据群组sid查询OA账号，真实姓名及该用户的职位id，职位排序和职位名以及所在组织的displayName")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", //
+                    paramType = "query"),
+            @ApiImplicitParam(name = "groupSid", value = "群组sid", dataType = "String", //
+                    paramType = "query")
+    })
+    @PostMapping("/findUserInfoByGroupSidNoPage")
+    public JsonResponse findUserInfoByGroupSidNoPage(@RequestParam(required = false) String appcode,@RequestParam(required = false) String groupSid){
+        return JsonResponse.success( uumsSysUserinfoApi.findUserInfoByGroupSidNoPage(appcode,groupSid));
+    }
+
     /**
      * 增加用户的权限
      * @return
