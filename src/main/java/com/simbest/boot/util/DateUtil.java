@@ -38,7 +38,7 @@ public final class DateUtil {
     public static final String timestampPattern3 = "yyyy-MM-dd HH:mm:ss.SSS Z";
 	public static final String timePattern = "HH:mm:ss";
 
-	//匹配2017年9月30日  取出2017 9 30
+	//匹配2017年9月20日 09:30  取出其中的2017  9  30  09 30
     public static final Pattern pattern = Pattern.compile( "\\d+" );
 
     public static final DateTimeFormatter fullDateTimeFormatter = new DateTimeFormatterBuilder().append(null, //because no printing is required
@@ -618,7 +618,9 @@ public final class DateUtil {
     }
 
     /**
-     * 根据传入的2017年9月20日 09:30格式的日期时间字符串，正则获取其中的数字
+     * 根据传入的2017年9月20日 09:30格式的日期时间字符串，正则获取其中的数字存为字符数组中
+     *      Eg：2017年9月20日 09:30  结果为：nums = {"2017","9","20","09","30"}
+     *
      * @param dateStr    格式为 2017年9月20日 09:30
      * @return
      */
