@@ -59,7 +59,7 @@ public class UumsSysOrgApi {
                 .param("id", String.valueOf(id))
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -105,7 +105,7 @@ public class UumsSysOrgApi {
                 .param("orgCode", orgCode)
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -128,11 +128,11 @@ public class UumsSysOrgApi {
                 .param("orgCode", orgCode)
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         if(!(response.getData() instanceof ArrayList )){
-            log.error("--uums接口返回的类型不为ArrayList--");
+            log.debug("--uums接口返回的类型不为ArrayList--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -155,11 +155,11 @@ public class UumsSysOrgApi {
                 .param("orgCode", orgCode)
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         if(!(response.getData() instanceof ArrayList )){
-            log.error("--uums接口返回的类型不为ArrayList--");
+            log.debug("--uums接口返回的类型不为ArrayList--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -182,7 +182,7 @@ public class UumsSysOrgApi {
                 .param("orgCode", orgCode)
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -203,7 +203,7 @@ public class UumsSysOrgApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -224,11 +224,11 @@ public class UumsSysOrgApi {
                 .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         if(!(response.getData() instanceof ArrayList )){
-            log.error("--uums接口返回的类型不为ArrayList--");
+            log.debug("--uums接口返回的类型不为ArrayList--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -250,7 +250,7 @@ public class UumsSysOrgApi {
                 .param( "appCode",appcode )
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
@@ -272,11 +272,41 @@ public class UumsSysOrgApi {
                 .param( "appCode",appcode )
                 .asBean(JsonResponse.class);
         if(response==null){
-            log.error("--response对象为空!--");
+            log.debug("--response对象为空!--");
             return null;
         }
         if(!(response.getData() instanceof ArrayList )){
-            log.error("--uums接口返回的类型不为ArrayList--");
+            log.debug("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleOrg> orgList = JacksonUtils.json2Type(json, new TypeReference<List<SimpleOrg>>(){});
+        return orgList;
+    }
+
+    /**
+     * 查出用户所在的市公司下的部门以及市公司下的县公司
+     * @param appcode
+     * @return
+     */
+    public List<SimpleOrg> findCityDeapartmentAndCountyCompany(String appcode) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findCityDeapartmentAndCountyCompany"+SSO)
+                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
+                .param( "username",username )
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.debug("--response对象为空!--");
+            return null;
+        }
+        if(response.getData() == null ){
+            log.debug(response.getMessage());
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.debug("--uums接口返回的类型不为ArrayList--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
