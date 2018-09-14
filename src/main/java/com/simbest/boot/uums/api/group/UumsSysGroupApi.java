@@ -358,7 +358,7 @@ public class UumsSysGroupApi {
      * @param appcode
      * @return
      */
-    public SimpleGroup findDataPermission(String appcode){
+    public List<SimpleGroup> findDataPermission(String appcode){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findDataPermission"+SSO)
@@ -371,7 +371,7 @@ public class UumsSysGroupApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        SimpleGroup auth = JacksonUtils.json2obj(json, SimpleGroup.class);
-        return auth;
+        List<SimpleGroup> groupList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleGroup>>(){});
+        return groupList;
     }
 }

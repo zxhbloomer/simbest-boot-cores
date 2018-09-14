@@ -18,7 +18,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 一些有用的日期时间工具类
@@ -37,6 +38,8 @@ public final class DateUtil {
     public static final String timestampPattern3 = "yyyy-MM-dd HH:mm:ss.SSS Z";
 	public static final String timePattern = "HH:mm:ss";
 
+	//匹配2017年9月20日 09:30  取出其中的2017  9  30  09 30
+    public static final Pattern pattern = Pattern.compile( "\\d+" );
 
     public static final DateTimeFormatter fullDateTimeFormatter = new DateTimeFormatterBuilder().append(null, //because no printing is required
 				 new DateTimeParser[]{
@@ -68,6 +71,11 @@ public final class DateUtil {
 		System.gc();
 
 
+        Matcher matcher = pattern.matcher( "2017年9月20日 09:30" );
+        while ( matcher.find() ){
+            System.out.println( matcher.group() );
+        }
+        System.out.println( getDateStrNumByGroups("2017年9月20日 09:30"));
 	}
 
     /**
@@ -607,5 +615,22 @@ public final class DateUtil {
         Instant instant = date.toInstant();
         ZoneId zoneId = ZoneId.systemDefault();
         return instant.atZone(zoneId).toLocalDateTime();
+    }
+
+    /**
+     * 根据传入的2017年9月20日 09:30格式的日期时间字符串，正则获取其中的数字存为字符数组中
+     *      Eg：2017年9月20日 09:30  结果为：nums = {"2017","9","20","09","30"}
+     *
+     * @param dateStr    格式为 2017年9月20日 09:30
+     * @return
+     */
+    public static String[] getDateStrNumByGroups(String dateStr){
+        String[] nums = new String[6];
+        Matcher matcher = pattern.matcher( dateStr );
+        int i = 0;
+        while ( matcher.find() ){
+            nums[i++] = matcher.group();
+        }
+        return nums;
     }
 }
