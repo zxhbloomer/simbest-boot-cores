@@ -46,6 +46,12 @@ public class SysLogLoginService extends GenericService<SysLogLogin, String> impl
             if(property.equals("loginEntry")){
                 whereSQL += "AND login_entry = :loginEntry ";
             }
+            if(property.equals("trueName")){
+                whereSQL += "AND true_name = :trueName ";
+            }
+            if(property.equals("belongOrgName")){
+                whereSQL += "AND belong_org_name = :belongOrgName ";
+            }
             if(property.equals("ssDate")){
                 whereSQL += "AND login_time >= :ssDate ";
             }

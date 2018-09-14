@@ -53,6 +53,8 @@ public class SysLogLogin extends GenericModel {
 
     //登录入口
     // 0 PC登录入口
+    // 1 CAS登录入口
+    // 2 微信登录入口
     @Column(nullable = false, length = 20)
     @NonNull
     private Integer loginEntry;
@@ -77,4 +79,10 @@ public class SysLogLogin extends GenericModel {
 
     @Column(length = 200)
     private String remark;
+
+    @Column
+    private String trueName;
+
+    @Column
+    private String belongOrgName;
 }

@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.sys.web;
 
+import com.github.wenhao.jpa.Specifications;
 import com.simbest.boot.base.web.controller.GenericController;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.sys.model.SysLogLogin;
@@ -10,6 +11,7 @@ import com.simbest.boot.sys.service.ISysLogLoginService;
 import com.simbest.boot.util.MapUtil;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,4 +40,12 @@ public class SysLogLoginController extends GenericController<SysLogLogin, String
         return JsonResponse.success(service.countLogin(MapUtil.objectToMap(o)));
     }
 
+    @PostMapping(value = {"/syncLoginLog", "/syncLoginLog/sso"})
+    public JsonResponse sysLoginLog(@RequestBody SysLogLogin o) {
+        Specification<SysLogLogin> specification = Specifications.<SysLogLogin>and()
+                .between("loginTime", o.getSsDate(), o.getEeDate())
+                .build();
+        Iterable<SysLogLogin> datas = service.findAllNoPage(specification);
+        return JsonResponse.success(datas);
+    }
 }

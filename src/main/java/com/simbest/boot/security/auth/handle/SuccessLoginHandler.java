@@ -50,7 +50,10 @@ public class SuccessLoginHandler implements AuthenticationSuccessHandler {
                     .loginEntry(0) //PC登录入口
                     .loginType(0)  //用户名登录方式
                     .loginTime(DateUtil.getCurrent())
-                    .isSuccess(true).build();
+                    .isSuccess(true)
+                    .trueName(iUser.getTruename())
+                    .belongOrgName(iUser.getBelongOrgName())
+                    .build();
             if(authentication.getDetails() instanceof WebAuthenticationDetails){
                 WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
                 logLogin.setIp(details.getRemoteAddress());
