@@ -151,6 +151,28 @@ public class UumsSysUserinfoApi {
     }
 
     /**
+     * 当前人查询别的用户的信息
+     * @param username
+     * @param appcode
+     * @return
+     */
+    public SimpleUser findByUsernameFromCurrent(String username,String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findByUsername"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("username",username)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        SimpleUser auth = JacksonUtils.json2obj(json, SimpleUser.class);
+        return auth;
+    }
+
+    /**
      * 根据用户名查询用户信息(BPS专用)
      * @param username
      * @param appcode
