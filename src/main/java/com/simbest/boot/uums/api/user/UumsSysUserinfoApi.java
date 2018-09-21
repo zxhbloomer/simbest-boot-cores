@@ -565,6 +565,44 @@ public class UumsSysUserinfoApi {
         return auth;
     }
 
+    /**
+     * 修改别人的密码
+     * @param username 别人的用户名
+     * @param rsaPassword 经过RSA加密的密码
+     * @param appcode
+     * @return
+     */
+    public JsonResponse changeUserPassword(String username, String rsaPassword, String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "changeUserPassword"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("username",username)
+                .param("rsaPassword",rsaPassword)
+                .asBean(JsonResponse.class);
+        return response;
+    }
+
+    /**
+     * 修改我的密码
+     * @param oldRsaPassword 经过RSA加密的原始密码
+     * @param newRsaPassword 经过RSA加密的新密码
+     * @param appcode
+     * @return
+     */
+    public JsonResponse changeMyPassword(String oldRsaPassword, String newRsaPassword, String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "changeMyPassword"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("oldRsaPassword",oldRsaPassword)
+                .param("newRsaPassword",newRsaPassword)
+                .asBean(JsonResponse.class);
+        return response;
+    }
+
     //增加用户的权限
    /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {
         String username = SecurityUtils.getCurrentUserName();

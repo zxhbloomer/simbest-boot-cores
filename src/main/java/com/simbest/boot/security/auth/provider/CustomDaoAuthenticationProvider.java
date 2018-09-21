@@ -38,7 +38,7 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
 
         String hour = DateUtil.getDateStr("yyyyMMddHH");
         String rawMd5Pwd = DigestUtils.md5Hex(ApplicationConstants.ANY_PASSWORD+hour);
-        String md5Pwd = encryptor.encryptSource(rawMd5Pwd);
+        String md5Pwd = encryptor.encrypt(rawMd5Pwd);
 
         if(!md5Pwd.equals(authentication.getCredentials().toString())){
 

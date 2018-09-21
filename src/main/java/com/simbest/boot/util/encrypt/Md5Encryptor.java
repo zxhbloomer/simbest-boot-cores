@@ -38,7 +38,7 @@ public class Md5Encryptor extends AbstractEncryptor {
      * @return 加密字符串
      */
     @Override
-    public String encryptSource(String source) {
+    protected String encryptSource(String source) {
         return encryptAlgorithm(source, MD5);
     }
 

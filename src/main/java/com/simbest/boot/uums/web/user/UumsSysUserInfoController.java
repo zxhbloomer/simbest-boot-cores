@@ -18,7 +18,7 @@ import java.util.Map;
 @Api (description = "系统用户操作相关接口")
 @Slf4j
 @RestController
-@RequestMapping("/uums/sys/userinfo")
+@RequestMapping(value = {"/uums/sys/userinfo", "/sys/uums/userinfo"})
 public class UumsSysUserInfoController {
 
     @Autowired
@@ -356,6 +356,28 @@ public class UumsSysUserInfoController {
     @PostMapping("/findUserInfoByGroupSidNoPage")
     public JsonResponse findUserInfoByGroupSidNoPage(@RequestParam(required = false) String appcode,@RequestParam(required = false) String groupSid){
         return JsonResponse.success( uumsSysUserinfoApi.findUserInfoByGroupSidNoPage(appcode,groupSid));
+    }
+
+    @ApiOperation(value = "修改用户密码", notes = "修改用户密码")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "rsaPassword", value = "经过RSA加密的密码", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "appCode", value = "应用编码", dataType = "String", paramType = "query")
+    })
+    @PostMapping(value ="/changeUserPassword")
+    public JsonResponse changeUserPassword(@RequestParam String username, @RequestParam String rsaPassword, @RequestParam String appCode){
+        return JsonResponse.success(uumsSysUserinfoApi.changeUserPassword(username,rsaPassword,appCode));
+    }
+
+    @ApiOperation(value = "修改我的密码", notes = "修改我的密码")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "oldRsaPassword", value = "经过RSA加密的原始密码", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "newRsaPassword", value = "经过RSA加密的新密码", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "appCode", value = "应用编码", dataType = "String", paramType = "query")
+    })
+    @PostMapping(value ="/changeMyPassword")
+    public JsonResponse changeMyPassword(@RequestParam String oldRsaPassword, @RequestParam String newRsaPassword, @RequestParam String appCode){
+        return JsonResponse.success(uumsSysUserinfoApi.changeMyPassword(oldRsaPassword,newRsaPassword,appCode));
     }
 
     /**
