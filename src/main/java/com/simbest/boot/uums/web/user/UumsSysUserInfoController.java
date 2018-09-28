@@ -366,7 +366,7 @@ public class UumsSysUserInfoController {
     })
     @PostMapping(value ="/changeUserPassword")
     public JsonResponse changeUserPassword(@RequestParam String username, @RequestParam String rsaPassword, @RequestParam String appCode){
-        return JsonResponse.success(uumsSysUserinfoApi.changeUserPassword(username,rsaPassword,appCode));
+        return uumsSysUserinfoApi.changeUserPassword(username,rsaPassword,appCode);
     }
 
     @ApiOperation(value = "修改我的密码", notes = "修改我的密码")
@@ -377,7 +377,7 @@ public class UumsSysUserInfoController {
     })
     @PostMapping(value ="/changeMyPassword")
     public JsonResponse changeMyPassword(@RequestParam String oldRsaPassword, @RequestParam String newRsaPassword, @RequestParam String appCode){
-        return JsonResponse.success(uumsSysUserinfoApi.changeMyPassword(oldRsaPassword,newRsaPassword,appCode));
+        return uumsSysUserinfoApi.changeMyPassword(oldRsaPassword,newRsaPassword,appCode);
     }
 
     /**

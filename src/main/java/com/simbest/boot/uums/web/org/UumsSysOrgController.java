@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api (description = "系统组织操作相关接口" )
 @RestController
-@RequestMapping("/uums/sys/org")
+@RequestMapping(value = {"/uums/sys/org", "/sys/uums/sys/org"})
 public class UumsSysOrgController {
 
     @Autowired

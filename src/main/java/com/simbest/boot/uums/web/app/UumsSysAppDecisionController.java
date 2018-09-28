@@ -30,7 +30,7 @@ import java.util.Map;
 
 @Api (description = "应用决策群组相关接口" )
 @RestController
-@RequestMapping("/uums/sys/appDecision")
+@RequestMapping(value = {"/uums/sys/appDecision", "/sys/uums/sys/appDecision"})
 public class UumsSysAppDecisionController {
 
     @Autowired

@@ -4,7 +4,10 @@
 package com.simbest.boot.base.repository;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Lists;
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.util.DateUtil;
+import com.simbest.boot.util.ObjectUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -63,6 +66,10 @@ public class LogicDeleteRepositoryImpl <T, ID extends Serializable> extends Simp
     private final EntityManager em;
     private final Class<T> domainClass;
     private static final String DELETED_FIELD = "removedTime";
+    private static final String MODIFIER_FIELD = "modifier";
+    private static final String MODIFIEDTIME_FIELD = "modifiedTime";
+    private static final String ENABLED_FIELD = "enabled";
+    private static final Object NOT_EXIST_ID_VALUE = null;
 
     public LogicDeleteRepositoryImpl(Class<T> domainClass, EntityManager em) {
         super(domainClass, em);
@@ -286,21 +293,24 @@ public class LogicDeleteRepositoryImpl <T, ID extends Serializable> extends Simp
     @Transactional
     public void logicDelete(Iterable<? extends T> entities) {
         Assert.notNull(entities, "The given Iterable of entities not be null!");
-        for (T entity : entities)
+        for (T entity : entities) {
             logicDelete(entity);
+        }
     }
 
     @Override
     @Transactional
     public void logicDeleteAll() {
-        for (T entity : findAllActive())
+        for (T entity : findAllActive()) {
             logicDelete(entity);
+        }
     }
 
     @Override
     public void deleteAllByIds(Iterable<? extends ID> ids) {
-        for(ID id: ids)
+        for(ID id: ids) {
             logicDelete(id);
+        }
     }
 
 
@@ -337,7 +347,11 @@ public class LogicDeleteRepositoryImpl <T, ID extends Serializable> extends Simp
 
         Root<T> root = update.from((Class<T>) domainClass);
 
-        update.set(DELETED_FIELD, localDateTime);
+        update.set(DELETED_FIELD, localDateTime); //设置删除时间
+        Map<String, Object> params = ObjectUtil.getEntityPersistentFieldValueExceptId(entity);
+        update.set(MODIFIER_FIELD, params.get(MODIFIER_FIELD)); //设置删除人
+        update.set(MODIFIEDTIME_FIELD, localDateTime);
+        update.set(ENABLED_FIELD, false); //删除数据后，设置为不可用
 
         final List<Predicate> predicates = new ArrayList<Predicate>();
 
@@ -346,9 +360,24 @@ public class LogicDeleteRepositoryImpl <T, ID extends Serializable> extends Simp
                 predicates.add(cb.equal(root.<ID>get(s),
                         entityInformation.getCompositeIdAttributeValue(entityInformation.getId(entity), s)));
             update.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-        } else
+        } else if(null != entityInformation.getId(entity)) {
             update.where(cb.equal(root.<ID>get(entityInformation.getIdAttribute().getName()),
                     entityInformation.getId(entity)));
+        } else {
+            List<Predicate> predicateList = Lists.newArrayList();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                //删除人和可用性字段不作为参数
+                if(!MODIFIER_FIELD.equals(entry.getKey()) && !ENABLED_FIELD.equals(entry.getKey())) {
+                    predicateList.add(cb.equal(root.get(entry.getKey()), entry.getValue()));
+                }
+            }
+            if(!predicateList.isEmpty()){
+                update.where(predicateList.toArray(new Predicate[]{}));
+            } else{
+                //无条件不允许删除
+                update.where(cb.equal(root.<ID>get(entityInformation.getIdAttribute().getName()), NOT_EXIST_ID_VALUE));
+            }
+        }
 
         em.createQuery(update).executeUpdate();
     }

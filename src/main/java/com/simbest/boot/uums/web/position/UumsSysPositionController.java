@@ -30,7 +30,7 @@ import java.util.Map;
 
 @Api (description = "系统职位操作相关接口" )
 @RestController
-@RequestMapping("/uums/sys/position")
+@RequestMapping(value = {"/uums/sys/position", "/sys/uums/sys/position"})
 public class UumsSysPositionController {
 
     @Autowired

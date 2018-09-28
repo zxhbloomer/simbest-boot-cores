@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api (description = "群组操作相关接口" )
 @RestController
-@RequestMapping("/uums/sys/group")
+@RequestMapping(value = {"/uums/sys/group", "/sys/uums/sys/group"})
 public class UumsSysGroupController {
 
     @Autowired
