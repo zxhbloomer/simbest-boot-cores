@@ -61,4 +61,7 @@ public class AppConfig {
 
     @Value("${app.file.upload.location}")
     private String uploadLocation;
+
+    @Value("${app.security.white.hosts}")
+    private String whiteHostList;
 }

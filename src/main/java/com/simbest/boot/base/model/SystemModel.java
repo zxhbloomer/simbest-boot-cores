@@ -11,18 +11,13 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.simbest.boot.constants.ApplicationConstants;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 用途：系统实体
@@ -53,7 +48,6 @@ public abstract class SystemModel extends GenericModel {
     //创建时间
     @Setter
     @Getter
-    @NonNull
     @Column(nullable = false, updatable = false)
     @CreationTimestamp// 创建时自动更新时间
     @JsonFormat(pattern = ApplicationConstants.FORMAT_DATE_TIME, timezone = ApplicationConstants.FORMAT_TIME_ZONE)
@@ -64,7 +58,6 @@ public abstract class SystemModel extends GenericModel {
     //最后更新时间
     @Setter
     @Getter
-    @NonNull
     @Column(nullable = false)
     @UpdateTimestamp// 更新时自动更新时间
     @JsonFormat(pattern = ApplicationConstants.FORMAT_DATE_TIME, timezone = ApplicationConstants.FORMAT_TIME_ZONE)

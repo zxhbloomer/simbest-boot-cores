@@ -132,14 +132,18 @@ public class SysFileController extends LogicController<SysFile, String> {
         response.setContentType("text/html; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
-
         MultipartHttpServletRequest mureq = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> multipartFiles = mureq.getFileMap();
         List<SysFile> sysFiles = fileService.uploadProcessFiles(multipartFiles.values(), request.getParameter("pmInsType"), request.getParameter("pmInsId"),
                 request.getParameter("pmInsTypePart"));
-        UploadFileResponse uploadFileResponse = new UploadFileResponse();
-        uploadFileResponse.setSysFiles(sysFiles);
-        JsonResponse jsonResponse = JsonResponse.success(uploadFileResponse);
+        JsonResponse jsonResponse;
+        if(!sysFiles.isEmpty()) {
+            UploadFileResponse uploadFileResponse = new UploadFileResponse();
+            uploadFileResponse.setSysFiles(sysFiles);
+            jsonResponse = JsonResponse.success(uploadFileResponse);
+        } else {
+            jsonResponse = JsonResponse.defaultErrorResponse();
+        }
         String result = "<script type=\"text/javascript\">parent.result="+JacksonUtils.obj2json(jsonResponse)+"</script>";
         out.println(result);
         out.close();

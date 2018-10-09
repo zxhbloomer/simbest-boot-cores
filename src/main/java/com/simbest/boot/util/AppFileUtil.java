@@ -139,32 +139,36 @@ public class AppFileUtil {
             }
             String filePath = null;
             String filename = getFileName(multipartFile.getOriginalFilename());
-            log.debug("Will upload file {} to {}", filename, serverUploadLocation);
-            switch (serverUploadLocation) {
-                case disk:
-                    byte[] bytes = multipartFile.getBytes();
-                    String storePath = config.getUploadPath()  + ApplicationConstants.SLASH + DateUtil.getCurrentStr()
-                            + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH
-                            + CodeGenerator.randomInt(4);
-                    File targetFileDirectory = new File(storePath);
-                    if (!targetFileDirectory.exists()) {
-                        FileUtils.forceMkdir(targetFileDirectory);
-                        log.debug("Directory {} is not exist, force create direcorty....", storePath);
-                    }
-                    Path path = Paths.get(targetFileDirectory.getPath() + ApplicationConstants.SLASH + filename);
-                    Files.write(path, bytes);
-                    filePath = path.toString();
-                    break;
-                case fastdfs:
-                    filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()),
-                            filename, getFileSuffix(filename));
-                    break;
+            if(validateUploadFileType(filename)) {
+                log.debug("Will upload file {} to {}", filename, serverUploadLocation);
+                switch (serverUploadLocation) {
+                    case disk:
+                        byte[] bytes = multipartFile.getBytes();
+                        String storePath = config.getUploadPath() + ApplicationConstants.SLASH + DateUtil.getCurrentStr()
+                                + ApplicationConstants.SLASH + directory + ApplicationConstants.SLASH
+                                + CodeGenerator.randomInt(4);
+                        File targetFileDirectory = new File(storePath);
+                        if (!targetFileDirectory.exists()) {
+                            FileUtils.forceMkdir(targetFileDirectory);
+                            log.debug("Directory {} is not exist, force create direcorty....", storePath);
+                        }
+                        Path path = Paths.get(targetFileDirectory.getPath() + ApplicationConstants.SLASH + filename);
+                        Files.write(path, bytes);
+                        filePath = path.toString();
+                        break;
+                    case fastdfs:
+                        filePath = FastDfsClient.uploadFile(IOUtils.toByteArray(multipartFile.getInputStream()),
+                                filename, getFileSuffix(filename));
+                        break;
+                }
+                SysFile sysFile = SysFile.builder().fileName(filename).fileType(getFileSuffix(filename))
+                        .filePath(filePath).fileSize(multipartFile.getSize()).downLoadUrl(SysFileController.DOWNLOAD_URL).
+                                build();
+                log.debug("Upload save file is {}", sysFile.toString());
+                fileModels.add(sysFile);
+            } else {
+                log.error("File {} upload is forbidden type, can not upload to server!", filename);
             }
-            SysFile sysFile = SysFile.builder().fileName(filename).fileType(getFileSuffix(filename))
-                    .filePath(filePath).fileSize(multipartFile.getSize()).downLoadUrl(SysFileController.DOWNLOAD_URL).
-                            build();
-            log.debug("Upload save file is {}", sysFile.toString());
-            fileModels.add(sysFile);
         }
         return fileModels;
     }

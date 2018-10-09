@@ -28,7 +28,7 @@ public class AbstractEncryptorSsoAuthenticationService extends AbstractSsoAuthen
             try {
                 decryptUsername = this.getEncryptor().decrypt(username);
             } catch (Exception e) {
-                log.debug(">_< Use {} decrypt username {} to {} faied......", this.getClass().toString(), username, decryptUsername);
+                log.debug(">_< Use {} decrypt username {} from {}, decrypt faied......", this.getClass().getSimpleName(), decryptUsername, username);
             }
         }
 

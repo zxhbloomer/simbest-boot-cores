@@ -26,10 +26,16 @@ public class MonitorSecurityConfigurer extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        http
+//                .antMatcher("/actuator/**")
+//                .httpBasic()
+//                .and()
+//                .authorizeRequests().antMatchers("/actuator/**").hasRole("SAFE");
         http
-                .antMatcher("/actuator/**")
-                .httpBasic()
+                .requestMatchers()
+                .antMatchers("/**/actuator/**")
                 .and()
-                .authorizeRequests().antMatchers("/actuator/**").hasRole("SAFE");
+                .authorizeRequests()
+                .antMatchers("/**/actuator/**").permitAll();
     }
 }

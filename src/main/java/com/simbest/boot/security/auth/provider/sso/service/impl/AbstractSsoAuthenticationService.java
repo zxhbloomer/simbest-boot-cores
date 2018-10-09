@@ -42,11 +42,11 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
         log.debug("Retrive username from request with: {}, appcode with {}", authentication.getPrincipal(), authentication.getCredentials());
         if(null != authentication.getPrincipal() && null != authentication.getCredentials()){
             String keyword = decryptUsername(((Principal)authentication.getPrincipal()).getName());
-            log.debug("Actually get username from request with: {}, appcode with {}", keyword, authentication.getCredentials().toString());
+            log.debug("{} get username from request with: {}, appcode with {}", this.getClass().getSimpleName(), keyword, authentication.getCredentials());
             if(StringUtils.isNotEmpty(keyword)) {
                 return attemptAuthentication(keyword, authentication);
             } else{
-                log.warn("-_- I am {} decrypt {} failed", this.getClass().getSimpleName(), authentication.toString());
+                log.warn(">_<  I am {} decrypt {} failed", this.getClass().getSimpleName(), authentication.toString());
                 return null;
             }
         }else{
@@ -71,16 +71,16 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
             } else if (authentication.getPrincipal() instanceof KeyTypePrincipal){
                 authUser = authService.findByKey(keyword, ((KeyTypePrincipal)authentication.getPrincipal()).getKeyType());
             }
-            log.debug("Login user is {}", authUser);
+            log.debug("{} Login user is {}", this.getClass().getSimpleName(), authUser);
             if(null != authUser) {
                 String username = authUser.getUsername();
                 String appcode = authentication.getCredentials().toString();
                 if(authService.checkUserAccessApp(username, appcode)) {
-                    log.debug("Check user {} access app {} sucessfully....", username, appcode);
+                    log.debug("{} check user {} access app {} sucessfully....", this.getClass().getSimpleName(), username, appcode);
                     //追加权限
                     Set<? extends IPermission> appPermission = authService.findUserPermissionByAppcode(username, appcode);
                     if(null != appPermission && !appPermission.isEmpty()) {
-                        log.debug("Will add {} permissions to user {} for app {}", appPermission.size(), username, appcode);
+                        log.debug("{} will add {} permissions to user {} for app {}", this.getClass().getSimpleName(), appPermission.size(), username, appcode);
                         authUser.addAppPermissions(appPermission);
                         authUser.addAppAuthorities(appPermission);
                     }
@@ -88,7 +88,7 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
                 }
             }
         } catch (Exception e){
-            log.debug("SSO authentication failed from request with user {} for app {}", keyword, authentication.getCredentials());
+            log.debug(">_< {} SSO authentication failed from request with user {} for app {}", this.getClass().getSimpleName(), keyword, authentication.getCredentials());
             Exceptions.printException(e);
         }
         return token;
