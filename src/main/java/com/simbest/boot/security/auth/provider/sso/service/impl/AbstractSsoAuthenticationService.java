@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 
 import java.security.Principal;
 import java.util.Set;
@@ -57,8 +56,8 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
 
     /**
      * 在应用的人员群组中校验用户是否可以访问
-     * @param username
-     * @param appcode
+     * @param keyword
+     * @param authentication
      * @return
      */
     public SsoUsernameAuthentication attemptAuthentication(String keyword, SsoUsernameAuthentication authentication) {
@@ -66,6 +65,7 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
         SsoUsernameAuthentication token = null;
         try {
             IUser authUser = null;
+            log.debug( "authentication.getPrincipal()的值为："+authentication.getPrincipal() );
             if(authentication.getPrincipal() instanceof UsernamePrincipal){
                 authUser = authService.findByKey(keyword, IAuthService.KeyType.username);
             } else if (authentication.getPrincipal() instanceof KeyTypePrincipal){
@@ -74,9 +74,18 @@ public abstract class AbstractSsoAuthenticationService implements SsoAuthenticat
             log.debug("{} Login user is {}", this.getClass().getSimpleName(), authUser);
             if(null != authUser) {
                 String username = authUser.getUsername();
+                log.debug( "username"+username );
                 String appcode = authentication.getCredentials().toString();
+<<<<<<< HEAD
                 if(authService.checkUserAccessApp(username, appcode)) {
                     log.debug("{} check user {} access app {} sucessfully....", this.getClass().getSimpleName(), username, appcode);
+=======
+                log.debug( "appcode"+appcode );
+                boolean flag =  authService.checkUserAccessApp(username, appcode);
+                log.debug( "flag:"+flag );
+                if(flag) {
+                    log.debug("Check user {} access app {} sucessfully....", username, appcode);
+>>>>>>> e753f431340fb8da5975cb1db6e9ea0bd84f5b2b
                     //追加权限
                     Set<? extends IPermission> appPermission = authService.findUserPermissionByAppcode(username, appcode);
                     if(null != appPermission && !appPermission.isEmpty()) {
