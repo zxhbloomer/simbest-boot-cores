@@ -4,7 +4,9 @@ import com.simbest.boot.base.service.impl.LogicService;
 import com.simbest.boot.sys.model.SysOperateLog;
 import com.simbest.boot.sys.repository.SysOperateLogRepository;
 import com.simbest.boot.sys.service.ISysOperateLogService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * <strong>Title : ISysOperateLogService</strong><br>
@@ -19,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 修改人 修改日期 修改描述<br>
  * -------------------------------------------<br>
  */
+@Slf4j
+@Service
 public class SysOperateLogService extends LogicService<SysOperateLog,String> implements ISysOperateLogService {
 
 
