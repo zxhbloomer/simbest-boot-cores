@@ -18,4 +18,10 @@ import com.simbest.boot.sys.model.SysOperateLog;
  */
 public interface ISysOperateLogService extends ILogicService<SysOperateLog,String> {
 
+    /**
+     * 保存系统操作日志
+     * @param sysOperateLog         操作日志对象
+     * @return
+     */
+    SysOperateLog saveLog(SysOperateLog sysOperateLog);
 }

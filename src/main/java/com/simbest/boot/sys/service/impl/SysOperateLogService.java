@@ -33,4 +33,14 @@ public class SysOperateLogService extends LogicService<SysOperateLog,String> imp
         super( repository );
         this.sysOperateLogRepository = repository;
     }
+
+    /**
+     * 保存系统操作日志
+     * @param sysOperateLog         操作日志对象
+     * @return
+     */
+    @Override
+    public SysOperateLog saveLog ( SysOperateLog sysOperateLog ) {
+        return sysOperateLogRepository.save( sysOperateLog );
+    }
 }
