@@ -44,6 +44,7 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -278,6 +279,7 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 //                    .addNodeAddress("redis://10.92.80.70:26379", "redis://10.92.80.70:26389", "redis://10.92.80.70:26399")
 //                    .addNodeAddress("redis://10.92.80.71:26379", "redis://10.92.80.71:26389", "redis://10.92.80.71:26399");
         }
+        log.debug("--------------------------------------------RedissonClient start");
         return Redisson.create(redissonConfig);
     }
 
@@ -289,6 +291,11 @@ public class RedisConfiguration extends CachingConfigurerSupport {
         return d;
     }
 
+    @PreDestroy
+    public void destroy() {
+        //redisson.shutdown(); //交由RedisConfiguration.redissonClient()进行shutdown
+        log.debug("--------------------------------------------RedissonClient shutdown");
+    }
 
 }
 

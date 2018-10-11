@@ -3,42 +3,46 @@
  */
 package com.simbest.boot.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.resource.ContentVersionStrategy;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
+import java.util.List;
+
 /**
- * 用途：配置静态文件目录
+ * 用途：Web MVC 配置
  * 作者: lishuyi
- * 时间: 2018/4/17  23:28
+ * 时间: 2018/10/11  17:32
  */
-//@Configuration
-//@EnableWebMvc
-public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+@Configuration
+public class WebMvcConfigSupport extends WebMvcConfigurationSupport {
 
-//    @Autowired
-//    private ObjectMapper objectMapper;
+    /**
+     * 统一使用JacksonConfiguration的ObjectMapper
+     */
+    @Autowired
+    private ObjectMapper objectMapper;
 
-//    @Override
-//    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-//        converters.add(new MappingJackson2HttpMessageConverter(objectMapper.copy()));
-//        converters.add(new AbstractHttpMessageConverter<InputStream>(MediaType.APPLICATION_OCTET_STREAM) {
-//            protected boolean supports(Class<?> clazz) {
-//                return InputStream.class.isAssignableFrom(clazz);
-//            }
-//
-//            protected InputStream readInternal(Class<? extends InputStream> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-//                return inputMessage.getBody();
-//            }
-//
-//            protected void writeInternal(InputStream inputStream, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-//                IOUtils.copy(inputStream, outputMessage.getBody());
-//            }
-//        });
-//    }
+    @Bean
+    public MappingJackson2HttpMessageConverter customJackson2HttpMessageConverter() {
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        jsonConverter.setObjectMapper(objectMapper);
+        return jsonConverter;
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(customJackson2HttpMessageConverter());
+        super.addDefaultHttpMessageConverters(converters);
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -65,6 +69,4 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
                 .resourceChain(true)
                 .addResolver(versionResourceResolver);
     }
-
-
 }

@@ -8,9 +8,6 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 /**
  * 用途： 创建分布式锁模板实例的工厂Bean
  * 作者: lishuyi
@@ -25,17 +22,6 @@ public class DistributedLockFactoryBean implements FactoryBean<DistributedLockTe
 
     @Autowired
     private RedissonClient redisson;
-
-    @PostConstruct
-    public void init() {
-        log.debug("--------------------------------------------RedissonClient start");
-    }
-
-    @PreDestroy
-    public void destroy() {
-        //redisson.shutdown(); //交由RedisConfiguration.redissonClient()进行shutdown
-        log.debug("--------------------------------------------RedissonClient shutdown");
-    }
 
     @Override
     public DistributedLockTemplate getObject() throws Exception {

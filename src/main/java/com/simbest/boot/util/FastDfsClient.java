@@ -12,6 +12,7 @@ import org.csource.common.MyException;
 import org.csource.common.NameValuePair;
 import org.csource.fastdfs.ClientGlobal;
 import org.csource.fastdfs.FileInfo;
+import org.csource.fastdfs.ProtoCommon;
 import org.csource.fastdfs.StorageClient;
 import org.csource.fastdfs.TrackerClient;
 import org.csource.fastdfs.TrackerServer;
@@ -19,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,10 +53,27 @@ public class FastDfsClient {
             }
             if (trackerServer == null) {
                 trackerServer = tracker.getConnection();
+                //给fastdfs发送一个消息,解决fastdfs第一次上传文件报错recv package size -1!=10。参考https://blog.qianxunclub.com/exception/fastdfs-recv-package-size/
+                ProtoCommon.activeTest(trackerServer.getSocket());
             }
             storageClient = new StorageClient(trackerServer, null);
+            log.info("FASTDFS StorageClient init successfully!");
         } catch (Exception ex) {
+            log.error("FASTDFS StorageClient init failed!");
             Exceptions.printException(ex);
+        }
+    }
+
+    @PreDestroy
+    public void shutdown(){
+        if(null != trackerServer){
+            try {
+                trackerServer.close();
+                log.info("FASTDFS TrackerServer shutdown successfully!");
+            } catch (IOException e) {
+                log.error("FASTDFS TrackerServer shutdown failed!");
+                Exceptions.printException(e);
+            }
         }
     }
 
@@ -64,7 +83,7 @@ public class FastDfsClient {
 
     public static String uploadFile(byte[] fileContent, String fileName, String extName) throws Exception {
         String fileLength = String.valueOf(fileContent.length);
-        log.debug("FastDfsClient upload fileName {} extName {} with length {}", fileLength, fileName, extName);
+        log.debug("FastDfsClient upload fileName: {} extName: {} with length: {}", fileName, extName, fileLength);
         NameValuePair[] metas = new NameValuePair[3];
         metas[0] = new NameValuePair("fileName", fileName);
         metas[1] = new NameValuePair("extName", extName);
@@ -83,6 +102,10 @@ public class FastDfsClient {
      * @throws Exception
      */
     public static String uploadFile(byte[] fileContent, String extName, NameValuePair[] metas) throws Exception {
+        log.debug("FastDfsClient upload file with extName: {} and metadata", extName);
+        for(NameValuePair kv : metas){
+            log.debug("metadata name: {} value: {}", kv.getName(), kv.getValue());
+        }
         String[] result = storageClient.upload_file(fileContent, extName, metas);
         String group = result[0];
         String filePath = result[1];
