@@ -6,6 +6,7 @@ package com.simbest.boot.sys.web;
 import com.simbest.boot.base.web.controller.LogicController;
 import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.config.AppConfig;
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.sys.model.SysFile;
 import com.simbest.boot.sys.model.UploadFileResponse;
 import com.simbest.boot.sys.service.ISysFileService;
@@ -15,6 +16,7 @@ import com.simbest.boot.util.encrypt.WebOffice3Des;
 import com.simbest.boot.util.json.JacksonUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -162,16 +164,19 @@ public class SysFileController extends LogicController<SysFile, String> {
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        // headers.setContentType(MediaType.parseMediaType(sysFile.getFileType()));
-        // String downloadFileName = new String(sysFile.getFileName().getBytes("UTF-8"), "ISO-8859-1");
-
         ContentDisposition cd = ContentDisposition.builder("attachment")
                 .filename(sysFile.getFileName(), StandardCharsets.UTF_8) // 防止文件名乱码，需指定文件名编码
                 .size(sysFile.getFileSize())
                 .build();
         headers.setContentDisposition(cd);
         File realFile = fileService.getRealFileById(id);
+        if(AppFileUtil.isImage(realFile)){
+            String fileType = AppFileUtil.getFileType(realFile);
+            String[] fileTypes = StringUtils.split(fileType, ApplicationConstants.SLASH);
+            headers.setContentType(new MediaType(fileTypes[0], fileTypes[1]));
+        } else {
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        }
         Resource resource = new InputStreamResource(new FileInputStream(realFile));
         return ResponseEntity.ok().headers(headers).body(resource);
     }
@@ -223,4 +228,5 @@ public class SysFileController extends LogicController<SysFile, String> {
             return JsonResponse.defaultErrorResponse();
         }
     }
+
 }

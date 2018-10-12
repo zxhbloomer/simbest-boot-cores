@@ -22,6 +22,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -107,7 +109,26 @@ public class AppFileUtil {
         return FilenameUtils.getExtension(pathToName);
     }
 
+    public static String getFileType(File file) {
+        try {
+            return Files.probeContentType(file.toPath());
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
+    public static boolean isImage(File file) {
+        try {
+            Image image = ImageIO.read(file);
+            if (image == null) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch(IOException ex) {
+           return false;
+        }
+    }
 
     /**
      * 上传单个文件
