@@ -331,11 +331,34 @@ public class UumsSysUserinfoApi {
     public List<UserOrgTree> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
+        return findUser(appcode,username,sysAppDecisionmap);
+    }
+
+    /**
+     * 根据过滤条件获取决策下的用户，无session
+     * @param appcode
+     * @param sysAppDecisionmap
+     * @return
+     */
+    public List<UserOrgTree> findUserByDecisionNoPageNoSession(String appcode,Map sysAppDecisionmap){
+        String username =(String )sysAppDecisionmap.get("loginUser");
+        log.debug("Http remote request user by username: {}", username);
+        return findUser(appcode,username,sysAppDecisionmap);
+    }
+
+    /**
+     * 根据过滤条件获取决策下的用户
+     * @param appcode
+     * @param username
+     * @param sysAppDecisionmap
+     * @return
+     */
+    private List<UserOrgTree> findUser(String appcode,String username,Map sysAppDecisionmap){
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
         JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findUserByDecisionNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode
-        +"&username="+username)
+                +"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class);
         if(response==null){
@@ -360,6 +383,27 @@ public class UumsSysUserinfoApi {
     public List<UserOrgTree> findUserByUsernameNoPage(String appcode,String username){
         String loginUser = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", loginUser);
+        return findUserByUsername(appcode, loginUser, username);
+    }
+
+    /**
+     * 根据用户返回用户以及用户的的组织树，无session
+     * @param appcode
+     * @param username
+     * @return
+     */
+    public List<UserOrgTree> findUserByUsernameNoPageNoSession(String appcode,String loginUser,String username){
+        log.debug("Http remote request user by username: {}", loginUser);
+        return findUserByUsername(appcode, loginUser, username);
+    }
+
+    /**
+     * 返回用户以及用户的的组织树
+     * @param appcode
+     * @param username
+     * @return
+     */
+    private List<UserOrgTree> findUserByUsername(String appcode,String loginUser,String username){
         JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByUsernameNoPage"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)

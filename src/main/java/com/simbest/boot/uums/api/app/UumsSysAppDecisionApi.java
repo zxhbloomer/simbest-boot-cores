@@ -99,6 +99,29 @@ public class UumsSysAppDecisionApi {
     public List<SimpleAppDecision> findDecisions(String appcode, Map sysAppDecisionMap) {
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
+        return find(appcode,username,sysAppDecisionMap);
+    }
+
+    /**
+     * 据appcode以及其下的流程id及活动id获取其下全部决策信息,不需要session
+     * @param appcode
+     * @param sysAppDecisionMap
+     * @return
+     */
+    public List<SimpleAppDecision> findDecisionsNoSession(String appcode, Map sysAppDecisionMap) {
+        String username =(String ) sysAppDecisionMap.get("loginUser");
+        log.debug("Http remote request user by username: {}", username);
+        return find(appcode,username,sysAppDecisionMap);
+    }
+
+    /**
+     * 获取其下全部决策信息
+     * @param appcode
+     * @param username
+     * @param sysAppDecisionMap
+     * @return
+     */
+    private List<SimpleAppDecision> find(String appcode,String username, Map sysAppDecisionMap){
         String json0=JacksonUtils.obj2json(sysAppDecisionMap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
@@ -111,6 +134,28 @@ public class UumsSysAppDecisionApi {
         }
         if(!(response.getData() instanceof ArrayList)){
             log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleAppDecision> appDecisionList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleAppDecision>>(){});
+        return appDecisionList;
+    }
+
+    /**
+     * 根据appCode查询某应用下流程的信息，不使用规则
+     * @param appcode
+     * @return
+     */
+    public List<SimpleAppDecision> findDecisionsByApp(String appcode){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findDecisionsByApp"+SSO)
+                .param( AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param( AuthoritiesConstants.SSO_API_APP_CODE,appcode )
+                .param("appCode", appcode)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());

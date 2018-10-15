@@ -94,6 +94,17 @@ public class UumsSysAppDecisionController {
         return JsonResponse.success(uumsSysAppDecisionApi.findDecisions(appcode,sysAppDecisionmap));
     }
 
+    /**
+     * 根据appCode查询某应用下流程的信息，不使用规则
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "根据appCode查询某应用下流程的信息，不使用规则", notes = "根据appCode查询某应用下流程的信息，不使用规则")
+    @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String", paramType = "query")
+    @PostMapping(value = "/findDecisionsByApp")
+    public JsonResponse findDecisionsByApp( @RequestParam String appcode) {
+        return JsonResponse.success(uumsSysAppDecisionApi.findDecisionsByApp(appcode));
+    }
 }
 
 
