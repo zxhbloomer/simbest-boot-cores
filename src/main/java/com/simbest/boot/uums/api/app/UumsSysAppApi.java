@@ -90,6 +90,24 @@ public class UumsSysAppApi {
     }
 
     /**
+     * 获取全部应用职位列表无分页
+     * @param appcode
+     * @param sysAppMap
+     * @return
+     */
+    public JsonResponse findAllNoPage( String appcode,Map sysAppMap) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(sysAppMap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findAllNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode )
+                .json( json0 )
+                .asBean(JsonResponse.class);
+        return response;
+    }
+
+    /**
      * 校验当前应用的appCode是否存在
      * @param appcode
      * @return

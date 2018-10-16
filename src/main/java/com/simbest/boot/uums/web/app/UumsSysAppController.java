@@ -7,12 +7,12 @@ import com.simbest.boot.base.web.response.JsonResponse;
 import com.simbest.boot.uums.api.app.UumsSysAppApi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -46,6 +46,54 @@ public class UumsSysAppController {
     @PostMapping("/findAppByAppCode")
     public JsonResponse findById(@RequestParam(required = false)  String appcode,@RequestParam(required = false)  String username) {
         return JsonResponse.success(uumsSysAppApi.findAppByAppCode( appcode ,username));
+    }
+
+    /**
+     * 单表条件查询
+     * @param page
+     * @param size
+     * @param direction
+     * @param properties
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "单表条件查询", notes = "单表条件查询")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "page", value = "当前页码", dataType = "int", paramType = "query", //
+                    required = true, example = "1"), //
+            @ApiImplicitParam(name = "size", value = "每页数量", dataType = "int", paramType = "query", //
+                    required = true, example = "10"), //
+            @ApiImplicitParam(name = "direction", value = "排序规则（asc/desc）", dataType = "String", //
+                    paramType = "query"), //
+            @ApiImplicitParam(name = "properties", value = "排序规则（属性名称）", dataType = "String", //
+                    paramType = "query") //
+    })
+    @PostMapping("/findAll")
+    public JsonResponse findAll( @RequestParam(required = true, defaultValue = "1") int page, //
+                                 @RequestParam(required = true, defaultValue = "10") int size, //
+                                 @RequestParam(required = true) String direction,
+                                 @RequestParam(required = true) String properties,
+                                 @RequestParam String appcode,
+                                 @RequestBody Map sysAppMap) {
+        return uumsSysAppApi.findAll( page , size , direction , properties , appcode, sysAppMap);
+    }
+
+    /**
+     * 获取全部应用职位列表无分页
+     * @param appcode
+     * @param sysAppMap
+     * @return
+     */
+    @ApiOperation(value = "单表条件查询", notes = "单表条件查询")
+    @ApiImplicitParams ({ //
+            @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", paramType = "query", //
+                    required = true, example = "1")
+    })
+    @PostMapping("/findAllNoPage")
+    public JsonResponse findAllNoPage(
+                                 @RequestParam String appcode,
+                                 @RequestBody(required = false) Map sysAppMap) {
+        return uumsSysAppApi.findAllNoPage(  appcode, sysAppMap);
     }
 
 }
