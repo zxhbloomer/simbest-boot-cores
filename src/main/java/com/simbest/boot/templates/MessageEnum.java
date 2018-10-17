@@ -92,8 +92,23 @@ public enum MessageEnum {
      * @param itemSubject			: 事项主题。
      * @消息内容 协作配合:您收到汪祥向您发送的"关于台前分公司拆除楼顶消防水箱的请示"的事件，请及时处理。
      */
-    MT000001("${appName}:您收到${fromUser}向您发送的[${itemSubject}]的${appName}事件，请及时处理。");
+    MT000001("${appName}:您收到${fromUser}向您发送的[${itemSubject}]的${appName}事件，请及时处理。"),
 
+    /**
+     * @param appName       系统名称
+     * @param managerUser   管理员类型
+     * @param documentType  档案类型
+     * @消息内容 专利管理提醒：档案室管理员提醒您，您借阅的专利实物档案已经到期，请及时归还
+     */
+    MT000002("${appName}提醒:${managerUser}提醒您，您借阅的${documentType}已经到期，请及时归还。"),
+
+    /**
+     * @param appName       系统名称
+     * @param managerUser   管理员类型
+     * @param documentType  档案类型
+     * @消息内容 专利管理提醒：档案室管理员提醒您，请及时归还您借阅的专利实物档案
+     */
+    MT000003("${appName}提醒:${managerUser}提醒您，请及时归还您借阅的{documentType}。");
 
 
     private String message;
