@@ -3,7 +3,10 @@
  */
 package com.simbest.boot.security.auth.oauth2;
 
+import com.simbest.boot.base.exception.Exceptions;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
 import org.springframework.stereotype.Component;
@@ -18,10 +21,17 @@ public class CustomWebResponseExceptionTranslator extends DefaultWebResponseExce
 
     @Override
     public ResponseEntity<OAuth2Exception> translate(Exception e) throws Exception {
-
-        OAuth2Exception oAuth2Exception = (OAuth2Exception) e;
-        return ResponseEntity
-                .status(oAuth2Exception.getHttpErrorCode())
-                .body(new CustomOauthException(oAuth2Exception.getMessage()));
+        Exceptions.printException(e);
+        if(e instanceof OAuth2Exception) {
+            OAuth2Exception oAuth2Exception = (OAuth2Exception) e;
+            return ResponseEntity
+                    .status(oAuth2Exception.getHttpErrorCode())
+                    .body(new CustomOauthException(oAuth2Exception.getMessage()));
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .body(new OAuth2Exception(e.getMessage()));
+        }
     }
 }
