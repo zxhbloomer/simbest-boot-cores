@@ -647,6 +647,25 @@ public class UumsSysUserinfoApi {
         return response;
     }
 
+    /**
+     * 获取一个群组下的所有人，并且对人员进行排序，排序之后获取人员的全部信息
+     * @param groupId
+     * @param appcode
+     * @return
+     */
+    public JsonResponse findUserByGroupSort(String groupId, String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByGroupSort"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("groupId",groupId)
+                .asBean(JsonResponse.class);
+        return response;
+    }
+
+
+
     //增加用户的权限
    /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {
         String username = SecurityUtils.getCurrentUserName();

@@ -346,6 +346,12 @@ public class UumsSysUserInfoController {
         return JsonResponse.success( uumsSysUserinfoApi.findByKey(keyword,keyType,appcode));
     }
 
+    /**
+     * 根据群组sid查询OA账号，真实姓名及该用户的职位id，职位排序和职位名以及所在组织的displayName
+     * @param appcode
+     * @param groupSid
+     * @return
+     */
     @ApiOperation(value = "根据群组sid查询OA账号，真实姓名及该用户的职位id，职位排序和职位名以及所在组织的displayName", notes = "根据群组sid查询OA账号，真实姓名及该用户的职位id，职位排序和职位名以及所在组织的displayName")
     @ApiImplicitParams ({ //
             @ApiImplicitParam(name = "appcode", value = "应用编码", dataType = "String", //
@@ -358,6 +364,13 @@ public class UumsSysUserInfoController {
         return JsonResponse.success( uumsSysUserinfoApi.findUserInfoByGroupSidNoPage(appcode,groupSid));
     }
 
+    /**
+     * 修改用户密码
+     * @param username
+     * @param rsaPassword
+     * @param appCode
+     * @return
+     */
     @ApiOperation(value = "修改用户密码", notes = "修改用户密码")
     @ApiImplicitParams ({
             @ApiImplicitParam(name = "username", value = "用户名", dataType = "String" ,paramType = "query"),
@@ -369,6 +382,13 @@ public class UumsSysUserInfoController {
         return uumsSysUserinfoApi.changeUserPassword(username,rsaPassword,appCode);
     }
 
+    /**
+     * 修改我的密码
+     * @param oldRsaPassword
+     * @param newRsaPassword
+     * @param appCode
+     * @return
+     */
     @ApiOperation(value = "修改我的密码", notes = "修改我的密码")
     @ApiImplicitParams ({
             @ApiImplicitParam(name = "oldRsaPassword", value = "经过RSA加密的原始密码", dataType = "String" ,paramType = "query"),
@@ -378,6 +398,22 @@ public class UumsSysUserInfoController {
     @PostMapping(value ="/changeMyPassword")
     public JsonResponse changeMyPassword(@RequestParam String oldRsaPassword, @RequestParam String newRsaPassword, @RequestParam String appCode){
         return uumsSysUserinfoApi.changeMyPassword(oldRsaPassword,newRsaPassword,appCode);
+    }
+
+    /**
+     * 获取一个群组下的所有人，并且对人员进行排序，排序之后获取人员的全部信息
+     * @param groupId
+     * @param appCode
+     * @return
+     */
+    @ApiOperation(value = "获取一个群组下的所有人，并且对人员进行排序，排序之后获取人员的全部信息", notes = "获取一个群组下的所有人，并且对人员进行排序，排序之后获取人员的全部信息")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "groupId", value = "群组id", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "appCode", value = "应用编码", dataType = "String", paramType = "query")
+    })
+    @PostMapping(value ="/findUserByGroupSort")
+    public JsonResponse findUserByGroupSort(@RequestParam String groupId, @RequestParam String appCode){
+        return uumsSysUserinfoApi.findUserByGroupSort(groupId,appCode);
     }
 
     /**
