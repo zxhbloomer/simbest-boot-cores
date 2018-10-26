@@ -33,7 +33,7 @@ public class DruidConfiguration {
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(),"/druid/*");
         //添加初始化参数：initParams
         //白名单：
-        servletRegistrationBean.addInitParameter("allow","127.0.0.1,localhost,10.92.81.163");
+        servletRegistrationBean.addInitParameter("allow","127.0.0.1,localhost,10.92.81.163,10.92.82.44");
         //IP黑名单 (存在共同时，deny优先于allow) : 如果满足deny的话提示:Sorry, you are not permitted to view this page.
         //servletRegistrationBean.addInitParameter("deny","localhost");
         // 添加控制台管理用户
