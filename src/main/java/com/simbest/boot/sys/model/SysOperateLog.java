@@ -5,10 +5,7 @@ import com.simbest.boot.base.model.LogicModel;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * <strong>Title : SysOperateLog</strong><br>
@@ -29,6 +26,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "SYS_LOG_OPERATE")
 public class SysOperateLog extends LogicModel {
 
     @Id
