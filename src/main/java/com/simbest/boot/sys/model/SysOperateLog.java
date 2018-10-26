@@ -42,7 +42,7 @@ public class SysOperateLog extends LogicModel {
     @Column(nullable = false,length = 500)
     private String operateInterface;                //调用接口
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String interfaceParam;                  //接口参数
 
     @Column(nullable = false,length = 10)
