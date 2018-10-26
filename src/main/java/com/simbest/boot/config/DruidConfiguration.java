@@ -28,14 +28,14 @@ public class DruidConfiguration {
      * @return
      */
     @Bean
-    public ServletRegistrationBean DruidStatViewServle2(){
+    public ServletRegistrationBean DruidStatViewServle(){
         //org.springframework.boot.context.embedded.ServletRegistrationBean提供类的进行注册.
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(),"/druid/*");
         //添加初始化参数：initParams
         //白名单：
         servletRegistrationBean.addInitParameter("allow","127.0.0.1,localhost,10.92.81.163,10.92.82.44");
-        //IP黑名单 (存在共同时，deny优先于allow) : 如果满足deny的话提示:Sorry, you are not permitted to view this page.
-        //servletRegistrationBean.addInitParameter("deny","localhost");
+        //IP黑名单 (共同存在时，deny优先于allow) : 如果满足deny的话提示:Sorry, you are not permitted to view this page.
+        servletRegistrationBean.addInitParameter("deny","localhost");
         // 添加控制台管理用户
         servletRegistrationBean.addInitParameter("loginUsername","hadmin");
         servletRegistrationBean.addInitParameter("loginPassword","111.com");
@@ -49,7 +49,7 @@ public class DruidConfiguration {
      * @return
      */
     @Bean
-    public FilterRegistrationBean druidStatFilter2(){
+    public FilterRegistrationBean druidStatFilter(){
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
         //添加过滤规则.
         filterRegistrationBean.addUrlPatterns("/*");
