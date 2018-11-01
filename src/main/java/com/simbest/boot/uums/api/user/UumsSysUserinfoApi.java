@@ -193,6 +193,28 @@ public class UumsSysUserinfoApi {
         return auth;
     }
 
+    /**
+     * 根据部门以及职位查询所有的人的用户名
+     * @param loginUser
+     * @param orgCode
+     * @param positionIds
+     * @param appcode
+     * @return
+     */
+    public String findUsernameByOrgAndPosition(String loginUser,String orgCode,String positionIds,String appcode) {
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUsernameByOrgAndPosition"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME,encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("orgCode",orgCode)
+                .param("positionIds", positionIds)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        return (String ) response.getData();
+    }
+
 
     /**
      * 根据群组sid查询用户信息并分页
@@ -648,7 +670,7 @@ public class UumsSysUserinfoApi {
     }
 
     /**
-     * 获取一个群组下的所有人，并且对人员进行排序，排序之后获取人员的全部信息
+     * 获取一个群组下的所有人，并且对人员进行排序，排序之后获取人员的全部信息。每个人只会给一个最大的组织和职位。
      * @param groupId
      * @param appcode
      * @return

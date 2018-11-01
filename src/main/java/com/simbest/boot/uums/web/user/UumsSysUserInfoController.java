@@ -105,6 +105,29 @@ public class UumsSysUserInfoController {
     }
 
     /**
+     * 根据部门以及职位查询所有的人的用户名
+     * @param loginUser
+     * @param orgCode
+     * @param positionIds
+     * @param appcode
+     * @return
+     */
+    @ApiOperation(value = "根据部门以及职位查询所有的人的用户名", notes = "根据部门以及职位查询所有的人的用户名")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "loginUser", value = "要验证的用户", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "orgCode", value = "组织编码", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "positionIds", value = "职位id", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "appcode", value = "appcode", dataType = "String", paramType = "query")
+    })
+    @PostMapping(value = "/findUsernameByOrgAndPosition")
+    public JsonResponse findUsernameByOrgAndPosition(@RequestParam String loginUser,
+                                                     @RequestParam String orgCode,
+                                                     @RequestParam String positionIds,
+                                                     @RequestParam String appcode) {
+        return JsonResponse.success(uumsSysUserinfoApi. findUsernameByOrgAndPosition(loginUser, orgCode, positionIds, appcode));
+    }
+
+    /**
      * 根据组织orgcode获取用户并分页
      * @param page
      * @param size
