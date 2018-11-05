@@ -1,6 +1,7 @@
 package com.simbest.boot.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -37,12 +39,14 @@ public class JacksonConfiguration {
     @Primary
     public ObjectMapper objectMapper() {
         SimpleModule simbestModule = new SimpleModule("Simbest JSON Module");
-        simbestModule.addDeserializer(String.class, new JacksonEmptyStringDeserializer());
+        simbestModule.addDeserializer(String.class, new JacksonCustomDeserializer());
         simbestModule.addSerializer(new JsonHtmlXssSerializer(String.class));
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new ParameterNamesModule()).registerModule(new
                 Jdk8Module()).registerModule(new JavaTimeModule()).registerModule(simbestModule);
 
+        //不允许出现特殊字符和转义符
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, false) ;
         //mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false); 不增加，避免key值为null，而避免节点消失
         //没有匹配的属性名称时不作失败处理  
         mapper.configure(MapperFeature.AUTO_DETECT_FIELDS, true);
@@ -57,7 +61,6 @@ public class JacksonConfiguration {
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
         mapper.configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, true);
         mapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
-        mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
         mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
 
         //序列化-对象转为字节
@@ -89,17 +92,18 @@ class JsonHtmlXssSerializer extends JsonSerializer<String> {
             throws IOException, JsonProcessingException {
         if (value != null) {
             String encodedValue = HtmlUtils.htmlEscape(value.toString());
+            //String encodedValue = StringEscapeUtils.escapeHtml4(value.toString());
             //以下定义因为特殊业务要求，放开的字符
-            encodedValue=encodedValue.replaceAll("&quot;", "\"");
+//            encodedValue=encodedValue.replaceAll("&quot;", "\"");
 //            encodedValue=encodedValue.replaceAll("&amp;", "&");
-            encodedValue=encodedValue.replaceAll("&ldquo;", "“");
-            encodedValue=encodedValue.replaceAll("&rdquo;", "”");
-            encodedValue=encodedValue.replaceAll("&mdash;", "—");
-            encodedValue=encodedValue.replaceAll("&times;", "×");
+//            encodedValue=encodedValue.replaceAll("&ldquo;", "“");
+//            encodedValue=encodedValue.replaceAll("&rdquo;", "”");
+//            encodedValue=encodedValue.replaceAll("&mdash;", "—");
+//            encodedValue=encodedValue.replaceAll("&times;", "×");
 //            encodedValue=encodedValue.replaceAll("&lt;", "<");
 //            encodedValue=encodedValue.replaceAll("&gt;", ">");
-//            encodedValue=encodedValue.replaceAll("&le;", "<=");
-//            encodedValue=encodedValue.replaceAll("&ge;", ">=");
+            encodedValue=encodedValue.replaceAll("&le;", "<=");
+            encodedValue=encodedValue.replaceAll("&ge;", ">=");
             jsonGenerator.writeString(encodedValue);
         }
     }
