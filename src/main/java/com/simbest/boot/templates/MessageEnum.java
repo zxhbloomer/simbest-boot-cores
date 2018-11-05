@@ -108,8 +108,15 @@ public enum MessageEnum {
      * @param documentType  档案类型
      * @消息内容 专利管理提醒：档案室管理员提醒您，请及时归还您借阅的专利实物档案
      */
-    MT000003("${appName}提醒:${managerUser}提醒您，请及时归还您借阅的{documentType}。");
+    MT000003("${appName}提醒:${managerUser}提醒您，请及时归还您借阅的{documentType}。"),
 
+    /**
+     * @param appName           系统名称
+     * @param serialNumber      编号
+     * @param approveResult     审批结果
+     * @消息内容 专利管理提醒：档案室管理员提醒您，请及时归还您借阅的专利实物档案
+     */
+    MT000004("【${appName}】您提交的“${serialNumber}”${appName}申请，已完成审批。审批结果：${approveResult}。请登录系统查看");
 
     private String message;
 
