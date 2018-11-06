@@ -1,11 +1,10 @@
 package com.simbest.boot.config;
 
+import com.alibaba.druid.support.http.StatViewServlet;
+import com.alibaba.druid.support.http.WebStatFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import com.alibaba.druid.support.http.StatViewServlet;
-import com.alibaba.druid.support.http.WebStatFilter;
 
 /**
  * <strong>Title : DruidConfiguration</strong><br>
@@ -20,7 +19,7 @@ import com.alibaba.druid.support.http.WebStatFilter;
  * 修改人 修改日期 修改描述<br>
  * -------------------------------------------<br>
  */
-@Configuration
+//@Configuration
 public class DruidConfiguration {
 
     /**
