@@ -13,17 +13,21 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 
 /**
- * 用途：将空字符串转换为null
+ * 用途：1、将空字符串转换为null 2、防止SQL注入 http://happyqing.iteye.com/blog/2229666
+ *
  * 作者: lishuyi
  * 时间: 2018/3/5  1:41
  */
-public class JacksonEmptyStringDeserializer extends StdDeserializer<String> {
+public class JacksonCustomDeserializer extends StdDeserializer<String> {
 
-    JacksonEmptyStringDeserializer() {
+    public final static String regex = "'|%|--|and|or|not|use|insert|delete|update|select|count|group|union" +
+            "|create|drop|truncate|alter|grant|execute|exec|xp_cmdshell|call|declare|source|sql";
+
+    JacksonCustomDeserializer() {
         this(null);
     }
 
-    protected JacksonEmptyStringDeserializer(Class<?> vc) {
+    protected JacksonCustomDeserializer(Class<?> vc) {
         super(vc);
     }
 
@@ -33,8 +37,13 @@ public class JacksonEmptyStringDeserializer extends StdDeserializer<String> {
         JsonNode node = jp.getCodec().readTree(jp);
         if (node.getNodeType() == JsonNodeType.STRING) {
             String val = node.asText("");
+            // 1、将空字符串转换为null
             if (Strings.isNullOrEmpty(val.trim())) {
                 return null;
+            }
+            // 2、防止SQL注入, (?i)不区分大小写替换
+            else {
+                return val.trim().replaceAll("(?i)"+regex, "");
             }
         }
         return node.asText();
