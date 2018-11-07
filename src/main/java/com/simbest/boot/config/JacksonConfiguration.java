@@ -1,25 +1,19 @@
 package com.simbest.boot.config;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.apache.commons.lang3.StringEscapeUtils;
+import com.simbest.boot.util.json.JacksonCustomDeserializer;
+import com.simbest.boot.util.json.JacksonCustomSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.web.util.HtmlUtils;
-
-import java.io.IOException;
 
 /**
  * <strong>Title</strong> : JacksonConfiguration.java<br>
@@ -40,7 +34,7 @@ public class JacksonConfiguration {
     public ObjectMapper objectMapper() {
         SimpleModule simbestModule = new SimpleModule("Simbest JSON Module");
         simbestModule.addDeserializer(String.class, new JacksonCustomDeserializer());
-        simbestModule.addSerializer(new JsonHtmlXssSerializer(String.class));
+        simbestModule.addSerializer(new JacksonCustomSerializer(String.class));
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new ParameterNamesModule()).registerModule(new
                 Jdk8Module()).registerModule(new JavaTimeModule()).registerModule(simbestModule);
@@ -77,34 +71,4 @@ public class JacksonConfiguration {
         return mapper;
     }
 
-}
-
-class JsonHtmlXssSerializer extends JsonSerializer<String> {
-    public JsonHtmlXssSerializer(Class<String> string) {
-        super();
-    }
-
-    public Class<String> handledType() {
-        return String.class;
-    }
-
-    public void serialize(String value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-            throws IOException, JsonProcessingException {
-        if (value != null) {
-            String encodedValue = HtmlUtils.htmlEscape(value.toString());
-            //String encodedValue = StringEscapeUtils.escapeHtml4(value.toString());
-            //以下定义因为特殊业务要求，放开的字符
-//            encodedValue=encodedValue.replaceAll("&quot;", "\"");
-//            encodedValue=encodedValue.replaceAll("&amp;", "&");
-//            encodedValue=encodedValue.replaceAll("&ldquo;", "“");
-//            encodedValue=encodedValue.replaceAll("&rdquo;", "”");
-//            encodedValue=encodedValue.replaceAll("&mdash;", "—");
-//            encodedValue=encodedValue.replaceAll("&times;", "×");
-//            encodedValue=encodedValue.replaceAll("&lt;", "<");
-//            encodedValue=encodedValue.replaceAll("&gt;", ">");
-            encodedValue=encodedValue.replaceAll("&le;", "<=");
-            encodedValue=encodedValue.replaceAll("&ge;", ">=");
-            jsonGenerator.writeString(encodedValue);
-        }
-    }
 }

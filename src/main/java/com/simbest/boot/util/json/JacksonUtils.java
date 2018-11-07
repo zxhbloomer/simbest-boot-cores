@@ -10,6 +10,7 @@ import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.config.JacksonConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,5 +128,27 @@ public class JacksonUtils {
             Exceptions.printException(e);
         }
         return result;
+    }
+
+    public static String escapeString(String value){
+        String escapeValue = HtmlUtils.htmlEscape(value);
+        //String escapeValue = StringEscapeUtils.escapeHtml4(value.toString());
+        //以下定义因为特殊业务要求，放开的字符
+//            escapeValue=escapeValue.replaceAll("&quot;", "\"");
+//            escapeValue=escapeValue.replaceAll("&amp;", "&");
+//            escapeValue=escapeValue.replaceAll("&ldquo;", "“");
+//            escapeValue=escapeValue.replaceAll("&rdquo;", "”");
+//            escapeValue=escapeValue.replaceAll("&mdash;", "—");
+//            escapeValue=escapeValue.replaceAll("&times;", "×");
+//            escapeValue=escapeValue.replaceAll("&lt;", "<");
+//            escapeValue=escapeValue.replaceAll("&gt;", ">");
+//            escapeValue=escapeValue.replaceAll("&le;", "<=");
+//            escapeValue=escapeValue.replaceAll("&ge;", ">=");
+        return escapeValue;
+    }
+
+    public static String unescapeString(String value){
+        String unescapeValue = HtmlUtils.htmlUnescape(value);
+        return unescapeValue;
     }
 }

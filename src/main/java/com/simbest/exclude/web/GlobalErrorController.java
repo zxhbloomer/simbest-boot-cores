@@ -37,7 +37,7 @@ import java.util.Map;
  * 作者: lishuyi
  * 时间: 2018/5/15  22:03
  */
-@Api(description = "SysLogLoginController", tags = {"系统管理-全局异常日志管理"})
+@Api(description = "GlobalErrorController", tags = {"系统管理-全局异常日志管理"})
 @Slf4j
 @Controller
 @RequestMapping("${server.error.path:${error.path:/error}}")

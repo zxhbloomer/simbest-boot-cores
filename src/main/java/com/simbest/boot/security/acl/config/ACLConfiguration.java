@@ -41,6 +41,8 @@ public class ACLConfiguration {
     @Bean
     public JdbcMutableAclService aclService() {
         JdbcMutableAclService jdbcMutableAclService = new JdbcMutableAclService(dataSource, lookupStrategy(), cache());
+        jdbcMutableAclService.setClassIdentityQuery("SELECT ACL_CLASS_SEQ.currval FROM dual");
+        jdbcMutableAclService.setSidIdentityQuery("SELECT ACL_SID_SEQ.currval FROM dual");
         return jdbcMutableAclService;
     }
 
