@@ -21,8 +21,8 @@ import java.io.IOException;
  */
 public class JacksonCustomDeserializer extends StdDeserializer<String> {
 
-    public final static String regex = "'|%|--|and|or|not|insert|delete|update|select|count|group|union" +
-            "|create|drop|truncate|alter|grant|execute|exec|xp_cmdshell|call|declare|source|sql";
+    /*public final static String regex = "'|%|--|and|or|not|insert|delete|update|select|count|group|union" +
+            "|create|drop|truncate|alter|grant|execute|exec|xp_cmdshell|call|declare|source|sql";*/
 
     public JacksonCustomDeserializer() {
         this(null);
@@ -45,7 +45,7 @@ public class JacksonCustomDeserializer extends StdDeserializer<String> {
             // 2、防止SQL注入, (?i)不区分大小写替换
             else {
                 val = HtmlUtils.htmlEscape(val);
-                val = val.trim().replaceAll("(?i)"+regex, "");
+                //val = val.trim().replaceAll("(?i)"+regex, "");
                 return val;
             }
         }
