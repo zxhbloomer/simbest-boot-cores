@@ -397,6 +397,58 @@ public class UumsSysUserinfoApi {
     }
 
     /**
+     * 根据过滤条件获取决策下的分组用户
+     * @param appcode
+     * @param sysAppDecisionmap
+     * @return
+     */
+    public List<Map<String,List<UserOrgTree>>> findUserByDecisionNoPageGrouping(String appcode,Map sysAppDecisionmap){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        return findUserGrouping(appcode,username,sysAppDecisionmap);
+    }
+
+    /**
+     * 根据过滤条件获取决策下的分组用户，无session
+     * @param appcode
+     * @param sysAppDecisionmap
+     * @return
+     */
+    public List<Map<String,List<UserOrgTree>>> findUserByDecisionNoPageNoSessionGrouping(String appcode,Map sysAppDecisionmap){
+        String username =(String )sysAppDecisionmap.get("loginUser");
+        log.debug("Http remote request user by username: {}", username);
+        return findUserGrouping(appcode,username,sysAppDecisionmap);
+    }
+
+    /**
+     * 根据过滤条件获取决策下的分组用户
+     * @param appcode
+     * @param username
+     * @param sysAppDecisionmap
+     * @return
+     */
+    private List<Map<String,List<UserOrgTree>>> findUserGrouping(String appcode,String username,Map sysAppDecisionmap){
+        String json0=JacksonUtils.obj2json(sysAppDecisionmap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findUserByDecisionNoPage"+SSO+"?loginuser="+username2+"&appcode="+appcode
+                +"&username="+username)
+                .json( json0 )
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<Map<String,List<UserOrgTree>>> userList=JacksonUtils.json2Type(json, new TypeReference<List<Map<String,List<UserOrgTree>>>>(){});
+        return userList;
+    }
+
+    /**
      * 根据用户返回用户以及用户的的组织树
      * @param appcode
      * @param username

@@ -178,7 +178,7 @@ public class UumsSysUserInfoController {
     }
 
     /**
-     * 根据过滤条件获取决策下的用户
+     * 根据过滤条件获取决策下的用户，有session
      * @param appcode
      * @param sysAppDecisionMap
      * @return
@@ -190,6 +190,21 @@ public class UumsSysUserInfoController {
     @PostMapping(value ="/findUserByDecisionNoPage")
     public JsonResponse findUserByDecisionNoPage(@RequestParam String appcode,@RequestBody Map sysAppDecisionMap){
         return JsonResponse.success(uumsSysUserinfoApi.findUserByDecisionNoPage(appcode,sysAppDecisionMap));
+    }
+
+    /**
+     * 根据过滤条件获取决策下的用户，无session
+     * @param appcode
+     * @param sysAppDecisionMap
+     * @return
+     */
+    @ApiOperation(value = "根据过滤条件获取决策下的用户", notes = "根据过滤条件获取决策下的用户")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "appcode", value = "当前应用appcode", dataType = "String" ,paramType = "query")
+    })
+    @PostMapping(value ="/findUserByDecisionNoPageGrouping")
+    public JsonResponse findUserByDecisionNoPageGrouping(@RequestParam String appcode,@RequestBody Map sysAppDecisionMap){
+        return JsonResponse.success(uumsSysUserinfoApi.findUserByDecisionNoPageGrouping(appcode,sysAppDecisionMap));
     }
 
     /**

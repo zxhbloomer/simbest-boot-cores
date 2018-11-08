@@ -10,10 +10,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * <strong>Title : SysAppController</strong><br>
@@ -87,6 +86,19 @@ public class UumsSysOrgController {
     @PostMapping ("/findCityDeapartmentAndCountyCompany")
     public JsonResponse findCityDeapartmentAndCountyCompany( @RequestParam  String appcode) {
         return JsonResponse.success(uumsSysOrgApi.findCityDeapartmentAndCountyCompany( appcode ));
+    }
+
+    /**
+     * 根据用户名以及规则出组织
+     * @param appcode
+     * @param userMap
+     * @return
+     */
+    @ApiOperation (value = "根据用户名以及规则出组织", notes = "根据用户名以及规则出组织")
+    @ApiImplicitParam(name = "appcode", value = "应用code", dataType = "String", paramType = "query")
+    @PostMapping ("/findOrgByUserMap")
+    public JsonResponse findCityDeapartmentAndCountyCompany( @RequestParam(required = false)  String appcode, @RequestBody(required = false) Map userMap) {
+        return JsonResponse.success(uumsSysOrgApi.findOrgByUserMap(appcode,userMap));
     }
 }
 

@@ -314,4 +314,35 @@ public class UumsSysOrgApi {
         return orgList;
     }
 
+    /**
+     * 根据用户名以及规则出组织
+     * @param appcode
+     * @param userMap
+     * @return
+     */
+    public List<SimpleOrg> findOrgByUserMap(String appcode,Map userMap) {
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        String json0=JacksonUtils.obj2json(userMap);
+        String username1=encryptor.encrypt(username);
+        String username2=username1.replace("+","%2B");
+        JsonResponse response= HttpClient.textBody(config.getUumsAddress() + USER_MAPPING + "findOrgByUserMap"+SSO+"?loginuser="+username2+"&appcode="+appcode )
+                .json( json0 )
+                .asBean(JsonResponse.class );
+        if(response==null){
+            log.debug("--response对象为空!--");
+            return null;
+        }
+        if(response.getData() == null ){
+            log.debug(response.getMessage());
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList )){
+            log.debug("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleOrg> orgList = JacksonUtils.json2Type(json, new TypeReference<List<SimpleOrg>>(){});
+        return orgList;
+    }
 }
