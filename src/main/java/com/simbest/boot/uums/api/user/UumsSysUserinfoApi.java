@@ -755,6 +755,33 @@ public class UumsSysUserinfoApi {
         return response;
     }
 
+    /**
+     * 获取某一个组织下的全部人，包括下级组织的人
+     * @param orgCode
+     * @param appcode
+     * @return
+     */
+    public Set<SimpleUser> findAllUserByOrgCode(String orgCode, String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findAllUserByOrgCode"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("orgCode",orgCode)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof List)){
+            log.error("--uums接口返回的类型不为List--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        Set<SimpleUser> users=JacksonUtils.json2Type(json, new TypeReference<Set<SimpleUser>>(){});
+        return users;
+    }
+
     //增加用户的权限
    /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {
         String username = SecurityUtils.getCurrentUserName();

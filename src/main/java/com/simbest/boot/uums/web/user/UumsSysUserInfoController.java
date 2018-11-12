@@ -471,6 +471,22 @@ public class UumsSysUserInfoController {
     }
 
     /**
+     * 获取某一个组织下的全部人，包括下级组织的人
+     * @param orgCode
+     * @param appCode
+     * @return
+     */
+    @ApiOperation(value = "获取某一个组织下的全部人，包括下级组织的人", notes = "获取某一个组织下的全部人，包括下级组织的人")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "orgCode", value = "组织编码", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "appCode", value = "应用编码", dataType = "String", paramType = "query")
+    })
+    @PostMapping(value ="/findAllUserByOrgCode")
+    public JsonResponse findAllUserByOrgCode(@RequestParam String orgCode, @RequestParam String appCode){
+        return JsonResponse.success( uumsSysUserinfoApi.findAllUserByOrgCode(orgCode,appCode),"获取组织下的全部人成功！");
+    }
+
+    /**
      * 增加用户的权限
      * @return
      */
