@@ -761,7 +761,7 @@ public class UumsSysUserinfoApi {
      * @param appcode
      * @return
      */
-    public Set<SimpleUser> findAllUserByOrgCode(String orgCode, String appcode) {
+    public Set<Map<String,Object>> findAllUserByOrgCode(String orgCode, String appcode) {
         String loginUser = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", loginUser);
         JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findAllUserByOrgCode"+SSO)
@@ -778,7 +778,7 @@ public class UumsSysUserinfoApi {
             return null;
         }
         String json = JacksonUtils.obj2json(response.getData());
-        Set<SimpleUser> users=JacksonUtils.json2Type(json, new TypeReference<Set<SimpleUser>>(){});
+        Set<Map<String,Object>> users=JacksonUtils.json2Type(json, new TypeReference<Set<Map<String,Object>>>(){});
         return users;
     }
 
