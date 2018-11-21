@@ -487,6 +487,22 @@ public class UumsSysUserInfoController {
     }
 
     /**
+     * 根据职位名获取用户不分页
+     * @param orgCode
+     * @param positionId
+     * @return
+     */
+    @ApiOperation(value = "根据职位名获取用户不分页", notes = "根据职位名获取用户不分页")
+    @ApiImplicitParams ({
+            @ApiImplicitParam(name = "positionId", value = "多个职位id", dataType = "String" ,paramType = "query"),
+            @ApiImplicitParam(name = "appCode", value = "应用编码", dataType = "String", paramType = "query")
+    })
+    @PostMapping(value ="/findUserByPositionNoPage")
+    public JsonResponse findUserByPositionNoPage(@RequestParam String orgCode, @RequestParam String positionId){
+        return JsonResponse.success( uumsSysUserinfoApi.findUserByPositionNoPage(orgCode,positionId),"获取职位下的人成功！");
+    }
+
+    /**
      * 增加用户的权限
      * @return
      */

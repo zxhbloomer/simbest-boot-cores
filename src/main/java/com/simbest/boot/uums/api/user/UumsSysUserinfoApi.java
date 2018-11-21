@@ -294,6 +294,33 @@ public class UumsSysUserinfoApi {
     }
 
     /**
+     * 根据职位名获取用户不分页
+     * @param appcode
+     * @param positionId
+     * @return
+     */
+    public List<SimpleUser> findUserByPositionNoPage( String appcode, String positionId ){
+        String username = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", username);
+        JsonResponse response =  HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByPositionNoPage"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(username))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("positionId", positionId)
+                .asBean(JsonResponse.class);
+        if(response==null){
+            log.error("--response对象为空!--");
+            return null;
+        }
+        if(!(response.getData() instanceof ArrayList)){
+            log.error("--uums接口返回的类型不为ArrayList--");
+            return null;
+        }
+        String json = JacksonUtils.obj2json(response.getData());
+        List<SimpleUser> userList=JacksonUtils.json2Type(json, new TypeReference<List<SimpleUser>>(){});
+        return userList;
+    }
+
+    /**
      * 根据角色id获取用户但不分页
      * @param roleId
      * @return
