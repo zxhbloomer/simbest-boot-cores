@@ -34,6 +34,15 @@ public class CustomDynamicWhere implements Serializable {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     /**
+     * 根据自定义进行原生的sql查询，无参数
+     * @param sql                       执行的sql语句
+     * @return
+     */
+    public List<Map<String, Object>> queryForList(String sql){
+        return jdbcTemplate.queryForList(sql);
+    }
+
+    /**
      * 根据自定义的动态参数进行原生的sql查询
      * @param sql                       执行的sql语句
      * @param params                    注入的参数  为占位符 ？
