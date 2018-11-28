@@ -44,7 +44,7 @@ public class JacksonCustomDeserializer extends StdDeserializer<String> {
             }
             // 2、防止SQL注入, (?i)不区分大小写替换
             else {
-                val = HtmlUtils.htmlEscape(val);
+                val = JacksonUtils.escapeString(val);
                 //val = val.trim().replaceAll("(?i)"+regex, "");
                 return val;
             }
