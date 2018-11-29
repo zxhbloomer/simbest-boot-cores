@@ -377,7 +377,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    public List<UserOrgTree> findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
+    public JsonResponse findUserByDecisionNoPage(String appcode,Map sysAppDecisionmap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         return findUser(appcode,username,sysAppDecisionmap);
@@ -389,7 +389,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    public List<UserOrgTree> findUserByDecisionNoPageNoSession(String appcode,Map sysAppDecisionmap){
+    public JsonResponse findUserByDecisionNoPageNoSession(String appcode,Map sysAppDecisionmap){
         String username =(String )sysAppDecisionmap.get("loginUser");
         log.debug("Http remote request user by username: {}", username);
         return findUser(appcode,username,sysAppDecisionmap);
@@ -402,7 +402,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    private List<UserOrgTree> findUser(String appcode,String username,Map sysAppDecisionmap){
+    private JsonResponse findUser(String appcode,String username,Map sysAppDecisionmap){
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
@@ -410,17 +410,7 @@ public class UumsSysUserinfoApi {
                 +"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class);
-        if(response==null){
-            log.error("--response对象为空!--");
-            return null;
-        }
-        if(!(response.getData() instanceof ArrayList)){
-            log.error("--uums接口返回的类型不为ArrayList--");
-            return null;
-        }
-        String json = JacksonUtils.obj2json(response.getData());
-        List<UserOrgTree> userList=JacksonUtils.json2Type(json, new TypeReference<List<UserOrgTree>>(){});
-        return userList;
+        return response;
     }
 
     /**
@@ -429,7 +419,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    public List<Map<String,List<UserOrgTree>>> findUserByDecisionNoPageGrouping(String appcode,Map sysAppDecisionmap){
+    public JsonResponse findUserByDecisionNoPageGrouping(String appcode,Map sysAppDecisionmap){
         String username = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", username);
         return findUserGrouping(appcode,username,sysAppDecisionmap);
@@ -441,7 +431,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    public List<Map<String,List<UserOrgTree>>> findUserByDecisionNoPageNoSessionGrouping(String appcode,Map sysAppDecisionmap){
+    public JsonResponse findUserByDecisionNoPageNoSessionGrouping(String appcode,Map sysAppDecisionmap){
         String username =(String )sysAppDecisionmap.get("loginUser");
         log.debug("Http remote request user by username: {}", username);
         return findUserGrouping(appcode,username,sysAppDecisionmap);
@@ -454,7 +444,7 @@ public class UumsSysUserinfoApi {
      * @param sysAppDecisionmap
      * @return
      */
-    private List<Map<String,List<UserOrgTree>>> findUserGrouping(String appcode,String username,Map sysAppDecisionmap){
+    private JsonResponse findUserGrouping(String appcode,String username,Map sysAppDecisionmap){
         String json0=JacksonUtils.obj2json(sysAppDecisionmap);
         String username1=encryptor.encrypt(username);
         String username2=username1.replace("+","%2B");
@@ -462,17 +452,7 @@ public class UumsSysUserinfoApi {
                 +"&username="+username)
                 .json( json0 )
                 .asBean(JsonResponse.class);
-        if(response==null){
-            log.error("--response对象为空!--");
-            return null;
-        }
-        if(!(response.getData() instanceof ArrayList)){
-            log.error("--uums接口返回的类型不为ArrayList--");
-            return null;
-        }
-        String json = JacksonUtils.obj2json(response.getData());
-        List<Map<String,List<UserOrgTree>>> userList=JacksonUtils.json2Type(json, new TypeReference<List<Map<String,List<UserOrgTree>>>>(){});
-        return userList;
+       return response;
     }
 
     /**

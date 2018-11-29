@@ -189,7 +189,7 @@ public class UumsSysUserInfoController {
     })
     @PostMapping(value ="/findUserByDecisionNoPage")
     public JsonResponse findUserByDecisionNoPage(@RequestParam String appcode,@RequestBody Map sysAppDecisionMap){
-        return JsonResponse.success(uumsSysUserinfoApi.findUserByDecisionNoPage(appcode,sysAppDecisionMap));
+        return uumsSysUserinfoApi.findUserByDecisionNoPage(appcode,sysAppDecisionMap);
     }
 
     /**
@@ -204,7 +204,7 @@ public class UumsSysUserInfoController {
     })
     @PostMapping(value ="/findUserByDecisionNoPageGrouping")
     public JsonResponse findUserByDecisionNoPageGrouping(@RequestParam String appcode,@RequestBody Map sysAppDecisionMap){
-        return JsonResponse.success(uumsSysUserinfoApi.findUserByDecisionNoPageGrouping(appcode,sysAppDecisionMap));
+        return uumsSysUserinfoApi.findUserByDecisionNoPageGrouping(appcode,sysAppDecisionMap);
     }
 
     /**
