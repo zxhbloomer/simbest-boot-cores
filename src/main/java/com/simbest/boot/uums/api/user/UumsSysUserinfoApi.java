@@ -461,7 +461,7 @@ public class UumsSysUserinfoApi {
      * @param username
      * @return
      */
-    public List<UserOrgTree> findUserByUsernameNoPage(String appcode,String username){
+    public JsonResponse findUserByUsernameNoPage(String appcode,String username){
         String loginUser = SecurityUtils.getCurrentUserName();
         log.debug("Http remote request user by username: {}", loginUser);
         return findUserByUsername(appcode, loginUser, username);
@@ -473,7 +473,7 @@ public class UumsSysUserinfoApi {
      * @param username
      * @return
      */
-    public List<UserOrgTree> findUserByUsernameNoPageNoSession(String appcode,String loginUser,String username){
+    public JsonResponse findUserByUsernameNoPageNoSession(String appcode,String loginUser,String username){
         log.debug("Http remote request user by username: {}", loginUser);
         return findUserByUsername(appcode, loginUser, username);
     }
@@ -484,23 +484,13 @@ public class UumsSysUserinfoApi {
      * @param username
      * @return
      */
-    private List<UserOrgTree> findUserByUsername(String appcode,String loginUser,String username){
+    private JsonResponse findUserByUsername(String appcode,String loginUser,String username){
         JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findUserByUsernameNoPage"+SSO)
                 .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
                 .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
                 .param("username",username)
                 .asBean(JsonResponse.class);
-        if(response==null){
-            log.error("--response对象为空!--");
-            return null;
-        }
-        if(!(response.getData() instanceof ArrayList)){
-            log.error("--uums接口返回的类型不为ArrayList--");
-            return null;
-        }
-        String json = JacksonUtils.obj2json(response.getData());
-        List<UserOrgTree> userList=JacksonUtils.json2Type(json, new TypeReference<List<UserOrgTree>>(){});
-        return userList;
+        return response;
     }
 
     /**

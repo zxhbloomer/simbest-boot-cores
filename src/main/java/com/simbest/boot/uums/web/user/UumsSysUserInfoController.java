@@ -220,7 +220,7 @@ public class UumsSysUserInfoController {
     })
     @PostMapping(value ="/findUserByUsernameNoPage")
     public JsonResponse findUserByUsernameNoPage(@RequestParam String appcode,@RequestParam String username){
-        return JsonResponse.success(uumsSysUserinfoApi.findUserByUsernameNoPage(appcode,username));
+        return uumsSysUserinfoApi.findUserByUsernameNoPage(appcode,username);
     }
 
     /**
