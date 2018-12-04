@@ -1,5 +1,6 @@
 package com.simbest.boot.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -59,12 +60,13 @@ public class JacksonConfiguration {
 
         //序列化-对象转为字节
         //禁止序列化空值
-        //mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
         mapper.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, true);
         mapper.configure(SerializationFeature.FLUSH_AFTER_WRITE_VALUE, true);
         //不包含空值属性
-        //mapper.setSerializationInclusion( JsonInclude.Include.NON_EMPTY);
+        mapper.setSerializationInclusion( JsonInclude.Include.NON_EMPTY);
+        mapper.setSerializationInclusion( JsonInclude.Include.NON_NULL );
         //格式化排列
         mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
 
