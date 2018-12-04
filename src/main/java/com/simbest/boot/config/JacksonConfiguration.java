@@ -60,7 +60,7 @@ public class JacksonConfiguration {
 
         //序列化-对象转为字节
         //禁止序列化空值
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, true);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
         mapper.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, true);
         mapper.configure(SerializationFeature.FLUSH_AFTER_WRITE_VALUE, true);
