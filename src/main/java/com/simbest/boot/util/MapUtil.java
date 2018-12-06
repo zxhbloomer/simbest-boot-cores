@@ -53,11 +53,12 @@ public class MapUtil {
                 //由字符串转换回对象对应的类型
                 if (field != null) {
                     field.setAccessible(true);
+                    Object value = map.get(field.getName());
                     // 如果类型是Boolean 是封装类
                     if ("class java.lang.Boolean".equals(field.getGenericType().toString())){
-                        Object value = "1".equals(map.get(field.getName()).toString())?true:false;
+                        value = "1".equals(map.get(field.getName()).toString())?true:false;
                     }
-                    field.set(obj, map.get(field.getName()));
+                    field.set(obj, value);
                 }
             }
         }
