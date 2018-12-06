@@ -55,7 +55,7 @@ public class MapUtil {
                     field.setAccessible(true);
                     // 如果类型是Boolean 是封装类
                     if ("class java.lang.Boolean".equals(field.getGenericType().toString())){
-                        Object value = "1".equals(map.get(field.getName()))?true:false;
+                        Object value = "1".equals(map.get(field.getName()).toString())?true:false;
                     }
                     field.set(obj, map.get(field.getName()));
                 }
