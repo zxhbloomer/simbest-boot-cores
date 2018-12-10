@@ -5,15 +5,19 @@ package com.simbest.boot.base.web.response;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.simbest.boot.constants.ErrorCodeConstants;
 import com.simbest.boot.util.DateUtil;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -132,5 +136,13 @@ public class JsonResponse {
         JsonResponse response = fail(obj);
         response.setMessage(message);
         return response;
+    }
+
+    public static JsonResponse unauthorized() {
+        return JsonResponse.builder().
+                errcode(HttpStatus.UNAUTHORIZED.value())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .error(HttpStatus.UNAUTHORIZED.name())
+                .build();
     }
 }

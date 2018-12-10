@@ -5,12 +5,14 @@ package com.simbest.boot.security.auth.config;
 
 import com.simbest.boot.config.Swagger2CsrfProtection;
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.security.auth.entryPoint.AccessDeniedEntryPoint;
 import com.simbest.boot.security.auth.filter.CaptchaAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.CustomAbstractAuthenticationProcessingFilter;
 import com.simbest.boot.security.auth.filter.RsaAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationFilter;
 import com.simbest.boot.security.auth.filter.SsoAuthenticationRegister;
 import com.simbest.boot.security.auth.filter.UumsAuthenticationFilter;
+import com.simbest.boot.security.auth.handle.FailedAccessDeniedHandler;
 import com.simbest.boot.security.auth.handle.FailedLoginHandler;
 import com.simbest.boot.security.auth.handle.SsoSuccessLoginHandler;
 import com.simbest.boot.security.auth.handle.SuccessLoginHandler;
@@ -136,17 +138,15 @@ public class FormSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .loginPage(ApplicationConstants.LOGIN_PAGE).failureUrl(ApplicationConstants.LOGIN_ERROR_PAGE) // 自定义登录界面
                 .failureHandler(failedLoginHandler) //记录登录错误日志，并自定义登录错误提示信息
                 .and().logout().logoutSuccessHandler(successLogoutHandler) // 成功登出后，重定向到登陆页
-                .and().exceptionHandling().accessDeniedPage("/403")// 处理异常，拒绝访问就重定向到 403 页面
+                .and().exceptionHandling().authenticationEntryPoint(new AccessDeniedEntryPoint()) //无权限返回JSON数据
+                .accessDeniedHandler(new FailedAccessDeniedHandler()) //无权限返回JSON数据
                 .and().headers().frameOptions().sameOrigin()
                 .and().csrf().disable()
-//                .and().csrf().requireCsrfProtectionMatcher(swagger2CsrfProtection)
-//                .and()
-//                .sessionManagement().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(1)
-//                .sessionRegistry(sessionRegistry).expiredUrl(ApplicationConstants.LOGIN_PAGE);
-                .sessionManagement().maximumSessions(1)
+
+                .sessionManagement().invalidSessionUrl(ApplicationConstants.LOGIN_PAGE).maximumSessions(5)
                 .maxSessionsPreventsLogin(true)
-                .sessionRegistry(sessionRegistry());
-                //.expiredUrl(ApplicationConstants.LOGIN_PAGE);
+                .sessionRegistry(sessionRegistry())
+                .expiredUrl(ApplicationConstants.LOGIN_PAGE);
 
         //.sessionFixation().newSession()  Session Fixation protection
         //Your servlet container did not change the session ID when a new session was created. You will not be adequately protected against session-fixation attacks
