@@ -35,7 +35,7 @@ public class JacksonConfiguration {
     public ObjectMapper objectMapper() {
         SimpleModule simbestModule = new SimpleModule("Simbest JSON Module");
         simbestModule.addDeserializer(String.class, new JacksonCustomDeserializer());
-        simbestModule.addSerializer(new JacksonCustomSerializer(String.class));
+        //simbestModule.addSerializer(new JacksonCustomSerializer(String.class));
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new ParameterNamesModule()).registerModule(new
                 Jdk8Module()).registerModule(new JavaTimeModule()).registerModule(simbestModule);

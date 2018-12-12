@@ -47,6 +47,7 @@ public class SuccessLogoutHandler implements LogoutSuccessHandler {
                 response.sendRedirect(request.getContextPath() + ApplicationConstants.CAS_LOGOUT_PAGE);
             }
         } else {
+            response.setStatus(HttpServletResponse.SC_OK);
             request.getRequestDispatcher(ApplicationConstants.LOGIN_PAGE).forward(request, response);
         }
     }

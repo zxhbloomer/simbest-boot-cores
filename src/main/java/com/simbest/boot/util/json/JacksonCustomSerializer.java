@@ -28,11 +28,11 @@ public class JacksonCustomSerializer extends JsonSerializer<String> {
             throws IOException {
         if (StringUtils.isNotEmpty(value)) {
             //如果注释以下代码，将直接将转义字符返回前端
-            jsonGenerator.writeString(JacksonUtils.unescapeString(value));
+            //jsonGenerator.writeString(JacksonUtils.unescapeString(value));
 
 
             //避免Could not write JSON: Can not write a field name, expecting a value报错
-            //jsonGenerator.writeString(value);
+            jsonGenerator.writeString(value);
         }
     }
 }
