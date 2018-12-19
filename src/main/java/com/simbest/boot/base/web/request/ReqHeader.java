@@ -48,7 +48,7 @@ public class ReqHeader<T> {
     @NonNull
     private String clientLinkEmail;
 
-    //请求方局方联系人
+    //请求方局方联系人（OA账号）
     @NonNull
     private String customLinkman;
 
@@ -64,6 +64,9 @@ public class ReqHeader<T> {
     @NonNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date requestTime;
+
+    //请求令牌
+    private String token;
 
     //请求数据
     @NonNull
