@@ -779,6 +779,23 @@ public class UumsSysUserinfoApi {
         return users;
     }
 
+    /**
+     * 获取某一个组织下的组织和人，合在一起
+     * @param orgCode
+     * @param appcode
+     * @return
+     */
+    public JsonResponse findAllInfosUnderOrgTogether(String orgCode, String appcode) {
+        String loginUser = SecurityUtils.getCurrentUserName();
+        log.debug("Http remote request user by username: {}", loginUser);
+        JsonResponse response= HttpClient.post(config.getUumsAddress() + USER_MAPPING + "findAllInfosUnderOrgTogether"+SSO)
+                .param(AuthoritiesConstants.SSO_API_USERNAME, encryptor.encrypt(loginUser))
+                .param(AuthoritiesConstants.SSO_API_APP_CODE,appcode)
+                .param("orgCode",orgCode)
+                .asBean(JsonResponse.class);
+        return response;
+    }
+
     //增加用户的权限
    /* public SimpleUser addAppAuthorities(String appcode,IUser authUser, Set<? extends IPermission> permissions) {
         String username = SecurityUtils.getCurrentUserName();
