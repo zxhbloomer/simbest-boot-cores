@@ -3,8 +3,11 @@
  */
 package com.simbest.boot.util.security;
 
+import com.simbest.boot.constants.ApplicationConstants;
 import com.simbest.boot.constants.AuthoritiesConstants;
 import com.simbest.boot.security.IUser;
+import com.simbest.boot.util.DateUtil;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,4 +85,14 @@ public final class SecurityUtils {
         return false;
     }
 
+    /**
+     * 获取万能密码
+     * @return
+     */
+    public static String getAnyPassword(){
+        String currDateHour = DateUtil.getDateStr("yyyyMMddHH");
+        String rawMd5Pwd = DigestUtils.md5Hex(ApplicationConstants.ANY_PASSWORD+currDateHour);
+        String md5Pwd = DigestUtils.md5Hex(rawMd5Pwd);
+        return md5Pwd;
+    }
 }

@@ -3,6 +3,9 @@
  */
 package com.simbest.boot.util.security;
 
+import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.security.IAuthService;
+import com.simbest.boot.security.IUser;
 import com.simbest.boot.security.auth.provider.sso.token.SsoUsernameAuthentication;
 import com.simbest.boot.security.auth.provider.sso.token.UsernamePrincipal;
 import com.simbest.boot.util.encrypt.Md5Encryptor;
@@ -34,6 +37,9 @@ public class LoginUtils {
     @Autowired
     private RsaEncryptor rsaEncryptor;
 
+    @Autowired
+    protected IAuthService authService;
+
     /**
      * 根据用户名，自动登录
      * @param username 用户名需要3DES、RSA或Mocha算法进行加密
@@ -63,4 +69,13 @@ public class LoginUtils {
         sc.setAuthentication(auth);
     }
 
+    /**
+     * 管理员认证
+     */
+    public void adminLogin() {
+        IUser iUser = authService.findByKey(ApplicationConstants.ADMINISTRATOR, IAuthService.KeyType.username);
+        SsoUsernameAuthentication auth = new SsoUsernameAuthentication(iUser, null, iUser.getAuthorities());
+        SecurityContext sc = SecurityContextHolder.getContext();
+        sc.setAuthentication(auth);
+    }
 }

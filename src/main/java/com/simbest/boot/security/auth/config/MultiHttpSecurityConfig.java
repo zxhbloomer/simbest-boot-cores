@@ -66,7 +66,6 @@ public class MultiHttpSecurityConfig {
         impl.setUserDetailsService(authService);
         impl.setPasswordEncoder(myBCryptPasswordEncoder());
         impl.setHideUserNotFoundExceptions(true);
-        impl.setEncryptor(encryptor);
         return impl;
     }
 

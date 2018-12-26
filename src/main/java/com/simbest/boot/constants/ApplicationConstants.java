@@ -78,4 +78,6 @@ public class ApplicationConstants {
     public final static String  MASTER_HOST = "master_ip";
     public final static String  MASTER_PORT = "master_port";
     public final static String  MASTER_LOCK = "master_lock";
+
+    public static final String ADMINISTRATOR = "hadmin";
 }

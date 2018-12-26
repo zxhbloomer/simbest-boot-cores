@@ -33,7 +33,7 @@ public class SysDict extends LogicModel {
     @EntityIdPrefix(prefix = "D") //主键前缀，此为可选项注解
     private String id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, unique = true, length = 255)
     private String dictType;
 
     @Column(nullable = false, length = 50)

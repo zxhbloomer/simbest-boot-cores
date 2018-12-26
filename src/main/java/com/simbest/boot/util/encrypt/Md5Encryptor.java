@@ -28,8 +28,8 @@ public class Md5Encryptor extends AbstractEncryptor {
      */
     public static void main(String[] args) {
         Md5Encryptor encryptor = new Md5Encryptor();
-        encryptor.encrypt("123456");
-        encryptor.encryptSource("1");
+        System.out.println(encryptor.encrypt("111.com"));
+        System.out.println(encryptor.encryptSource("111.com"));
     }
 
     /**

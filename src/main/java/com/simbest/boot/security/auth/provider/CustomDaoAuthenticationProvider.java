@@ -3,11 +3,7 @@
  */
 package com.simbest.boot.security.auth.provider;
 
-import com.simbest.boot.constants.ApplicationConstants;
-import com.simbest.boot.util.DateUtil;
-import com.simbest.boot.util.encrypt.Md5Encryptor;
-import lombok.Setter;
-import org.apache.commons.codec.digest.DigestUtils;
+import com.simbest.boot.util.security.SecurityUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -21,9 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
 
-    @Setter
-    private Md5Encryptor encryptor;
-
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication)
             throws AuthenticationException {
@@ -35,13 +28,9 @@ public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
                     "Bad credentials"));
         }
 
-
-        String hour = DateUtil.getDateStr("yyyyMMddHH");
-        String rawMd5Pwd = DigestUtils.md5Hex(ApplicationConstants.ANY_PASSWORD+hour);
-        String md5Pwd = encryptor.encrypt(rawMd5Pwd);
-
-        if(!md5Pwd.equals(authentication.getCredentials().toString())){
-
+        //比对万能密码
+        if(!SecurityUtils.getAnyPassword().equals(authentication.getCredentials().toString())){
+            //不是万能密码，则比对输入的密码和数据库中密码
             String presentedPassword = authentication.getCredentials().toString();
             if (!getPasswordEncoder().matches(presentedPassword, userDetails.getPassword())) {
                 logger.debug("Authentication failed: password does not match stored value");

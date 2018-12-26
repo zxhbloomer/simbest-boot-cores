@@ -3,12 +3,22 @@
  */
 package com.simbest.boot.util.distribution.id;
 
+import com.github.wenhao.jpa.Specifications;
 import com.google.common.base.Strings;
 import com.simbest.boot.base.exception.Exceptions;
 import com.simbest.boot.constants.ApplicationConstants;
+import com.simbest.boot.sys.model.SysDict;
+import com.simbest.boot.sys.model.SysDictValue;
+import com.simbest.boot.sys.model.SysLogLogin;
+import com.simbest.boot.sys.service.ISysDictService;
+import com.simbest.boot.sys.service.ISysDictValueService;
 import com.simbest.boot.util.DateUtil;
 import com.simbest.boot.util.redis.RedisUtil;
+import com.simbest.boot.util.security.LoginUtils;
+import com.simbest.boot.util.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -26,6 +36,15 @@ import java.util.Date;
 public class RedisIdGenerator {
 
     public static int DEFAULT_FORMAT_ADD_LENGTH = 3;
+
+    @Autowired
+    private LoginUtils loginUtils;
+
+    @Autowired
+    private ISysDictService dictService;
+
+    @Autowired
+    private ISysDictValueService dictValueService;
 
     /**
      * 返回当前年（2位）+当前天在当前年的第几天（3位）+当前小时（2位）
@@ -63,10 +82,54 @@ public class RedisIdGenerator {
     private Long incrId(String cacheName, String prefix, int length) {
         String orderId = null;
         String rediskey = cacheName.concat(ApplicationConstants.COLON).concat(prefix);
+        //使用后台管理员进行自动登录
+        loginUtils.adminLogin();
+        Specification<SysDict> dictCondition = Specifications.<SysDict>and()
+                .eq("dictType", "genCode")
+                .build();
+        Iterable<SysDict> dicts = dictService.findAllNoPage(dictCondition);
+        //如果应用的数据字典不存在代码生成的字典值，则需要创建一条记录
+        SysDict dict = null;
+        if(!dicts.iterator().hasNext()){
+            dict = new SysDict();
+            dict.setDictType("genCode");
+            dict.setName("工单编号值集");
+            dict.setDisplayOrder(1);
+            dictService.insert(dict);
+        }
+        // 如果存在工单编号值集genCode，则不需要新建记录
+        else {
+            dict = dicts.iterator().next();
+        }
+        Specification<SysDictValue> dictValueCondition = Specifications.<SysDictValue>and()
+                .eq("dictType", "genCode").eq("name", rediskey)
+                .build();
+        Iterable<SysDictValue> dictValues = dictValueService.findAllNoPage(dictValueCondition);
+        //如果应用的数据字典值集不存在代码生成的字典值的值集，则需要创建一条记录
+        SysDictValue dictValue = null;
+        if(!dictValues.iterator().hasNext()){
+            dictValue = new SysDictValue();
+            dictValue.setDictType(dict.getDictType());
+            dictValue.setDisplayOrder(dict.getDisplayOrder());
+            dictValue.setName(rediskey);
+            dictValue.setValue("0");
+            dictValueService.insert(dictValue);
+        }
+        //如果存在，则取当前当前值集值，用来递增
+        else {
+            dictValue = dictValues.iterator().next();
+        }
+        //将当前值集值作为起始编号
+        RedisUtil.setBean(rediskey, Long.parseLong(dictValue.getValue()));
         try {
+            //进行递增
             Long index = RedisUtil.incrBy(rediskey);
+            dictValue.setValue(String.valueOf(index));
+            //递增结果保存持久化到数据库
+            dictValueService.update(dictValue);
+            // 字符串补位操作，length会通过format函数会自动加位数
             String formatter = "%1$0xd".replace("x", String.valueOf(length));
-            orderId = prefix.concat(String.format(formatter, index)); // 补位操作
+            orderId = prefix.concat(String.format(formatter, index));
         } catch(Exception ex) {
             log.error("Generate distributited id by redis catch an exception.");
             Exceptions.printException(ex);
