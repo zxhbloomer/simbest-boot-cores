@@ -4,9 +4,11 @@
 package com.simbest.boot.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.simbest.boot.component.converter.StringToDateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -41,6 +43,14 @@ public class WebMvcConfigSupport extends WebMvcConfigurationSupport {
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(customJackson2HttpMessageConverter());
         super.addDefaultHttpMessageConverters(converters);
+    }
+
+    /**
+     * 添加自定义的Converters和Formatters.
+     */
+    @Override
+    protected void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToDateConverter());
     }
 
     @Override

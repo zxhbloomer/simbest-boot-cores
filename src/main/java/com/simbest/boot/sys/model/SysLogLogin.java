@@ -59,7 +59,7 @@ public class SysLogLogin extends GenericModel {
     @NonNull
     private Integer loginEntry;
 
-    @Column(unique = true)
+    @Column
     private String sessionid;
 
     @Column

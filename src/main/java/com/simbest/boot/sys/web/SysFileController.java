@@ -13,8 +13,10 @@ import com.simbest.boot.sys.service.ISysFileService;
 import com.simbest.boot.util.AppFileUtil;
 import com.simbest.boot.util.encrypt.UrlEncryptor;
 import com.simbest.boot.util.encrypt.WebOffice3Des;
+import com.simbest.boot.util.http.BrowserUtil;
 import com.simbest.boot.util.json.JacksonUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -77,51 +81,6 @@ public class SysFileController extends LogicController<SysFile, String> {
         super(fileService);
         this.fileService = fileService;
     }
-//
-//    /**
-//     * 注释掉的方法在IE8不支持
-//     * @param uploadfile
-//     * @return
-//     */
-//    @ApiOperation(value = "上传单个流程附件", notes = "会保存到数据库SYS_FILE")
-//    @PostMapping(value = {UPLOAD_PROCESS_FILE_URL, UPLOAD_PROCESS_FILE_URL_SSO})
-//    public void uploadProcessFile(@RequestParam("file") MultipartFile uploadfile,
-//                                                    @PathVariable("pmInsType") String pmInsType,
-//                                                    @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
-//                                                    @PathVariable("pmInsTypePart") String pmInsTypePart, HttpServletRequest request, HttpServletResponse response) throws Exception {
-//        this.uploadProcessFiles(new MultipartFile[]{uploadfile}, pmInsType, pmInsId, pmInsTypePart,request, response);
-//    }
-//
-//    /**
-//     * 注释掉的方法在IE8不支持
-//     * @param uploadfiles
-//     * @return
-//     */
-//    @ApiOperation(value = "上传多个流程附件", notes = "会保存到数据库SYS_FILE")
-//    @PostMapping(value = {UPLOAD_PROCESS_FILES_URL, UPLOAD_PROCESS_FILES_URL_SSO})
-//    public void uploadProcessFiles(@RequestParam("files") MultipartFile[] uploadfiles,
-//                                           @PathVariable("pmInsType") String pmInsType,
-//                                           @RequestParam(value = "pmInsId", required = false) String pmInsId, //起草阶段上传文件，可不填写业务单据ID
-//                                           @PathVariable("pmInsTypePart") String pmInsTypePart, HttpServletRequest request, HttpServletResponse response) throws Exception {
-//        response.setContentType("text/html; charset=UTF-8");
-//        response.setCharacterEncoding("UTF-8");
-//        PrintWriter out = response.getWriter();
-//
-//        for (MultipartFile uploadFile : uploadfiles) {
-//            if (!AppFileUtil.validateUploadFileType(uploadFile.getOriginalFilename())) {
-//                JsonResponse jsonResponse = JsonResponse.fail("不允许上传的文件类型");
-//                String result = "<script type=\"text/javascript\">parent.result="+JacksonUtils.obj2json(jsonResponse)+"</script>";
-//                out.println(result);
-//            }
-//        }
-//        List<SysFile> sysFiles = fileService.uploadProcessFiles(uploadfiles, pmInsType, pmInsId, pmInsTypePart);
-//        UploadFileResponse uploadFileResponse = new UploadFileResponse();
-//        uploadFileResponse.setSysFiles(sysFiles);
-//        JsonResponse jsonResponse = JsonResponse.success(uploadFileResponse);
-//        String result = "<script type=\"text/javascript\">parent.result="+JacksonUtils.obj2json(jsonResponse)+"</script>";
-//        out.println(result);
-//        out.close();
-//    }
 
     /**
      * 上传文件，支持IE8及以上版本浏览器，支持同时上传多个附件
@@ -129,6 +88,7 @@ public class SysFileController extends LogicController<SysFile, String> {
      * @param response
      * @throws Exception
      */
+    @ApiOperation(value = "上传多个附件,支持关联流程", notes = "会保存到数据库SYS_FILE")
     @PostMapping(value = {UPLOAD_PROCESS_FILES_URL, UPLOAD_PROCESS_FILES_URL_SSO})
     public void uploadFile(HttpServletRequest request, HttpServletResponse response) throws Exception{
         response.setContentType("text/html; charset=UTF-8");
@@ -153,22 +113,37 @@ public class SysFileController extends LogicController<SysFile, String> {
 
     /**
      * 下载文件
+     * @param request
      * @param id
      * @return
      * @throws FileNotFoundException
+     * @throws UnsupportedEncodingException
      */
+    @ApiOperation(value = "下载文件")
     @GetMapping(value = {DOWNLOAD_URL, DOWNLOAD_URL_SSO})
-    public ResponseEntity<?> download(@RequestParam("id") String id) throws FileNotFoundException {
+    public ResponseEntity<?> download(HttpServletRequest request, @RequestParam("id") String id) throws FileNotFoundException, UnsupportedEncodingException {
         SysFile sysFile = fileService.findById(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
-        ContentDisposition cd = ContentDisposition.builder("attachment")
-                .filename(sysFile.getFileName(), StandardCharsets.UTF_8) // 防止文件名乱码，需指定文件名编码
-                .size(sysFile.getFileSize())
-                .build();
-        headers.setContentDisposition(cd);
+
+        //设置文件名称
+//        ContentDisposition cd = ContentDisposition.builder("attachment")
+//                .filename(sysFile.getFileName(), StandardCharsets.UTF_8) // 防止文件名乱码，需指定文件名编码
+//                .size(sysFile.getFileSize())
+//                .build();
+//        headers.setContentDisposition(cd);
+        boolean isMSIE = BrowserUtil.isMSBrowser(request);
+        String fileName = null;
+        if (isMSIE) {
+            fileName = URLEncoder.encode(sysFile.getFileName(), ApplicationConstants.UTF_8);
+        } else {
+            fileName = new String(sysFile.getFileName().getBytes(ApplicationConstants.UTF_8), "ISO-8859-1");
+        }
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + fileName + "\"");
+
+        //设置文件类型
         File realFile = fileService.getRealFileById(id);
         if(AppFileUtil.isImage(realFile)){
             String fileType = AppFileUtil.getFileType(realFile);
