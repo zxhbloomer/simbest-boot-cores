@@ -3,13 +3,30 @@
  */
 package com.simbest.boot.util;
 
+import com.google.common.collect.Maps;
 import com.simbest.boot.base.exception.Exceptions;
+import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -105,8 +122,85 @@ public class MapUtil {
                 }
             }
         }
-
         return map;
+    }
+
+    /**
+     * 简单 xml 转换为 Map
+     * @param reader
+     * @return
+     */
+    public static Map<String,String> xmlToMap(String xml){
+        try {
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = documentBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+            Element element = document.getDocumentElement();
+            NodeList nodeList = element.getChildNodes();
+            Map<String, String> map = new LinkedHashMap<String, String>();
+            for(int i=0;i<nodeList.getLength();i++){
+                Element e = (Element) nodeList.item(i);
+                map.put(e.getNodeName(),e.getTextContent());
+            }
+            return map;
+        } catch (DOMException e) {
+            Exceptions.printException(e);
+        } catch (ParserConfigurationException e) {
+            Exceptions.printException(e);
+        } catch (SAXException e) {
+            Exceptions.printException(e);
+        } catch (IOException e) {
+            Exceptions.printException(e);
+        }
+        return null;
+    }
+
+    /**
+     * url 参数串连
+     * @param map
+     * @param valueUrlencode
+     * @return
+     */
+    public static String mapJoin(Map<String, String> map, boolean valueUrlencode){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(String key :map.keySet()){
+            if(map.get(key)!=null&&!"".equals(map.get(key))){
+                try {
+                    String temp = (key.endsWith("_")&&key.length()>1)?key.substring(0,key.length()-1):key;
+                    stringBuilder.append(temp)
+                            .append("=")
+                            .append(valueUrlencode? URLEncoder.encode(map.get(key),"utf-8").replace("+", "%20"):map.get(key))
+                            .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    Exceptions.printException(e);;
+                }
+            }
+        }
+        if(stringBuilder.length()>0){
+            stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Map key 排序
+     * @param map
+     * @return
+     */
+    public static Map<String,String> orderMapByKey(Map<String, String> map){
+        HashMap<String, String> tempMap = new LinkedHashMap<String, String>();
+        List<Map.Entry<String, String>> infoIds = new ArrayList<Map.Entry<String, String>>(	map.entrySet());
+
+        Collections.sort(infoIds, new Comparator<Map.Entry<String, String>>() {
+            public int compare(Map.Entry<String, String> o1,Map.Entry<String, String> o2) {
+                return (o1.getKey()).toString().compareTo(o2.getKey());
+            }
+        });
+
+        for (int i = 0; i < infoIds.size(); i++) {
+            Map.Entry<String, String> item = infoIds.get(i);
+            tempMap.put(item.getKey(), item.getValue());
+        }
+        return tempMap;
     }
 
     /**
@@ -127,6 +221,81 @@ public class MapUtil {
         return sortMap;
     }
 
+    /**
+     * 获取Http请求的参数
+     * @param request
+     * @return
+     */
+    public static Map<String, String> getRequestParameters(HttpServletRequest request){
+        Map<String, String[]> requestParams = request.getParameterMap();
+        Map<String, String> params = Maps.newHashMap();
+        for (String key : requestParams.keySet()) {
+            String value = "";
+            String[] values = requestParams.get(key);
+            for (int i = 0; i < values.length; i++) {
+                value += values[i];
+            }
+            if(StringUtils.isNotEmpty(value)){
+                params.put(key, value);
+            }
+        }
+        return params;
+    }
+
+    /**
+     * 获取Http请求的URL及参数
+     * 按照腾讯官方要求，将请求参数拼装至URL中，以便计算签名
+     * @param request
+     * @return
+     */
+    public static String getRequestUrlWithParameters(HttpServletRequest request) {
+        String pageUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        if(StringUtils.isNotEmpty(queryString)){
+            String[] queryStrings = StringUtils.split(queryString, "&");
+            if(queryStrings.length > 0){
+                pageUrl += "?";
+                for(String q:queryStrings){
+                    if(!StringUtils.startsWith(q, "#") && !StringUtils.startsWith(q, "code=") && !StringUtils.startsWith(q, "state="))
+                        pageUrl += q+"&";
+                }
+            }
+            pageUrl = StringUtils.removeEnd(pageUrl, "&");
+        }
+        return pageUrl;
+    }
+
+    /**
+     * 追加Http请求的URL参数
+     * @param request
+     * @return
+     */
+    public static String addRequestUrlWithParameters(HttpServletRequest request, String[] parameters) {
+        String pageUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        if(StringUtils.isNotEmpty(queryString)){
+            String[] queryStrings = StringUtils.split(queryString, "&");
+            if(queryStrings.length > 0){
+                pageUrl += "?";
+                for(String q:queryStrings){
+                    if(!StringUtils.startsWith(q, "#") && !StringUtils.startsWith(q, "code=") && !StringUtils.startsWith(q, "state="))
+                        pageUrl += q+"&";
+                }
+                for(String q:parameters){
+                    if(!StringUtils.startsWith(q, "#") && !StringUtils.startsWith(q, "code=") && !StringUtils.startsWith(q, "state="))
+                        pageUrl += q+"&";
+                }
+            }
+            pageUrl = StringUtils.removeEnd(pageUrl, "&");
+        } else{
+            pageUrl += "?";
+            for(String q:parameters){
+                if(!StringUtils.startsWith(q, "#") && !StringUtils.startsWith(q, "code=") && !StringUtils.startsWith(q, "state="))
+                    pageUrl += q+"&";
+            }
+        }
+        return pageUrl;
+    }
 }
 
 class MapKeyComparator implements Comparator<String>{
