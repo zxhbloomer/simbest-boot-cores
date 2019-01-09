@@ -4,6 +4,7 @@
 package com.simbest.boot.util;
 
 import com.google.common.collect.Maps;
+import com.mzlion.core.lang.Assert;
 import com.simbest.boot.base.exception.Exceptions;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.DOMException;
@@ -270,31 +271,22 @@ public class MapUtil {
      * @param request
      * @return
      */
-    public static String addRequestUrlWithParameters(HttpServletRequest request, String[] parameters) {
+    public static String addRequestUrlWithParameters(HttpServletRequest request, Map<String, String> parameters) {
+        Assert.notEmpty(parameters, "Add parameters can not be null");
         String pageUrl = request.getRequestURI();
         String queryString = request.getQueryString();
         if(StringUtils.isNotEmpty(queryString)){
-            String[] queryStrings = StringUtils.split(queryString, "&");
-            if(queryStrings.length > 0){
-                pageUrl += "?";
-                for(String q:queryStrings){
-                    if(!StringUtils.startsWith(q, "#") && !StringUtils.startsWith(q, "code=") && !StringUtils.startsWith(q, "state="))
-                        pageUrl += q+"&";
-                }
-                for(String q:parameters){
-                    if(!StringUtils.startsWith(q, "#") && !StringUtils.startsWith(q, "code=") && !StringUtils.startsWith(q, "state="))
-                        pageUrl += q+"&";
-                }
+            pageUrl += "?" + queryString +"&";
+            for (String key : parameters.keySet()) {
+                pageUrl += key+"="+parameters.get(key)+"&";
             }
-            pageUrl = StringUtils.removeEnd(pageUrl, "&");
         } else{
             pageUrl += "?";
-            for(String q:parameters){
-                if(!StringUtils.startsWith(q, "#") && !StringUtils.startsWith(q, "code=") && !StringUtils.startsWith(q, "state="))
-                    pageUrl += q+"&";
+            for (String key : parameters.keySet()) {
+                pageUrl += key+"="+parameters.get(key)+"&";
             }
         }
-        return pageUrl;
+        return StringUtils.removeEnd(pageUrl, "&");
     }
 }
 

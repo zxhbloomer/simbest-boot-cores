@@ -3,6 +3,7 @@
  */
 package com.simbest.boot.base.web.log;
 
+import com.simbest.boot.util.server.HostUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -28,6 +29,9 @@ import java.util.Arrays;
 @Order(10)
 @Component
 public class GlobalWebRequestLogger {
+
+    private final static String LOGTAG = "GWL=======>>";
+
     ThreadLocal<Long> startTime = new NamedThreadLocal<>("global-web-logger");
 
     /**
@@ -48,12 +52,13 @@ public class GlobalWebRequestLogger {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         // 记录下请求内容
-        log.info("URL : " + request.getRequestURL().toString());
-        log.info("HTTP_METHOD : " + request.getMethod());
-        log.info("IP : " + request.getRemoteAddr());
-        log.info("CLASS_METHOD : "
+        log.info(LOGTAG + "URL : " + request.getRequestURL().toString());
+        log.info(LOGTAG + "HTTP_METHOD : " + request.getMethod());
+//        log.info("IP : " + request.getRemoteAddr());
+        log.info(LOGTAG + "IP : " + HostUtil.getClientIpAddress(request));
+        log.info(LOGTAG + "CLASS_METHOD : "
                 + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-        log.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+        log.info(LOGTAG + "ARGS : " + Arrays.toString(joinPoint.getArgs()));
     }
 
     /**
@@ -64,7 +69,7 @@ public class GlobalWebRequestLogger {
     @AfterReturning(returning = "ret", pointcut = "webLog()")
     public void doAfterReturning(Object ret) throws Throwable {
         // 处理完请求，返回内容
-        log.info("RESPONSE : " + ret);
-        log.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()) + "ms");
+        log.info(LOGTAG + "RESPONSE : " + ret);
+        log.info(LOGTAG + "SPEND TIME : " + (System.currentTimeMillis() - startTime.get()) + "ms");
     }
 }
