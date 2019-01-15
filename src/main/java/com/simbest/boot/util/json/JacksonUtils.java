@@ -135,7 +135,7 @@ public class JacksonUtils {
         //String escapeValue = StringEscapeUtils.escapeHtml4(value.toString());
         //以下定义因为特殊业务要求，放开的字符
 //            escapeValue=escapeValue.replaceAll("&quot;", "\"");
-//            escapeValue=escapeValue.replaceAll("&amp;", "&");
+            escapeValue=escapeValue.replaceAll("&amp;", "&");
 //            escapeValue=escapeValue.replaceAll("&ldquo;", "“");
 //            escapeValue=escapeValue.replaceAll("&rdquo;", "”");
 //            escapeValue=escapeValue.replaceAll("&mdash;", "—");
@@ -151,4 +151,5 @@ public class JacksonUtils {
         String unescapeValue = HtmlUtils.htmlUnescape(value);
         return unescapeValue;
     }
+
 }
