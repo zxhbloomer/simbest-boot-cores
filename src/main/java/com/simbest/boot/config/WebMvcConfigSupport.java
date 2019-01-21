@@ -70,7 +70,8 @@ public class WebMvcConfigSupport extends WebMvcConfigurationSupport {
                 "/css/**",
                 "/js/**",
                 "/fonts/**",
-                "/html/**")
+                "/html/**",
+                "/favicon.ico")
                 .addResourceLocations(
                         "classpath:/META-INF/resources/webjars/",
                         "classpath:/static/img/",
@@ -78,9 +79,12 @@ public class WebMvcConfigSupport extends WebMvcConfigurationSupport {
                         "classpath:/static/css/",
                         "classpath:/static/js/",
                         "classpath:/static/fonts/",
-                        "classpath:/static/html/")
+                        "classpath:/static/html/",
+                        "classpath:/static/**")
                 .setCachePeriod(-1) /* no cache */
                 .resourceChain(true)
                 .addResolver(versionResourceResolver);
+
+        super.addResourceHandlers(registry);
     }
 }
