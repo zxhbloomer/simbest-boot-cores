@@ -16,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-
+import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -36,6 +36,7 @@ import java.util.List;
  * -------------------------------------------<br>
  */
 @Slf4j
+@Service
 public class LogicService<T extends LogicModel,PK extends Serializable> extends SystemService<T,PK> implements ILogicService<T,PK> {
 
     private LogicRepository<T,PK> logicRepository;
