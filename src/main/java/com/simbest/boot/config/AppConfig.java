@@ -6,6 +6,7 @@ package com.simbest.boot.config;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 用途：应用配置
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Data
 @Configuration
+@ConfigurationProperties
 public class AppConfig {
 
     @Value("${server.servlet.context-path}")
