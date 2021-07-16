@@ -18,7 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-
+import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
@@ -39,6 +39,7 @@ import java.util.Set;
  * -------------------------------------------<br>
  */
 @Slf4j
+@Service
 @CacheConfig(cacheNames = ApplicationConstants.REDIS_DEFAULT_CACHE_PREFIX)
 public class GenericService<T extends GenericModel,PK extends Serializable> implements IGenericService<T,PK> {
 
